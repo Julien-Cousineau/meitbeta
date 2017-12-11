@@ -1,0 +1,265 @@
+:root {
+  --main-bg-color: brown;
+  --barColor: #222;
+  --barWidth: 60px;
+  --barHeight: 50px;  
+}
+
+a {
+    cursor: pointer;
+}
+#map {
+     position:absolute; 
+     top:0; 
+     bottom:0; 
+     left:0;
+     right:0;
+}
+/*.hidebtn {*/
+/*    position: absolute;*/
+/*    right: 0px;*/
+/*    height: 100%;*/
+/*}*/
+/*.exportbtn {*/
+/*    position: absolute;*/
+/*    right: 0px;*/
+/*    height: 100%;*/
+/*}*/
+
+.hidebtn {
+    height: 100%;
+}
+.exportbtn {
+    height: 100%;
+}
+
+
+.exportcontainer {
+    position: absolute;
+    right: 0px;
+    height: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    
+}
+
+.maincontainer {
+    position: absolute;
+    top:var(--barHeight);
+    left:var(--barWidth);
+    right:var(--barWidth);
+    bottom:var(--barHeight);
+}
+.footer-container {
+    position: fixed;
+    display: inline-block;
+}
+div.dc-chart {
+    float: none;
+}
+.number-display {
+    font-size: 30px;
+    color: #fff;
+    display: inline;
+    margin: 15px 0px;
+    vertical-align: middle;
+}
+.headerGroup {
+    z-index: 1000;
+    position: absolute;
+    pointer-events: none;
+    touch-action: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.header, .footer, .sidebar {
+    background: var(--barColor);
+    /*color: #fff;*/
+    margin: 0;
+    display: block;
+    position: absolute;
+    /*padding: 10px;*/
+    z-index: 10;
+    
+}
+
+.header {
+    height:var(--barHeight);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 11;
+}
+.header .tileName {
+   padding-top: 10px;
+}
+
+.navbar-inverse {
+    background-color: #222;
+    border-color: #222;
+}
+.navbar-inverse .tileName {
+   padding-top: 10px;
+}
+
+.footer {
+    height:var(--barHeight);
+    bottom: 0;
+    left: var(--barWidth);
+    right: var(--barWidth);
+}
+.sidebar{
+    top: var(--barHeight);
+    bottom: 0;
+    width: var(--barWidth);
+}
+.left {
+    left: 0;
+}
+.right {
+    right: 0;
+}
+
+.tileName {
+    font-size: 18px;
+}
+
+
+.sidernav-list {
+  list-style-type: none;
+}
+.sidernav-list:first-child {
+  padding-top: 30px;
+}
+
+.sidernav-list-item {
+  cursor: pointer;
+  padding: 10px 0px;
+  opacity: 0.75;
+  font-size: 1.5em;
+  text-align: center;
+
+}
+
+.sidernav-list-item-active {
+  width: 100%;
+  cursor: pointer;
+  padding: 10px 0px;
+  opacity: 0.75;
+  font-size: 1.5em;
+  text-align: center;
+  background-color: #fff;
+}
+
+.sidernav-list-item:hover {
+  color: #fff;
+}
+
+.sidernav-list-name {
+  /*padding: 6px;*/
+  text-align: center;
+}
+.sidernav-list-name:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.sidernav-list-selected {
+  padding: 6px;
+  text-decoration: underline;
+}
+.sidernav-list-selected:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.tooltip.left {
+    /*position: relative;*/
+  /*padding: 0 5px;*/
+  /*position: absolute;*/
+  /*margin-left:-35px;*/
+}
+.tooltip.left {
+    -moz-transform: translateX(-60px); 
+    -ms-transform: translateX(-60px); 
+    -o-transform: translateX(-60px); 
+    -webkit-transform: translateX(-60px); 
+    transform: translateX(-60px); 
+    
+} 
+.tooltip.right {
+    -moz-transform: translateX(120px); 
+    -ms-transform: translateX(120px); 
+    -o-transform: translateX(120px); 
+    -webkit-transform: translateX(120px); 
+    transform: translateX(120px); 
+    
+}
+.statusIcon {
+    font-size: 30px;
+    line-height: 0.8;
+}
+.statusIconGreen {
+    margin-right: 2px;
+    font-size: 35px;
+    color: #5cb85c;
+    background: white;
+    border-radius: 50%;
+    line-height: 0.8;
+}
+.statusContainer {
+    position: absolute;
+    top:15px;
+    right:50px;
+    
+    /*width:175px;*/
+    /*height: 35px;*/
+    /*border-radius: 3px;*/
+    /*background: white;*/
+    /*box-shadow: 0 0 0 2px rgba(0,0,0,0.1);*/
+}
+.ccontainer {
+   width:100%;
+   padding-top: 5px;
+}
+.left_col {
+    position: absolute;
+    width: 220px;
+}
+.right_col {
+    position: absolute;
+    left: 220px;
+    right: 0;
+}
+
+.right_colO {
+    width: 100%;
+    text-align: center;
+    padding: 0px 5px;
+}
+.right_colI {
+    display: inline-block;
+}
+
+.tooltip > .tooltip-inner {
+    background-color: #5cb85c; 
+    color: #FFFFFF; 
+    border: 1px solid green;
+    padding: 15px;
+    font-size: 16px;
+    
+}
+.changepassword {
+    margin-top: 10px;
+    margin-right: 15px;
+    float: right;
+}
+/*.LGbtn2 {*/
+/*    margin-top: 8px;*/
+/*    color: #fff;*/
+/*    background-color: #337ab7;*/
+/*    border-color: #2e6da4;*/
+/*}*/

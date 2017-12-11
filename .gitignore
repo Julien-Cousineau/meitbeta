@@ -1,0 +1,8 @@
+*.slf
+*.csv
+*.csv2
+*.hex
+*.geojson
+
+data
+node_modules

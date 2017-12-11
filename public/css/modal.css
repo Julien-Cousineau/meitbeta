@@ -1,0 +1,78 @@
+#upload-input {
+  display: none;
+}
+.uploadContainer .btn:focus, .upload-btn:focus{
+  outline: 0 !important;
+}
+
+.uploadContainer .dropzone {
+    background: white;
+    border-radius: 5px;
+    border: 2px dashed rgb(0, 135, 247);
+    border-image: none;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.uploadContainer .container {
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+}
+
+.uploadContainer .row {
+  margin-top: 10px;
+}
+.uploadContainer .successicon {
+    color:#28a745;
+}
+.uploadContainer .upload-btn {
+  color: #ffffff;
+  background-color: #F89406;
+  border: none;
+}
+
+.uploadContainer .upload-btn:hover,
+.upload-btn:focus,
+.upload-btn:active,
+.upload-btn.active {
+  color: #ffffff;
+  background-color: #FA8900;
+  border: none;
+}
+
+.uploadContainer h4 {
+  padding-bottom: 30px;
+  color: #B8BDC1;
+}
+
+.uploadContainer .glyphicon {
+  /*font-size: 5em;*/
+  color: #9CA3A9;
+}
+
+.uploadContainer h2 {
+  margin-top: 15px;
+  color: #68757E;
+}
+
+.uploadContainer .panel {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.uploadContainer #upload-input {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .uploadContainer .main-container {
+    width: 100%;
+  }
+}
+
+/*@media (min-width: 992px) {*/
+/*  .uploadContainer .container {*/
+/*    width: 450px;*/
+/*  }*/
+/*}*/
