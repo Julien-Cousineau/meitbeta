@@ -42,7 +42,13 @@ a {
     padding-bottom: 5px;
     
 }
-
+.bodycontainer {
+    position: absolute;
+    top:var(--barHeight);
+    left:var(--barWidth);
+    right:var(--barWidth);
+    bottom:var(--barHeight);
+}
 .maincontainer {
     position: absolute;
     top:var(--barHeight);
@@ -113,9 +119,10 @@ div.dc-chart {
     right: var(--barWidth);
 }
 .sidebar{
-    top: var(--barHeight);
+    /*top: var(--barHeight);*/
     bottom: 0;
     width: var(--barWidth);
+    background-color: red;
 }
 .left {
     left: 0;
