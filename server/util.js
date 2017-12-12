@@ -8,3 +8,7 @@ exports.extend = function (dest, src) {
     for (var i in src) dest[i] = src[i];
     return dest;
 };
+
+exports.range=function(n){
+  return Array.from(new Array(n), (x,i) => i);
+}

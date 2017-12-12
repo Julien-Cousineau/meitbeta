@@ -1,31 +1,48 @@
 /*global $,extend*/
-function Table(parent,options){
+
+function BaseTable(parent){
   this._parent = parent;
-  this.options = extend(Object.create(this.options), options);
-  this.construct();    
+  
+  // this.options = extend(Object.create(this.options), options);
+  // this.construct();    
 }
-Table.prototype = {
-  options:{
-    container:"",
-    id:"",
-    columns:{file:{title:"File",type:'string'},size:{title:"Size",type:'string'},created:{title:"Created",type:'string'}},
-    data:function(){return [];}
-  },
+BaseTable.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
-  get container(){return this.options.container},
-  get id(){return this.options.id},
-  get columns(){return this.options.columns},
-  set columns(value){this.options.columns=value;},
-  get data(){return this.options.data();},
-  construct:function(){
+  // options:{
+  //   container:"",
+  //   id:"",
+  //   newactionbutton:function(){return null;},
+  //   columns:{file:{title:"File",type:'string'},size:{title:"Size",type:'string'},created:{title:"Created",type:'string'}},
+  //   data:function(){return [];}
+  // },
+  
+  get container(){return this.parent.options.container},
+  get id(){return this.parent.options.id},
+  get columns(){return this.parent.options.columns},
+  set columns(value){this.parent.options.columns=value;},
+  get data(){return this.parent.data;},
+  set data(value){this.parent.data=value;},
+  apiFunc:function(){
+    const self=this;
+    this.parent.parent.socket.on(self.parent.options.apiFuncName, function(list){
+      
+        if(self.data){
+          self.data= list;
+          self.update();  
+        } else {
+          self.data= list;
+          self.build();
+        }
+    });
+  },
+  build:function(){
     const self=this;
     const container = this.container;
     const id = this.id;
-    
     const data = this.data;
-    console.log(data)
+    
+    
     $("{0}".format(container)).append(this.getDivTable(id));
-    console.log($("{0}".format(container)))
     $("#{0}".format(id)).append(this.getDivHeader(this.columns));
     this.datatable = $("#{0}".format(id)).DataTable( {
                     "dom":"<'row'<'col-sm-4 refreshcontainer'><'col-sm-4'l><'col-sm-4'f>>".format(id) + 
@@ -42,39 +59,47 @@ Table.prototype = {
                 });
     
   },
+  // getKeys:function(){
+  //   const columns = this.columns;
+  //   const array=[];
+  //   for(let key in columns){
+  //     const obj=columns[key];
+  //     if(obj.type==="string"){array.push({data:key});}
+  //     else{
+  //       array.push({"className":obj.className,
+  //                     "orderable":false,
+  //                     "data":null,
+  //                     "render":function (data,type,full,meta){return obj.render(full)}});
+  //       if(obj.action)obj.action(this.id,obj.className);
+  //     }
+  //   }
+  //   return array;
+  // },
   getKeys:function(){
     const columns = this.columns;
     const array=[];
+    
     for(let key in columns){
       const obj=columns[key];
-      if(obj.type==="string"){array.push({data:key});}
-      else{
-        array.push({"className":obj.className,
-                       "orderable":false,
-                       "data":null,
-                       "render":function (data,type,full,meta){return obj.render(full)}});
-        if(obj.action)obj.action(this.id,obj.className);
-      }
+      array.push({"className":(obj.className) ? obj.className:null,
+                  "orderable":(obj.orderable) ? obj.orderable:null,
+                  "data":(obj.data) ? key:null,
+                  "render":(obj.render) ? function (data,type,full,meta){return obj.render(full)}:key,
+                 });
     }
     return array;
   },
   addTableFunc:function(){
     $('#{0} tbody'.format(this.id)).off(); // Remove all event listeners, if not duplicates will exist
     const columns = this.columns;
+    
     for(let key in columns){
       const obj=columns[key];
       if(obj.action)obj.action(this.id,obj.className);
     }
-    this.addRefreshButton();
-    this.parent.addUploadButton();
+    this.parent.options.actionbuttons(this.id);
+    // this.parent.addUploadButton();
   },
-  addRefreshButton:function(){
-    const self=this;
-    let html =`<button type="button" class="btn btn-secondary"><span><i class="fa fa-refresh" aria-hidden="true"></i></span>Refresh</button>`;
-    $(".refreshcontainer").empty().append(html);
-    $(".refreshcontainer button").on("click",function(){self.parent.getFileList();});
-  },
-  
   update:function(){
     this.datatable.clear();
     this.datatable.rows.add(this.data);
@@ -93,3 +118,4 @@ Table.prototype = {
     return '<thead><tr>{0}</tr></thead>'.format(ths);
   },
 }
+

@@ -1,6 +1,23 @@
 #upload-input {
   display: none;
 }
+
+.inlinepanelshide {
+  overflow:hidden;
+}
+.inlinepanels {
+  width:200%;
+  display: inline-block;
+}
+.inlinepanels .panelleft {
+  width:49%;
+  display: inline-block;
+}
+.inlinepanels .panelright {
+  width:49%;
+  display: inline-block;
+}
+
 .uploadContainer .btn:focus, .upload-btn:focus{
   outline: 0 !important;
 }

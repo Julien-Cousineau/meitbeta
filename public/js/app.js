@@ -38,9 +38,20 @@ App.prototype ={
     socket.on('chat message', function(msg){
         console.log('message: ' + msg);
       });
-    socket.on('refreshfilelist', function(msg){
-        self.Upload.getFileList();
-      });
+    // socket.on('refreshfilelist', function(msg){
+    //     self.Upload.getFileList();
+    //   });
+    // socket.on('getfiles', function(results){
+    //     self.Upload.getFileList();
+    // });
+    // socket.on('gettables', function(results){
+    //     self.Upload.getTableList();
+    //   });
+    // socket.on('getdatasets', function(results){
+        
+    //     self.Upload.getDatasetList(results);
+    //   });           
+      
     socket.on('connect', function () {
         console.log("connect")
       });

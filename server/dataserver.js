@@ -6,8 +6,11 @@ const IP = process.env.IP;
 const mongodatabase = "meitdata";
 const mongourl = "mongodb://" + IP +":27017/" + mongodatabase;
 const collectionconvert="convert";
+const collectiontable="table";
 var formidable = require('formidable');
+const util = require('./util');
 
+const async = require("async");
 const fs = require('fs');
 const prettyBytes = require('pretty-bytes');
 var MongoClient = require('mongodb').MongoClient;
@@ -91,6 +94,7 @@ DataServer.prototype = {
     });
     
   },
+
   fileList:function(callback){
      MongoClient.connect(mongourl, function(err, db) {
       if (err) throw err;
@@ -98,7 +102,7 @@ DataServer.prototype = {
       dbase.collection(collectionconvert).find({parentid:null}).toArray(function(err, result) {
         if (err) throw err;
         db.close();
-        callback(result);
+        callback(err,result);
       });
     });   
   },  
@@ -190,6 +194,77 @@ DataServer.prototype = {
         childid:null,
         parentid:null,
       };
+  },
+  getdatasets:function(callback){
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(collectiontable).find({}).toArray(function(err, result) {
+        callback(err,result);
+      });
+   });
+  },
+  datasetExist:function(name,callback){
+     MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(collectiontable).find({ name: name }).toArray(function(err, result) {
+        callback(err,result);
+      });
+     });
+  },
+  newDataset:function(maincallback){
+    const self=this;
+    let name;
+    const datasetExist = function(i,callback){
+      name = "table" + i;
+      self.datasetExist(name,function(err,result){
+        if(err) throw Error(result);
+          
+        if(result.length===0){callback(null,name);}
+        else{callback(null,false);}
+      });
+    };
+      
+      
+    async.someSeries(util.range(100), datasetExist, function(err, result) {
+      if (err) throw err;
+      console.log(name)
+      MongoClient.connect(mongourl, function(err, db) {
+        if (err) throw err;
+          
+        const obj={name:name,datecreated:new Date().toISOString()};
+        const dbase = db.db(mongodatabase);
+        dbase.collection(collectiontable).insertOne(obj, function(err, res) {
+          if (err) throw err;
+          console.log("1 document inserted");
+          db.close();
+          self.getdatasets(function(err,results){
+            maincallback(err,results);  
+          });
+        })
+      });
+    });
+  },
+  deletedataset:function(obj,callback){
+    const self=this;
+    // if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      var myquery = { name: obj.name };
+      dbase.collection(collectiontable).deleteMany(myquery,function(err, result) {
+        if (err) throw err;
+        db.close();
+        self.getdatasets(function(err,results){
+          callback(err,results);  
+        });
+      });
+    });   
+  
+    
+    
+    
   },
 
 };

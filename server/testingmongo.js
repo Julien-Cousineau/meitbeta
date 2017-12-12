@@ -5,7 +5,7 @@ var url = "mongodb://" + IP +":27017/meitdata";
 
 function Test(){
   // this.createdb();
-  // this.createCollection();
+  this.createCollection();
   // this.insertOne();
   // this.insertMany();
   // this.findOne();
@@ -13,7 +13,7 @@ function Test(){
   // this.findManyWithAttr();
   // this.query();
   // this.update();
-  this.delete();
+  // this.delete();
 }
 Test.prototype = {
   createdb:function(){
@@ -27,7 +27,7 @@ Test.prototype = {
     MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      dbase.createCollection("upload", function(err, res) {
+      dbase.createCollection("table", function(err, res) {
         if (err) throw err;
         console.log("Collection created!");
         db.close();
@@ -37,9 +37,13 @@ Test.prototype = {
   insertOne:function(){
     MongoClient.connect(url, function(err, db) {
       if (err) throw err;
-      var dbase = db.db("mydb"); //here
-      var myobj = { name: "Company Inc", address: "Highway 37" };
-      dbase.collection("customers").insertOne(myobj, function(err, res) {
+      var dbase = db.db("meitdata"); //here
+      var myobj = { name: "table1", 
+                    datecreated: new Date().toString(),
+                    childids:[]
+                    
+                    };
+      dbase.collection("table").insertOne(myobj, function(err, res) {
         if (err) throw err;
         console.log("1 document inserted");
         db.close();

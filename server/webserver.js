@@ -57,6 +57,9 @@ WebServer.prototype = {
       res.sendFile(path.resolve(__dirname, '../public/index.html'));
     });
     this.dataserver = new DataServer(this.pointer);
+    // this.dataserver.newTable(function(){
+      
+    // })
     this.websocketSetup();
     this.startServer();
     
@@ -81,10 +84,40 @@ WebServer.prototype = {
         });
         // io.emit('chat message', msg);
       });
+      socket.on('getdatasets', function(){
+        self.dataserver.getdatasets(function(err,results){
+          if(err)console.log("Error on getdatasets")
+          io.emit('getdatasets', results);
+        });
+        // io.emit('chat message', msg);
+      });
+      socket.on('getfiles', function(){
+        self.dataserver.fileList(function(err,results){
+          if(err)console.log("Error on getfiles")
+          io.emit('getfiles', results);
+        });
+      });
+        // io.emit('chat message', msg);
+      socket.on('newdataset', function(){
+        self.dataserver.newDataset(function(err,results){
+          if(err)console.log("Error on getdatasets")
+          io.emit('getdatasets', results);
+        });
+        // io.emit('chat message', msg);
+      });  
+      socket.on('deletedataset', function(obj){
+        self.dataserver.deletedataset(obj,function(err,results){
+          if(err)console.log("Error on deletedataset")
+          io.emit('getdatasets', results);
+        });
+        // io.emit('chat message', msg);
+      });  
       socket.on('deletefile', function(obj){
-        console.log(obj)
         self.dataserver.deletefile(obj,function(){
-          io.emit('refreshfilelist');
+          self.dataserver.fileList(function(err,results){
+            if(err)console.log("Error on getfiles")
+            io.emit('getfiles', results);
+          });
         });
         // io.emit('chat message', msg);
       });

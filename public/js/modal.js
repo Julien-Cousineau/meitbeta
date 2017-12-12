@@ -1,4 +1,4 @@
-/*global $,extend,Table*/
+/*global $,extend,Table,FileTable,DatesetTable*/
 function Modal(parent,options){
   this._parent = parent;
   const self = this;
@@ -13,49 +13,137 @@ Modal.prototype ={
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   options:{container:"",
            name:"upload",
-           filelist:[]
+           data:{file:[],dataset:[]},
+           table:{
+             file:{},
+             dataset:{},
+           }
     
   },
+  // tableOptions:function(){
+  //   const self=this;
+  //   this.tables={
+  //     file:{
+  //       container:".tableplaceholder",
+  //       id:'file',
+  //       newactionbutton:function(id){return self.addUploadButton(id);},
+  //       columns:{
+  //         name:{title:"CSV Files",type:'string'},
+  //         childid:{title:"Ready for Database",
+  //               type:'convert',
+  //               className:"tableConvert",
+  //               render:function(full){return self.htmlConvert(full);},
+  //               action:function(id,className){return self.htmlConvertAction(id,className);}
+  //         },
+  //         size:{title:"Size",type:'string'},
+  //         datecreated:{title:"Date Uploaded",type:'string'},
+  //         delete:{title:"",
+  //                 type:"delete",
+  //                 className:"rowdelete",
+  //                 render:function(full){return self.htmlrowdelete(full);},
+  //                 action:function(id,className){return self.htmlrowdeleteaction(id,className);}
+  //               }
+  //         },
+  //       data:function(){return self.data.file;}
+  //     },
+  //     dateset:{
+  //       container:".datasetplaceholder",
+  //       id:'dataset',
+  //       newactionbutton:function(id){return self.addNewDatasetButton(id);},
+  //       columns:{
+  //         name:{title:"Dateset name",type:'string'},
+  //         datecreated:{title:"Date Uploaded",type:'string'},
+  //         childids:{title:"Data",
+  //               type:'data',
+  //               className:"dataAtt",
+  //               render:function(full){return self.htmlDataset(full);},
+  //               action:function(id,className){return self.htmlDatasetAction(id,className);}
+  //         },
+  //         // size:{title:"Size",type:'string'},
+          
+  //         delete:{title:"",
+  //                 type:"delete",
+  //                 className:"rowdelete",
+  //                 render:function(full){return self.htmlrowdelete(full);},
+  //                 action:function(id,className){return self.htmlrowdeleteaction(id,className);}
+  //               }
+  //         },
+  //       data:function(){return self.data.dataset;}
+  //     }
+  //   };
+  // },
   construct:function(){
     if(this.parent.debug)console.log("Constructing Modal")
+    this.tables['file']=new FileTable(this.parent.pointer);
+    this.tables['dataset']=new DatesetTable(this.parent.pointer);
     this.render();
-    this.getFileList();
+    // this.getFileList();
+    // this.parent.socket.emit("getdatasets")
   },
-  get filelist(){return this._filelist;},
-  set filelist(value){this._filelist= value;},
-  getFileList(){
-    const self=this;
-    this.parent.api.getFileList(function(value){
-      self.filelist= value;
-      if(self.tables['file']){
-        self.tables['file'].update();  
-      } else {
-        self.buildFileTable();
-      }
-      
-    });
+  // get data(){return this._data;},
+  // set data(value){this._data = value;},
+  
+  // setData:function(id,data){
+  //   this.data.dataset= data;
+  //   if(this.tables[id]){
+  //     this.tables[id].update();  
+  //   } else {
+  //     this.buildTable(this.options);
+  //   }
     
-  },
+  // },
+  
+  // getFileList:function(list){
+  //   const self=this;
+  //   // this.parent.api.getFileList(function(value){
+  //   self.data.file= list;
+  //   if(self.tables['file']){
+  //     self.tables['file'].update();  
+  //   } else {
+  //     self.buildFileTable();
+  //   }
+  //   // });
+    
+  // },
+  // getDatasetList:function(list){
+  //   const self=this;
+  //   console.log("getDatasetList")
+    
+  //   self.datasetlist= list;
+  //   if(self.tables['dataset']){
+  //     self.tables['dataset'].update();  
+  //   } else {
+  //     self.buildDatasetTable();
+  //   }
+    
+  // },
   render:function(){
     $(this.container).append(this.renderhtml);
     // $('body').append(this.defaultdropzone());
     // this.setDropzone();
     this.constructFunc();
   },
-  uploadFile:function(){
-    // const html = `<input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>`;
-    
-    // $(".uploadcontainer").append(html);
-    // this.setDropzone();
-    $('#upload-input').click();
+  // uploadFile:function(){
+  //   $('#upload-input').click();
+  // },
+  // addNewDatasetButton:function(id){
+  //   const self=this;
+  //   let html =`<button type="button" class="btn btn-warning">New Dataset</button>
+  //             `;
+  //   $("#{0}_wrapper .uploadcontainer".format(id)).empty().append(html);
+  //   $("#{0}_wrapper .uploadcontainer button".format(id)).on("click",function(){self.addNewDatasetButtonAction();});
+  // },
+  addNewDatasetButtonAction:function(){
+    this.parent.socket.emit("newdataset")
+    console.log("New Databse")
     
   },
-  addUploadButton:function(){
+  addUploadButton:function(id){
     const self=this;
     let html =`<button type="button" class="btn btn-warning">Upload File</button>
                <input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>`;
-    $(".uploadcontainer").empty().append(html);
-    $(".uploadcontainer button").on("click",function(){self.uploadFile();});
+    $("#{0}_wrapper .uploadcontainer".format(id)).empty().append(html);
+    $("#{0}_wrapper .uploadcontainer button".format(id)).on("click",function(){self.uploadFile();});
     this.setDropzone();
   },  
   setDropzone:function(){
@@ -133,15 +221,20 @@ Modal.prototype ={
   },
   constructFunc:function(){
     const self=this;
-    $('#nav-profile-tab').on('click',function(){self.getFileList();})
+    // $('#nav-profile-tab').on('click',function(){self.getFileList();})
+    // $('#nav-profile-tab').on('click',function(){self.getFileList();})
   },
-  
+  buildTable:function(options){
+    this.tables[options.id] = new Table(this.pointer,options);
+  },
   buildFileTable:function(){
     console.log("buildFileList")
     const self=this;
+    const id='filetable';
     const options={
         container:".tableplaceholder",
-        id:"filetable",
+        id:id,
+        newactionbutton:function(id){return self.addUploadButton(id);},
         columns:{
           name:{title:"CSV Files",type:'string'},
           childid:{title:"Ready for Database",
@@ -159,10 +252,47 @@ Modal.prototype ={
                   action:function(id,className){return self.htmlrowdeleteaction(id,className);}
                  }
           },
-        data:function(){return self.filelist;}
+        data:function(){return self.data.file;}
       }
-    this.tables['file'] = new Table(this.pointer,options) 
+    this.tables[id] = new Table(this.pointer,options) 
   },
+  buildDatasetTable:function(){
+    console.log("Build Dataset Table")
+    const self=this;
+    const id='datasettable';
+    const options={
+        container:".datasetplaceholder",
+        id:id,
+        newactionbutton:function(id){return self.addNewDatasetButton(id);},
+        columns:{
+          name:{title:"Dateset name",type:'string'},
+          datecreated:{title:"Date Uploaded",type:'string'},
+          childids:{title:"Data",
+                 type:'data',
+                 className:"dataAtt",
+                 render:function(full){return self.htmlDataset(full);},
+                 action:function(id,className){return self.htmlDatasetAction(id,className);}
+          },
+          // size:{title:"Size",type:'string'},
+          
+          delete:{title:"",
+                  type:"delete",
+                  className:"rowdelete",
+                  render:function(full){return self.htmlrowdelete(full);},
+                  action:function(id,className){return self.htmlrowdeleteaction(id,className);}
+                }
+          },
+        data:function(){return self.datasetlist;}
+      }
+    this.tables[id] = new Table(this.pointer,options) 
+  },
+  htmlDataset:function(full){
+    return `<button class="btn btn-primary>Julien</button>`;
+    
+  },
+  htmlDatasetAction:function(id,className){
+    
+  },  
   htmlrowdelete:function(){
     return `<button type="button" class="btn btn-danger" con="main">Delete</button>`;
     
@@ -177,8 +307,11 @@ Modal.prototype ={
   },
   htmlrowdeletedetailaction:function(id,row,rowid,tr,con){
     const self=this;
+    let truefunction;
+    if(id==='filetable')truefunction=function(){self.parent.socket.emit('deletefile',row.data())};
+    if(id==='datasettable')truefunction=function(){self.parent.socket.emit('deletedataset',row.data())};
     const conF={
-      true:function(){self.parent.socket.emit('deletefile',row.data())},
+      true:truefunction,
       false:function(){return;}
     };
     
@@ -195,7 +328,7 @@ Modal.prototype ={
     $('#{0} tbody'.format(id)).on('click', 'td.{0} button[con="main"]'.format(className), function () {
       console.log("click htmlrowdeleteaction")
       var tr = $(this).closest('tr');      
-      var row = self.tables['file'].datatable.row( tr );
+      var row = self.tables[id].datatable.row( tr );
       var obj = row.data();
       var rowid = row[0][0];
       console.log('row',row[0][0])
@@ -216,7 +349,7 @@ Modal.prototype ={
     $('#{0} tbody'.format(id)).on('click', 'td.{0} button'.format(className), function () {
       console.log("here")
       var tr = $(this).closest('tr');      
-      var row = self.tables['file'].datatable.row( tr );
+      var row = self.tables[id].datatable.row( tr );
       var obj = row.data();
       obj.htmlid = 'myid';
       self.parent.socket.emit('convertcsv',obj);
@@ -301,11 +434,35 @@ Modal.prototype ={
               
               </div>
               <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-              
-              
-              
+              <div class="inlinepanelshide">
+              <div class="inlinepanels"> 
+                <div class="panelleft">
+                  <div class="container">
+                    
+                    <div class="row">
+                      <div class="col-sm-12 datasetplaceholder">
+                      
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+                
+                <div class="panelright">
+                  
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-sm-12 datasetdataplaceholder">
+                      <button class="btn btn-primary"></button>
+                      
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
               </div>
-            </div>
+              </div>
+              </div>
               
               
               
