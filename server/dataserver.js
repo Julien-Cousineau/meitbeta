@@ -1,6 +1,7 @@
 const path = require('path');
 const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
 const CONVERTFOLDER =  path.join(__dirname, '../data/convert');
+const SCHEMAFOLDER =  path.join(__dirname, '../data/schema');
 const CONVERT = require('./convert');
 const IP = process.env.IP;
 const mongodatabase = "meitdata";
@@ -9,7 +10,11 @@ const collectionconvert="convert";
 const collectiontable="table";
 var formidable = require('formidable');
 const util = require('./util');
-const ObjectID = require('mongodb').ObjectID;
+const MapDServer = require("./mapdserver");
+
+
+
+
 
 const async = require("async");
 const fs = require('fs');
@@ -19,7 +24,10 @@ var MongoClient = require('mongodb').MongoClient;
 function DataServer(parent,options){
   // parent,options
     this._parent = parent;
+    const self=this;
+    this.pointer = function(){return self;};
     // this.options = util.extend(Object.create(this.options), options);
+    this.mapdserver = new MapDServer(this.pointer)
     this.construct();
 }
 DataServer.prototype = {
@@ -131,7 +139,7 @@ DataServer.prototype = {
             dbase.collection(collectiontable).updateOne({ name: dataset.name }, { $push: { fileids: file._id } }, function(err, res) {
               if (err) throw err;
               db.close();
-              const meta={action:"Done"}
+              const meta={action:"done"}
               maincallback(false,meta);
             });
           });
@@ -153,25 +161,58 @@ DataServer.prototype = {
       });
     });   
   },  
-  processFile:function(filename,callback){
+  processFile:function(obj,callback){
     const self=this;
+    const filename = obj.name;
     const input = path.resolve(UPLOADFOLDER,filename);
     const output = path.resolve(CONVERTFOLDER,filename +"2");
     const options={
       csvinput:[input],
       csvoutput:[output],
-      printfunc:function(opt){callback(opt)},
+      printfunc:function(opt){callback(false,opt)},
     };
     new CONVERT(options,function(meta){
       console.log("here here")
       self.insert(output,function(){
         self.setids(input,output,function(){
-          meta.action="done";
-          callback(meta);
+          meta.action="convert done";
+          callback(false,meta);
         });
       });
 
     });
+  },
+  uploadtodatabase:function(file,dataset,callback){
+    const self=this;
+    self.getConvertedFile(file,function(err,cfile){
+      if (err) throw err;
+      self.mapdserver.copyData(dataset.name,cfile.filepath,function(err,results){
+        const meta = {action:"upload done",data:results}
+        callback(err,meta);
+      });
+    });
+    
+    
+    
+  },
+  getConvertedFile:function(file,callback){
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(collectionconvert).findOne({ childid: file.childid }, function(err, child) {
+        callback(err,child);
+      });
+    });
+    
+  },
+  isconverted:function(obj,callback){
+    let meta={action:'0'};
+    if(obj.childid){meta.action="convert done";callback(false,meta)}
+    else{
+      this.processFile(obj,function(err,meta){
+        callback(err,meta);
+      });
+    }
   },
   setids:function(parentpath,childpath,callback){
     const childname =this.getfileinfo(childpath).name;
@@ -223,10 +264,6 @@ DataServer.prototype = {
         callback();
       });
     });   
-  
-    
-    
-    
   },
   getfileinfo:function(filepath){
       const name        = path.basename(filepath);
@@ -296,53 +333,53 @@ DataServer.prototype = {
   // },
   newDataset:function(name,maincallback){
     const self=this;
+    const schemafilepath=path.resolve(SCHEMAFOLDER,"template1.sql");
     
     
     self.datasetExist(name,function(err,result){
       if(err) throw Error(result);
       if(result.length!==0){maincallback(true,"Dataset exist!");}
       else{
-        MongoClient.connect(mongourl, function(err, db) {
-        if (err) throw err;
-          
-        const obj={
-                  name:name,
-                  datecreated:new Date().toISOString(),
-                  fileids:[],
-        };
-        const dbase = db.db(mongodatabase);
-        dbase.collection(collectiontable).insertOne(obj, function(err, res) {
-          if (err) throw err;
-          console.log("1 document inserted");
-          db.close();
-          self.getdatasets(function(err,results){
-            maincallback(err,results);  
+        self.mapdserver.createTable(name,schemafilepath,function(err,results){
+          if(err){maincallback(err,results);return;}  
+          MongoClient.connect(mongourl, function(err, db) {
+            if (err) throw err;
+            const obj={
+                      name:name,
+                      datecreated:new Date().toISOString(),
+                      fileids:[],
+            };
+            const dbase = db.db(mongodatabase);
+            dbase.collection(collectiontable).insertOne(obj, function(err, res) {
+              if (err) throw err;
+              console.log("1 document inserted");
+              db.close();
+              self.getdatasets(function(err,results){
+                maincallback(err,results);  
+              });
+            });
           });
         })
-      });
-        
-        
       }
     });
-    
-      
-  
   },  
   deletedataset:function(obj,callback){
     const self=this;
-    // if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);
-    MongoClient.connect(mongourl, function(err, db) {
-      if (err) throw err;
-      var dbase = db.db(mongodatabase);
-      var myquery = { name: obj.name };
-      dbase.collection(collectiontable).deleteMany(myquery,function(err, result) {
+    self.mapdserver.dropTable(obj.name,function(err,results){
+      if(err){callback(err,results);return;}
+      MongoClient.connect(mongourl, function(err, db) {
         if (err) throw err;
-        db.close();
-        self.getdatasets(function(err,results){
-          callback(err,results);  
+        var dbase = db.db(mongodatabase);
+        var myquery = { name: obj.name };
+        dbase.collection(collectiontable).deleteMany(myquery,function(err, result) {
+          if (err) throw err;
+          db.close();
+          self.getdatasets(function(err,results){
+            callback(err,results);  
+          });
         });
-      });
-    });   
+      });  
+    });
   
     
     

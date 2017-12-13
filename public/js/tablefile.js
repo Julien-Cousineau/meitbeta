@@ -22,11 +22,11 @@ FileTable.prototype = {
       actionbuttons:function(id){return self.htmlUploadButton(id);},
       columns:{
         name:{title:"CSV Files",data:""},
-        childid:{title:"Ready for Database",
-               className:"tableConvert",
-               render:function(full){return self.htmlConvert(full);},
-               action:function(id,className){return self.htmlConvertAction(id,className);}
-        },
+        // childid:{title:"Ready for Database",
+        //       className:"tableConvert",
+        //       render:function(full){return self.htmlConvert(full);},
+        //       action:function(id,className){return self.htmlConvertAction(id,className);}
+        // },
         size:{title:"Size",data:''},
         datecreated:{title:"Date Uploaded",data:''},
         delete:{title:"",
@@ -53,9 +53,9 @@ FileTable.prototype = {
       var tr = $(this).closest('tr');      
       var row = self.base.datatable.row( tr );
       var obj = row.data();
-      obj.htmlid = 'myid';
+      obj.htmlid = obj.name.replace(".","");
       self.parent.socket.emit('convertcsv',obj);
-      $(this).parent().empty().append(getprogressbar('myid'));
+      $(this).parent().empty().append(getprogressbar(obj.htmlid));
     });
     self.parent.socket.on('convertcsv', function(meta){
       if(meta.action==="done"){
@@ -117,7 +117,7 @@ FileTable.prototype = {
   },
   htmlUploadButtonAction:function(id){
     const self=this;
-    this.parent.api.uploadFiles('#upload-input','.uploadcontainer',function(){
+    this.parent.api.uploadFiles('#upload-input','#{0}_wrapper .uploadcontainer'.format(id),function(){
       self.htmlUploadButton(id);
       self.parent.socket.emit("getfiles");
     });

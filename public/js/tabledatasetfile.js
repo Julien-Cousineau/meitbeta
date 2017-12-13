@@ -20,7 +20,7 @@ DatesetFileTable.prototype = {
       container:".datasetfileplaceholder",
       id:'datasetfile',
       apiFuncName:'getfilesanddatasets',
-    //   actionbuttons:function(id){return self.htmlAddButton(id);},
+      actionbuttons:function(id){return self.htmlBackButton(id);},
       columns:{
         name:{title:"CSV Files",data:""},
         datecreated:{title:"Date Uploaded",data:''},
@@ -46,10 +46,10 @@ DatesetFileTable.prototype = {
       var tr = $(this).closest('tr');      
       var row = self.base.datatable.row( tr );
       var obj = row.data();
-      obj.htmlid = 'myid';
+      obj.htmlid = obj.name.replace(".","");
       obj.dataset = self.dataset;
       self.parent.socket.emit('addfiledataset',obj);
-      $(this).parent().empty().append(getprogressbar('myid'));
+      $(this).parent().empty().append(getprogressbar(obj.htmlid));
     });
     self.parent.socket.on('addfiledataset', function(meta){
       if(meta.action==="done"){
@@ -61,5 +61,17 @@ DatesetFileTable.prototype = {
       }
     });
     
+  },
+  htmlBackButton:function(id){
+    const self=this;
+    // let html =`<button type="button" class="btn btn-warning">New Dataset</button>`;
+    let html =`
+    <button type="button" class="btn-circle btn-primary"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></button>
+          `;
+    $("#{0}_wrapper .refreshcontainer".format(id)).empty().append(html);
+    $("#{0}_wrapper .refreshcontainer button".format(id)).on("click",function(){self.htmlBackButtonAction(id);});
+  },
+  htmlBackButtonAction:function(id){
+    $('.panelleft').css("margin-left","0%");
   },
 };

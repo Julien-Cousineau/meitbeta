@@ -77,10 +77,19 @@ WebServer.prototype = {
     io.on('connection', function(socket){
       console.log('a user connected');
       socket.on('convertcsv', function(obj){
-        // console.log(obj)
-        self.dataserver.processFile(obj.name,function(meta){
+        self.dataserver.processFile(obj,function(meta){
           meta.htmlid = obj.htmlid;
           io.emit('convertcsv', meta);
+          if(meta.action==="convert done"){
+            self.datasetExist(obj.name,function(err,results){
+              const newobj = results[0];
+              self.dataserver.uploadtodatabase(newobj,function(meta){
+                meta.htmlid = obj.htmlid;
+                io.emit('convertcsv', meta);
+              })
+            });
+            
+          }
         });
         // io.emit('chat message', msg);
       });
@@ -120,22 +129,27 @@ WebServer.prototype = {
         // io.emit('chat message', msg);
       });
       socket.on('addfiledataset', function(obj){
-        self.dataserver.setDatasetFileids(obj,function(err,meta){
-          meta.htmlid=obj.htmlid;
+        self.dataserver.isconverted(obj,function(err,meta){
+          meta.htmlid = obj.htmlid;
           io.emit('addfiledataset', meta);
+          if(meta.action==="convert done"){
+            const tempdataset = obj.dataset;
+            self.dataserver.datasetExist(tempdataset.name,function(err,results){
+              const dataset = results[0];
+              self.dataserver.uploadtodatabase(obj,dataset,function(err,meta){
+                meta.htmlid = obj.htmlid;
+                io.emit('addfiledataset', meta);
+                self.dataserver.setDatasetFileids(obj,function(err,meta){
+                  meta.htmlid=obj.htmlid;
+                  io.emit('addfiledataset', meta);
+                });
+              });
+            });
+          }
         });
       });
       
-      
-      socket.on('setdatasetfileids', function(obj){
-        self.dataserver.setDatasetFileids(obj,function(err,results){
-          // if(err){io.emit('setdatasetfileids', results);}
-          // else{io.emit('getdatasets', results);}
-          io.emit('setdatasetfileids', results);
-        });
-        // io.emit('chat message', msg);
-      });  
-      
+
       
       
       socket.on('deletedataset', function(obj){

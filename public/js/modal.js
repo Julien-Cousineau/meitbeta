@@ -454,7 +454,6 @@ Modal.prototype ={
                   <div class="container">
                     <div class="row">
                       <div class="col-sm-12 datasetfileplaceholder">
-                      <button class="btn btn-primary"></button>
                       
                       </div>
                     </div>
