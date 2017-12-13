@@ -76,6 +76,7 @@ Modal.prototype ={
     if(this.parent.debug)console.log("Constructing Modal")
     this.tables['file']=new FileTable(this.parent.pointer);
     this.tables['dataset']=new DatesetTable(this.parent.pointer);
+    this.tables['datasetfile']=new DatesetFileTable(this.parent.pointer);
     this.render();
     // this.getFileList();
     // this.parent.socket.emit("getdatasets")
@@ -452,7 +453,7 @@ Modal.prototype ={
                   
                   <div class="container">
                     <div class="row">
-                      <div class="col-sm-12 datasetdataplaceholder">
+                      <div class="col-sm-12 datasetfileplaceholder">
                       <button class="btn btn-primary"></button>
                       
                       </div>
@@ -470,16 +471,17 @@ Modal.prototype ={
             
             
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
+              
             </div>
           </div>
         </div>`,
     other:``,
     other2:``,
   },
+  // <div class="modal-footer">
+  //               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+  //               <button type="button" class="btn btn-primary">Save changes</button>
+  //             </div>
   defaultdropzone:function(){
     return `<DIV id="preview-template" style="display: none;">
 <DIV class="dz-preview dz-file-preview">

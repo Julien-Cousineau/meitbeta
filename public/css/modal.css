@@ -9,6 +9,10 @@
   width:200%;
   display: inline-block;
 }
+.forminline {
+  display: flex;
+}
+
 .inlinepanels .panelleft {
   width:49%;
   display: inline-block;

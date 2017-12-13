@@ -9,6 +9,7 @@ const collectionconvert="convert";
 const collectiontable="table";
 var formidable = require('formidable');
 const util = require('./util');
+const ObjectID = require('mongodb').ObjectID;
 
 const async = require("async");
 const fs = require('fs');
@@ -94,7 +95,53 @@ DataServer.prototype = {
     });
     
   },
-
+  getFilesandDatasets:function(dataset,callback){
+    const self=this;
+    this.fileList(function(err,list){
+      if (err) throw err;
+      // self.datasetExist(dataset.name,function(err,results){
+        // if (err) throw err;
+        // const dataset = results[0];
+        
+        let newlist = list.map(item=>{
+          if(item.datasetids.map(item=>item.toString()).includes(dataset._id.toString())){
+            item.inside=true;
+          } else{item.inside=false;}
+          return item;
+        });
+        
+        callback(false,newlist);
+      });
+    // });
+  },
+  setDatasetFileids:function(obj,maincallback){
+    const datasetname = obj.dataset.name;
+    const filename = obj.name;
+    // console.log(datasetname)
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(collectionconvert).findOne({ name: filename }, function(err, file) {
+        if (err) throw err;
+        dbase.collection(collectiontable).findOne({ name: datasetname }, function(err, dataset) {
+          if (err) throw err;
+          console.log(file.datasetids)
+          dbase.collection(collectionconvert).updateOne({ name: file.name }, { $push: { datasetids: dataset._id } }, function(err, res) {
+            if (err) throw err;
+            dbase.collection(collectiontable).updateOne({ name: dataset.name }, { $push: { fileids: file._id } }, function(err, res) {
+              if (err) throw err;
+              db.close();
+              const meta={action:"Done"}
+              maincallback(false,meta);
+            });
+          });
+        });
+      });
+    });
+    
+    
+    
+  },
   fileList:function(callback){
      MongoClient.connect(mongourl, function(err, db) {
       if (err) throw err;
@@ -129,7 +176,7 @@ DataServer.prototype = {
   setids:function(parentpath,childpath,callback){
     const childname =this.getfileinfo(childpath).name;
     const parentname =this.getfileinfo(parentpath).name;
-    console.log("setids")
+    // console.log("setids")
     MongoClient.connect(mongourl, function(err, db) {
       if (err) throw err;
       var dbase = db.db(mongodatabase);
@@ -164,7 +211,7 @@ DataServer.prototype = {
     });    
   },
   deletefile:function(obj,callback){
-    console.log(obj.filepath)
+    // console.log(obj.filepath)
     if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);
     MongoClient.connect(mongourl, function(err, db) {
       if (err) throw err;
@@ -193,6 +240,7 @@ DataServer.prototype = {
         datecreated:datecreated,
         childid:null,
         parentid:null,
+        datasetids:[],
       };
   },
   getdatasets:function(callback){
@@ -213,27 +261,55 @@ DataServer.prototype = {
       });
      });
   },
-  newDataset:function(maincallback){
-    const self=this;
-    let name;
-    const datasetExist = function(i,callback){
-      name = "table" + i;
-      self.datasetExist(name,function(err,result){
-        if(err) throw Error(result);
+  // newDataset:function(maincallback){
+  //   const self=this;
+  //   let name;
+  //   const datasetExist = function(i,callback){
+  //     name = "table" + i;
+  //     self.datasetExist(name,function(err,result){
+  //       if(err) throw Error(result);
           
-        if(result.length===0){callback(null,name);}
-        else{callback(null,false);}
-      });
-    };
+  //       if(result.length===0){callback(null,name);}
+  //       else{callback(null,false);}
+  //     });
+  //   };
       
       
-    async.someSeries(util.range(100), datasetExist, function(err, result) {
-      if (err) throw err;
-      console.log(name)
-      MongoClient.connect(mongourl, function(err, db) {
+  //   async.someSeries(util.range(100), datasetExist, function(err, result) {
+  //     if (err) throw err;
+  //     console.log(name)
+  //     MongoClient.connect(mongourl, function(err, db) {
+  //       if (err) throw err;
+          
+  //       const obj={name:name,datecreated:new Date().toISOString()};
+  //       const dbase = db.db(mongodatabase);
+  //       dbase.collection(collectiontable).insertOne(obj, function(err, res) {
+  //         if (err) throw err;
+  //         console.log("1 document inserted");
+  //         db.close();
+  //         self.getdatasets(function(err,results){
+  //           maincallback(err,results);  
+  //         });
+  //       })
+  //     });
+  //   });
+  // },
+  newDataset:function(name,maincallback){
+    const self=this;
+    
+    
+    self.datasetExist(name,function(err,result){
+      if(err) throw Error(result);
+      if(result.length!==0){maincallback(true,"Dataset exist!");}
+      else{
+        MongoClient.connect(mongourl, function(err, db) {
         if (err) throw err;
           
-        const obj={name:name,datecreated:new Date().toISOString()};
+        const obj={
+                  name:name,
+                  datecreated:new Date().toISOString(),
+                  fileids:[],
+        };
         const dbase = db.db(mongodatabase);
         dbase.collection(collectiontable).insertOne(obj, function(err, res) {
           if (err) throw err;
@@ -244,8 +320,14 @@ DataServer.prototype = {
           });
         })
       });
+        
+        
+      }
     });
-  },
+    
+      
+  
+  },  
   deletedataset:function(obj,callback){
     const self=this;
     // if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);

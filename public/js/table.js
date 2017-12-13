@@ -20,17 +20,23 @@ BaseTable.prototype = {
   get id(){return this.parent.options.id},
   get columns(){return this.parent.options.columns},
   set columns(value){this.parent.options.columns=value;},
+  get meta(){return this.parent.meta;},
+  set meta(value){this.parent.meta=value;},
   get data(){return this.parent.data;},
   set data(value){this.parent.data=value;},
   apiFunc:function(){
     const self=this;
-    this.parent.parent.socket.on(self.parent.options.apiFuncName, function(list){
-      
+    this.parent.parent.socket.on(self.parent.options.apiFuncName, function(obj){
+      const list = obj.data;
+      const meta = obj.meta;
+      console.log(list)
         if(self.data){
           self.data= list;
+          self.meta = meta;
           self.update();  
         } else {
           self.data= list;
+          self.meta = meta;
           self.build();
         }
     });
@@ -97,7 +103,7 @@ BaseTable.prototype = {
       const obj=columns[key];
       if(obj.action)obj.action(this.id,obj.className);
     }
-    this.parent.options.actionbuttons(this.id);
+    if(this.parent.options.actionbuttons)this.parent.options.actionbuttons(this.id);
     // this.parent.addUploadButton();
   },
   update:function(){

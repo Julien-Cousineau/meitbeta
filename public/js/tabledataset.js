@@ -5,6 +5,7 @@ function DatesetTable(parent){
   this.pointer = function(){return self;};
   this.base = new BaseTable(this.pointer);
   this.data = null;
+  
   this.construct();
   
 }
@@ -49,14 +50,18 @@ DatesetTable.prototype = {
       var row = self.base.datatable.row( tr );
       var obj = row.data();
       var rowid = row[0][0];
-      $(this).children("button").children("i").toggleClass("fa-plus fa-minus")
-      if ( row.child.isShown() ) {
-        row.child.hide();
-        tr.removeClass('shown');
-      } else {        
-        row.child(self.htmlDatasetDetail(rowid,row.data()) ).show();
-        tr.addClass('shown');
-      }
+      $('.panelleft').css("margin-left","-49%");
+      self.parent.socket.emit("getfilesanddatasets",obj);
+      
+      
+      // $(this).children("i").toggleClass("fa-plus fa-minus")
+      // if ( row.child.isShown() ) {
+      //   row.child.hide();
+      //   tr.removeClass('shown');
+      // } else {        
+      //   row.child(self.htmlDatasetDetail(rowid,row.data()) ).show();
+      //   tr.addClass('shown');
+      // }
     
     });
     
@@ -112,13 +117,31 @@ DatesetTable.prototype = {
   },
   htmlAddButton:function(id){
     const self=this;
-    let html =`<button type="button" class="btn btn-warning">New Dataset</button>
-               `;
+    // let html =`<button type="button" class="btn btn-warning">New Dataset</button>`;
+    let html =`
+    <div class="row">
+      <div class="col-sm-8">
+        <input type="text" class="form-control form-control-sm" id="newdatasetinput" placeholder="name of table">
+        <div class="invalid-feedback">
+          Name already exist.
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <button class="btn btn-primary">New</button>
+      </div>
+    </div>
+          `;
     $("#{0}_wrapper .uploadcontainer".format(id)).empty().append(html);
-    $("#{0}_wrapper .uploadcontainer button".format(id)).on("click",function(){self.htmlAddButtonAction();});
+    $("#{0}_wrapper .uploadcontainer button".format(id)).on("click",function(){self.htmlAddButtonAction(id);});
+    this.parent.socket.on("newdataseterror", function(msg){
+      $("#{0}_wrapper .uploadcontainer input".format(id)).addClass("is-invalid")
+    });
+    
+    
   },
   htmlAddButtonAction:function(id){
     const self=this;
-    this.parent.socket.emit("newdataset")
+    let value=$("#{0}_wrapper .uploadcontainer input".format(id)).val();
+    this.parent.socket.emit("newdataset",value);
   },  
 };

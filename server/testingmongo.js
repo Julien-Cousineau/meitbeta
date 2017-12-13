@@ -5,11 +5,11 @@ var url = "mongodb://" + IP +":27017/meitdata";
 
 function Test(){
   // this.createdb();
-  this.createCollection();
+  // this.createCollection();
   // this.insertOne();
   // this.insertMany();
   // this.findOne();
-  // this.findMany();
+  this.findMany();
   // this.findManyWithAttr();
   // this.query();
   // this.update();
@@ -92,7 +92,7 @@ Test.prototype = {
     MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      dbase.collection("convert").find({}).toArray(function(err, result) {
+      dbase.collection("table").find({}).toArray(function(err, result) {
         if (err) throw err;
         console.log(result);
         db.close();
