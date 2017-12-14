@@ -82,13 +82,7 @@ a {
     padding-bottom: 5px;
     
 }
-.bodycontainer {
-    position: absolute;
-    top:var(--barHeight);
-    left:var(--barWidth);
-    right:var(--barWidth);
-    bottom:var(--barHeight);
-}
+
 .maincontainer {
     position: absolute;
     top:var(--barHeight);
@@ -158,8 +152,20 @@ div.dc-chart {
     left: var(--barWidth);
     right: var(--barWidth);
 }
+
+.gridContainer {
+    top:0;
+    bottom: 0;
+    right: 0;
+    left:var(--barWidth);
+    margin: 0;
+    display: block;
+    position: absolute;
+    padding: 10px 20px 0;
+    z-index: 2;
+}
 .sidebar{
-    /*top: var(--barHeight);*/
+    top: 0;
     bottom: 0;
     width: var(--barWidth);
     background-color: red;

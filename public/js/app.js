@@ -17,6 +17,10 @@ App.prototype ={
     keywords:'en',
     keyTags:'',
   },
+ panels : [
+      {id:"idclass",header:"Class",att:"class",class:"chartclass"},
+      {id:"idtype",header:"Type",att:"type",class:"charttype"},
+      ],
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
@@ -30,6 +34,7 @@ App.prototype ={
     this.Login  = new Login(this.pointer,{container:"#login"})
     this.Header = new Header(this.pointer,{container:"#header"})
     this.changeLanguage(this.language) //TODO: initialize labels
+    this.grid = new Grid(this.pointer);
     this.mapd = new MapD(this.pointer);
   },
   websocket:function(){

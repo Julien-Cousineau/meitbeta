@@ -3,6 +3,7 @@
 function MapD(parent){
   this._parent = parent;
   this.construct()
+  this.emissiontype = 'nox';
     
 }
 MapD.prototype = {
@@ -17,20 +18,63 @@ MapD.prototype = {
     .user("mapd")
     .password("HyperInteractive")
     .connect(function(error, con) {
-      /*
-       *  This instaniates a new crossfilter.
-       *  Pass in mapdcon as the first argument to crossfilter, then the
-       *  table name, then a label for the data (unused in this example).
-       *
-       *  to see all availables --  con.getTables()
-       */
-       crossfilter.crossfilter(con, "table3").then(self.createCharts)
-      /*
-       *  Pass instance of crossfilter into our reateCharts.
-       */
+       crossfilter.crossfilter(con, "table3").then(function(crossFilter){return self.createCharts(crossFilter);})
     });
   },
+  reduceFunction:function(){
+     return[
+        {expression: "nox",agg_mode:"sum",name: "nox"},
+        {expression: "co",agg_mode:"sum",name: "co"},
+        {expression: "hc",agg_mode:"sum",name: "hc"},
+        {expression: "nh3",agg_mode:"sum",name: "nh3"},
+        {expression: "co2",agg_mode:"sum",name: "co2"},
+        {expression: "ch4",agg_mode:"sum",name: "ch4"},
+        {expression: "n2o",agg_mode:"sum",name: "n2o"},
+        {expression: "sox",agg_mode:"sum",name: "sox"},
+        {expression: "pm25",agg_mode:"sum",name: "pm25"},
+        {expression: "pm10",agg_mode:"sum",name: "pm10"},
+        {expression: "pm",agg_mode:"sum",name: "pm"},
+        {expression: "bc",agg_mode:"sum",name: "bc"},
+      ];
+  },
+  createClassChart:function(){
+  },
+  colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
+  createTypeChart:function(){
+    const self=this;
+    let dimension = this.crossFilter.dimension("type");
+    let group = dimension.group().reduce(this.reduceFunction());
+    
+    var chart = dc.rowChart('.charttype')
+                .height(null)
+                .width(null)
+                .elasticX(true)
+                .cap(20)
+                .othersGrouper(false)
+                .ordinalColors(this.colorScheme)
+                .measureLabelsOn(true)
+                .dimension(dimension)
+                .group(group)
+                .valueAccessor(function (p) {return p[self.emissiontype];})
+                .autoScroll(true);
+    dc.renderAllAsync();
+    console.log("here")
+  },
+  createTimeChart:function(){
+    
+  },  
+  createModeChart:function(){
+    
+  }, 
+  createEngineChart:function(){
+    
+  }, 
+  
   createCharts:function(crossFilter){
+    this.crossFilter = crossFilter;
+    this.createTypeChart();
+  },
+  createCharts2:function(crossFilter){
     // var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - 50
     // var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 200
     var colorScheme = ["#22A7F0", "#3ad6cd", "#d4e666"];
