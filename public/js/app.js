@@ -30,6 +30,7 @@ App.prototype ={
     this.Login  = new Login(this.pointer,{container:"#login"})
     this.Header = new Header(this.pointer,{container:"#header"})
     this.changeLanguage(this.language) //TODO: initialize labels
+    this.mapd = new MapD(this.pointer);
   },
   websocket:function(){
     const self=this;

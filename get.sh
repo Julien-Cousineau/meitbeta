@@ -13,4 +13,14 @@ wget https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css
 wget https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js
 wget https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js
 wget https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js
+wget https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.js
+wget https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.css
+wget https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js
+wget https://dc-js.github.io/dc.js/js/crossfilter.js
+wget https://raw.githubusercontent.com/mapd/mapd-connector/master/dist/browser-connector.js
+wget https://raw.githubusercontent.com/mapd/mapd-crossfilter/master/dist/mapd-crossfilter.js
+wget https://raw.githubusercontent.com/mapd/mapd-charting/master/dist/mapdc.js
+wget https://raw.githubusercontent.com/mapd/mapd-charting/master/dist/mapdc.css
+
+
 npm install --save express compression cors body-parser cookie-parser node-uuid express-session formidable pretty-bytes
