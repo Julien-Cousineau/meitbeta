@@ -22,10 +22,11 @@ const options ={
     shiptype:{'en':"Ship Type",'fr':"Type de navire"},
     emissionmode:{'en':"Emission Mode",'fr':"Code d'émission"},
     enginecode:{'en':"Engine Code",'fr':"Code de moteur"},
-    year:{'en':"Year",'fr':"Année"},
-    month:{'en':"Month",'fr':"Mois"},
-    dow:{'en':"Day of Week",'fr':"Jour de semaine"},
-    hour:{'en':"Hour",'fr':"Heure"},
+    // datetime:{'en':"Date Time",'fr':"Temps"},
+    // year:{'en':"Year",'fr':"Année"},
+    // month:{'en':"Month",'fr':"Mois"},
+    // dow:{'en':"Day of Week",'fr':"Jour de semaine"},
+    // hour:{'en':"Hour",'fr':"Heure"},
     total:{'en':"Total",'fr':"Filtres"},
     hidepanels:{'en':"Hide Panels",'fr':"Cacher les panneaux"},
     unhidepanels:{'en':"Unhide Panels",'fr':"Décacher les panneaux"}
@@ -41,6 +42,25 @@ const options ={
   {tag:".LGbtn2",type:'text',id:"language"},
   {tag:".LGbtn2",type:'text',id:"language"},
   ],
+  panels:[
+  // {id:"paneldate",active:false,keyword:"daterange",icon:"fa fa-calendar",dimensionids:['datet']},
+  {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dimensionids:['class']},
+  // {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dimensionids:['type']},
+  {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dimensionids:['meit']},
+  // {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dimensionids:['mode']},
+  // {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dimensionids:['engine']},
+  ],
+  charts:{
+    // total:{keyword:'total',dim:'total',dctype:'numberDisplay',defaultscale:''},
+    // datet:{keyword:'daterange',dim:'datet',dctype:'barChart',defaultscale:''},
+    meit:{keyword:'meitregion',dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+    class:{keyword:'shipclass',dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+    // type:{keyword:'shiptype',dim:'type',dctype:'rowChart',defaultscale:''},
+    // mode:{keyword:'emissionmode',dim:'mode',dctype:'pieChart',defaultscale:''},
+    // engine:{keyword:'enginecode',dim:'engine',dctype:'pieChart',defaultscale:''},
+    },
+  
+  
   
 };
 

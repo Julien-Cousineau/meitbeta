@@ -25,7 +25,34 @@ Grid.prototype = {
       b.toggleClass("fa-chevron-up fa-chevron-down")});
       $(".close-link").click(function(){var a=$(this).closest(".x_panel");a.remove()});
   },
+  renderPanelContent:function(id){
+    return '<div class="forchart {0}"></div>'.format("_" + id);
+  },
   renderPanelTitle:function(panel){
+    const header = this.parent.keywords[panel.keyword].en
+    const charts = this.parent.charts;
+    const keywords = this.parent.keywords;
+    let panelcontent="";
+    // console.log(panel.dimensionids)
+    // if(panel.dimensionids.length>1){
+    //   let htmltab = panel.dimensionids.map((id,i)=>{
+    //     const chart=charts[id];
+    //     return `<li {2}><a data-toggle="tab" class="badge badge-secondary" href="#{0}">{1}</a></li>`.format('tab_'+id,keywords[chart.keyword].en,(i===0)?'class="active"':'');
+    //   });
+    //   panelcontent += `<ul class="nav nav-pills">` + htmltab.join("") + "</ul>";
+    //   console.log(panelcontent)
+      
+    //   let htmlcontent=panel.dimensionids.map((id,i)=>{
+    //     const chart=charts[id];
+    //     return `<div id="{0}" class="tab-pane fade in active">{1}</div>`.format('tab_'+id,this.renderPanelContent(id));
+    //   },this);
+    //   panelcontent +=`<div class="tab-content">` + htmlcontent.join("") +`</div>`;
+    //   console.log(panelcontent)
+    // } else {
+    //   panelcontent=this.renderPanelContent(panel.dimensionids[0]);
+    // }
+    panelcontent=this.renderPanelContent(panel.dimensionids[0]);
+    
     return `
           <div class="x_panel tile fixed_height_320" panelid="{0}">
             <div class="x_title">
@@ -48,11 +75,10 @@ Grid.prototype = {
               <div class="clearfix"></div>
             </div>
             <div class="x_content" style="display: block;">
-              <div class="{2}">
-              </div>
+              {2}
             </div>
           </div>  
-            `.format(panel.id,panel.header,panel.class);
+            `.format(panel.id,header,panelcontent);
     
   },
   renderRow:function(panels){

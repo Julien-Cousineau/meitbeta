@@ -16,15 +16,16 @@ App.prototype ={
     language:'en',
     keywords:'en',
     keyTags:'',
+    panels:'',
+    charts:'',
   },
- panels : [
-      {id:"idclass",header:"Class",att:"class",class:"chartclass"},
-      {id:"idtype",header:"Type",att:"type",class:"charttype"},
-      ],
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
   get keyTags(){return this.options.keyTags;},
+  get panels(){return this.options.panels;},
+  get charts(){return this.options.charts;},
+  set charts(value){this.options.charts=value;},
   get debug(){return this.options.debug;},
   construct:function(){
     if(this.debug)console.log("Constructing App")

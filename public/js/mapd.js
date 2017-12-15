@@ -2,12 +2,16 @@
 
 function MapD(parent){
   this._parent = parent;
+  const self = this;
+  this.pointer = function(){return self;};
   this.construct()
-  this.emissiontype = 'nox';
+  this.emissionType = 'nox';
+  this.divider = 1;
     
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get reduceFunc(){return this.reduceFunction();},
   construct:function(){
     const self=this;
     this.con=new MapdCon()
@@ -46,8 +50,8 @@ MapD.prototype = {
     let group = dimension.group().reduce(this.reduceFunction());
     
     var chart = dc.rowChart('.charttype')
-                .height(null)
-                .width(null)
+                .height(300)
+                .width(300)
                 .elasticX(true)
                 .cap(20)
                 .othersGrouper(false)
@@ -72,7 +76,16 @@ MapD.prototype = {
   
   createCharts:function(crossFilter){
     this.crossFilter = crossFilter;
-    this.createTypeChart();
+    const charts=this.parent.charts;
+    for(let i in charts){
+      let chart=charts[i];
+      chart.dc = new Chart(this.pointer,chart)
+      dc.renderAllAsync()
+    }
+    // charts.forEach(chart=>{
+    //   chart.dc = new Chart(this.pointer,chart)
+    // },this);
+    // this.createTypeChart();
   },
   createCharts2:function(crossFilter){
     // var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - 50

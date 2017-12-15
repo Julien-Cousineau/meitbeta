@@ -163,6 +163,8 @@ div.dc-chart {
     position: absolute;
     padding: 10px 20px 0;
     z-index: 2;
+    overflow: auto;
+    margin-top: 30px;
 }
 .sidebar{
     top: 0;
