@@ -10,7 +10,7 @@
     <!-- Stylesheets -->
     
     <!--<link rel='stylesheet' href='css/dc.css' />-->
-    <!--<link rel='stylesheet' href='css/mapbox-gl.css' />-->
+    <link rel='stylesheet' href='css/ext/mapbox-gl.css' />
     <!--<link rel='stylesheet' href='css/mapbox-gl-geocoder.css'/>-->
     <link rel="stylesheet" href="css/ext/bootstrap.min.css" /> 
     <link rel='stylesheet' href='css/font-awesome.min.css' />
@@ -32,11 +32,23 @@
     <script src="js/ext/jquery.dataTables.min.js"></script>
     <script src="js/ext/dataTables.bootstrap4.min.js"></script>
     <script src="js/ext/d3.js"></script>
-    <script src="js/ext/crossfilter.js"></script>
-    <script src="js/ext/dc.js"></script>
-    <script src="js/ext/browser-connector.js"></script>
-    <script src="js/ext/mapd-crossfilter.js"></script>
-    <script src="js/ext/mapdc.js"></script>
+    <script src="js/ext/async.min.js"></script>
+    
+    <!--<script src="js/ext/mapd/thrift.js"></script>-->
+    <!--<script src="js/ext/mapd/mapd.thrift.js"></script>-->
+    <!--<script src="js/ext/mapd/mapd_types.js"></script>-->
+    <!--<script src="js/ext/mapd/MapdCon.js"></script>-->
+    <!--<script src="js/ext/mapd/mapd-crossfilter.js"></script>-->
+    <!--<script src="js/ext/mapd/mapdc.js"></script>-->
+
+    
+    
+    
+    <script src="js/ext/mapd/crossfilter.js"></script>
+    <script src="js/ext/mapd/dc.js"></script>
+    <script src="js/ext/mapd/browser-connector.js"></script>
+    <script src="js/ext/mapd/mapd-crossfilter.js"></script>
+    <script src="js/ext/mapd/mapdc.js"></script>
     
     <!--<script src="js/ext/dropzone.min.js"></script>-->
     
@@ -60,7 +72,7 @@
     <!--<script src="js/ext/dc.min.js"></script>-->
     
     <!--<script src='js/ext/turf.min.js'></script>-->
-    <!--<script src='js/ext/mapbox-gl.js'></script>-->
+    <script src='js/ext/mapbox-gl.js'></script>
     <!--<script src='js/ext/mapbox-gl-geocoder.js'></script>-->
     
     <script src="js/logo.js"></script>
@@ -75,8 +87,10 @@
     <script src="js/header.js"></script>
     <script src="js/login.js"></script>
     <script src="js/mapd.js"></script>
-     <script src="js/grid.js"></script>
-     <script src="js/chart.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/geomap.js"></script>
+    <script src="js/map.js"></script>
     <!--<script src="js/footer.js"></script>-->
     <!--<script src="js/meitapp.js"></script>-->
     <!--<script src="js/exportcsv.js"></script>-->
@@ -100,10 +114,10 @@
   </div>  
   <div id=home style="display:none;">
     <div id="header"></div>
-    <div id="mapcontainer"></div>
+    <div id="mapcontainer"><div id="map"></div></div>
     <div class="bodyContainer">
-    <div class="sidebar left"></div>
-    <div class="gridContainer"></div>
+      <div class="sidebar left"></div>
+      <div class="gridContainer"></div>
     </div>
   </div>
 

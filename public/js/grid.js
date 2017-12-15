@@ -11,7 +11,7 @@ Grid.prototype = {
   construct:function(){
 
     
-    $('.gridContainer').empty().append(this.renderRow(this.parent.panels));
+    $('.gridContainer').empty().append(this.renderRow(this.parent.charts));
     this.panelFunc();
     
     
@@ -26,7 +26,7 @@ Grid.prototype = {
       $(".close-link").click(function(){var a=$(this).closest(".x_panel");a.remove()});
   },
   renderPanelContent:function(id){
-    return '<div class="forchart {0}"></div>'.format("_" + id);
+    return `<div class="forchart {0}"></div>`.format("_" + id);
   },
   renderPanelTitle:function(panel){
     const header = this.parent.keywords[panel.keyword].en
@@ -51,16 +51,19 @@ Grid.prototype = {
     // } else {
     //   panelcontent=this.renderPanelContent(panel.dimensionids[0]);
     // }
-    panelcontent=this.renderPanelContent(panel.dimensionids[0]);
+    panelcontent=this.renderPanelContent(panel.dim);
     
     return `
           <div class="x_panel tile fixed_height_320" panelid="{0}">
             <div class="x_title">
               <h2>{1}</h2>
               <ul class="nav navbar-right panel_toolbox">
+                <li class="resetbtnli" style="visibility: hidden"><a class="resetbtn"><i class="fa fa-filter"></i><i class="fa fa-times xicon"></i></a></li>
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                 </li>
                 <li class="dropdown">
+                  
+                  
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="#">Settings 1</a>
@@ -75,7 +78,9 @@ Grid.prototype = {
               <div class="clearfix"></div>
             </div>
             <div class="x_content" style="display: block;">
-              {2}
+  
+                {2}
+           
             </div>
           </div>  
             `.format(panel.id,header,panelcontent);

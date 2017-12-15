@@ -166,6 +166,18 @@ div.dc-chart {
     overflow: auto;
     margin-top: 30px;
 }
+
+.mapcontainer {
+     position: absolute;
+    top:var(--linkHeight);
+    bottom: 0;
+    right: 0;
+    left:0;
+    z-index: 0;
+ 
+ 
+}
+
 .sidebar{
     top: 0;
     bottom: 0;

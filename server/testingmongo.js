@@ -2,6 +2,8 @@ var MongoClient = require('mongodb').MongoClient;
 const IP = process.env.IP;
 var url = "mongodb://" + IP +":27017/meitdata";
 
+const collection = "convert";
+// const collection = "table";
 
 function Test(){
   // this.createdb();
@@ -92,7 +94,7 @@ Test.prototype = {
     MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      dbase.collection("convert").find({}).toArray(function(err, result) {
+      dbase.collection(collection).find({}).toArray(function(err, result) {
         if (err) throw err;
         console.log(result);
         db.close();
@@ -140,8 +142,8 @@ Test.prototype = {
         MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      var myquery = { name: "dummy 1.csv" };
-      dbase.collection("convert").deleteMany(myquery,function(err, result) {
+      var myquery = { name: "arcticWIG_09212017.csv" };
+      dbase.collection(collection).deleteMany(myquery,function(err, result) {
         if (err) throw err;
         db.close();
       });

@@ -35,14 +35,14 @@ function main(){
             // {name:"hex_1",file:"hex_1.hex"},
             // {name:"hex_4",file:"hex_4.hex"},
             // {name:"hex_16",file:"hex_16.hex"},
-            {name:"pacific_growth_factors_11212017",file:"pacific_growth_factors_11212017.csv"},
-            {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
-            // {name:"hex_16",file:"hex_16.hex"},
+            // {name:"pacific_growth_factors_11212017",file:"pacific_growth_factors_11212017.csv"},
+            // {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
+            {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"},
           ]
   
-   download(list,function(e){
+  download(list,function(e){
     console.log("Done")
-   })
+  })
   
 }
 

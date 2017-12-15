@@ -26,15 +26,17 @@ function DataServer(parent,options){
     this._parent = parent;
     const self=this;
     this.pointer = function(){return self;};
-    // this.options = util.extend(Object.create(this.options), options);
+    this.options = util.extend(Object.create(this.options), options);
     this.mapdserver = new MapDServer(this.pointer)
     this.construct();
 }
 DataServer.prototype = {
+  options:{web:true
+  },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   construct:function(){
-    this.postfile();
-    this.postfilelist();
+    if(this.options.web)this.postfile();
+    if(this.options.web)this.postfilelist();
   },
   postfile:function(){
     const self=this;

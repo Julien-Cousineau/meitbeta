@@ -5,6 +5,15 @@
 .site_title, .x_title h2, table.tile_info td p {
     text-overflow: ellipsis;
 }
+.xicon {
+    font-size: 8px;
+    left: 5px;
+    top: 15px;
+    position: absolute;
+
+    width: 100%;
+    text-align: center;
+}
 h2 {
     font-size: 18px;
     font-weight: 400;
@@ -17,6 +26,14 @@ h2 {
 .panel_toolbox>li>a:hover {
     background: #F5F7FA;
 }
+.chart-container-child {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
+}
+
 
 .nav>li>a:focus, .nav>li>a:hover {
     background-color: transparent;
@@ -28,6 +45,7 @@ h2 {
 }
 
 .x_panel {
+    pointer-events: auto;
     color: #73879C;
     width: 100%;
     padding: 10px 17px;
@@ -105,6 +123,7 @@ h2 {
     float: left;
     clear: both;
     margin-top: 5px;
+    height: 250px;
 }
 .dropdown-menu {
     box-shadow: none;

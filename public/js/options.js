@@ -42,23 +42,31 @@ const options ={
   {tag:".LGbtn2",type:'text',id:"language"},
   {tag:".LGbtn2",type:'text',id:"language"},
   ],
-  panels:[
-  // {id:"paneldate",active:false,keyword:"daterange",icon:"fa fa-calendar",dimensionids:['datet']},
-  {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dimensionids:['class']},
-  // {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dimensionids:['type']},
-  {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dimensionids:['meit']},
-  // {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dimensionids:['mode']},
-  // {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dimensionids:['engine']},
+  charts:[
+  {id:"paneldate",active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',attributes:{}},
+  {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
   ],
-  charts:{
-    // total:{keyword:'total',dim:'total',dctype:'numberDisplay',defaultscale:''},
-    // datet:{keyword:'daterange',dim:'datet',dctype:'barChart',defaultscale:''},
-    meit:{keyword:'meitregion',dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
-    class:{keyword:'shipclass',dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
-    // type:{keyword:'shiptype',dim:'type',dctype:'rowChart',defaultscale:''},
-    // mode:{keyword:'emissionmode',dim:'mode',dctype:'pieChart',defaultscale:''},
-    // engine:{keyword:'enginecode',dim:'engine',dctype:'pieChart',defaultscale:''},
-    },
+  geomaps:{
+    lng:{dim:'lng'},
+    lat:{dim:'lat'},
+    mapmeit:{dim:'mapmeit',minimum:0,maximum:3},
+    hex16:{dim:'hex_16',minimum:4,maximum:7},
+    // hex4:{dim:'hex_4',minimum:8,maximum:12},
+    // hex1:{dim:'hex_1',minimum:12,maximum:14},
+  },
+  // charts:{
+  //   // total:{keyword:'total',dim:'total',dctype:'numberDisplay',defaultscale:''},
+  //   // datet:{keyword:'daterange',dim:'datet',dctype:'barChart',defaultscale:''},
+  //   // meit:{keyword:'meitregion',dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  //   class:{keyword:'shipclass',dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  //   type:{keyword:'shiptype',dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  //   mode:{keyword:'emissionmode',dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  //   engine:{keyword:'enginecode',dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
+  //   },
   
   
   

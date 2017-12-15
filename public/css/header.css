@@ -1,6 +1,6 @@
 :root {
   --barColor: #222;
-  --linkHeight: 40px; 
+  --linkHeight: 49px; 
   --bannerHeight: 100px;
   --bodyMarginLeft: 50px;
   --titleH: 25px;
@@ -17,6 +17,7 @@
 
 .bodyContainer {
   position:absolute;
+  pointer-events: none;
   top:calc(var(--bannermargin) + var(--headerH));
   bottom:0;
   left:0;

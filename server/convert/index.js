@@ -174,7 +174,7 @@ Convert.prototype = {
 	      outstream.write(obj);
 	      });
 	    },
-	    error:function(e){console.log("error");self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(true,e);},
+	    error:function(e){console.log("error",e);self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(true,e);},
       complete: function() {console.log("done");self.meta.action=null;self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(false);}
     });
   },

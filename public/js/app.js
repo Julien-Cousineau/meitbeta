@@ -24,6 +24,8 @@ App.prototype ={
   get keywords(){return this.options.keywords;},
   get keyTags(){return this.options.keyTags;},
   get panels(){return this.options.panels;},
+  get geomaps(){return this.options.geomaps;},
+  set geomaps(value){return this.options.geomaps=value;},
   get charts(){return this.options.charts;},
   set charts(value){this.options.charts=value;},
   get debug(){return this.options.debug;},
@@ -37,6 +39,7 @@ App.prototype ={
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     this.mapd = new MapD(this.pointer);
+    this.mapContainer = new MapContainer(this.pointer,{},function(){})
   },
   websocket:function(){
     const self=this;

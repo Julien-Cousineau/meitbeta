@@ -23,4 +23,18 @@ wget https://raw.githubusercontent.com/mapd/mapd-charting/master/dist/mapdc.js
 wget https://raw.githubusercontent.com/mapd/mapd-charting/master/dist/mapdc.css
 
 
+wget https://mapd.github.io/mapd-charting/example/js/thrift.js
+wget https://mapd.github.io/mapd-charting/example/js/mapd.thrift.js
+wget https://mapd.github.io/mapd-charting/example/js/mapd_types.js
+wget https://mapd.github.io/mapd-charting/example/js/MapdCon.js
+wget https://mapd.github.io/mapd-charting/example/js/mapd-crossfilter.js
+wget https://mapd.github.io/mapd-charting/example/js/mapdc.js
+
+wget https://cdnjs.cloudflare.com/ajax/libs/async/2.6.0/async.min.js
+
+wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js
+wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css
+
+
+
 npm install --save express compression cors body-parser cookie-parser node-uuid express-session formidable pretty-bytes
