@@ -36,6 +36,7 @@ App.prototype ={
     this.Upload = new Modal(this.pointer,{container:"body",name:'upload'});
     this.Login  = new Login(this.pointer,{container:"#login"})
     this.Header = new Header(this.pointer,{container:"#header"})
+    this.LeftSide = new LeftSide(this.pointer,{})
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     this.mapd = new MapD(this.pointer);

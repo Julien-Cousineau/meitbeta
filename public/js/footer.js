@@ -1,10 +1,10 @@
 /*global $,extend,localStorage*/
-function LeftSide(parent,options){
+function Footer(parent,options){
   this._parent = parent;
   this.options = extend(Object.create(this.options), options);
   this.construct();
 }
-LeftSide.prototype ={
+Footer.prototype ={
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   options:{container:""
     
@@ -14,7 +14,7 @@ LeftSide.prototype ={
     this.render();
   },
   render:function(){
-    $('.sidebar.left').append(this.divSideBarIcons());
+    $('.sidebar.footer').append(this.divSideBarIcons());
     $('[data-toggle="tooltip"]').tooltip();
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();

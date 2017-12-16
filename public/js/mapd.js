@@ -31,17 +31,17 @@ MapD.prototype = {
   reduceFunction:function(){
      return[
         {expression: "nox",agg_mode:"sum",name: "nox"},
-        {expression: "co",agg_mode:"sum",name: "co"},
-        {expression: "hc",agg_mode:"sum",name: "hc"},
-        {expression: "nh3",agg_mode:"sum",name: "nh3"},
-        {expression: "co2",agg_mode:"sum",name: "co2"},
-        {expression: "ch4",agg_mode:"sum",name: "ch4"},
-        {expression: "n2o",agg_mode:"sum",name: "n2o"},
-        {expression: "sox",agg_mode:"sum",name: "sox"},
-        {expression: "pm25",agg_mode:"sum",name: "pm25"},
-        {expression: "pm10",agg_mode:"sum",name: "pm10"},
-        {expression: "pm",agg_mode:"sum",name: "pm"},
-        {expression: "bc",agg_mode:"sum",name: "bc"},
+        // {expression: "co",agg_mode:"sum",name: "co"},
+        // {expression: "hc",agg_mode:"sum",name: "hc"},
+        // {expression: "nh3",agg_mode:"sum",name: "nh3"},
+        // {expression: "co2",agg_mode:"sum",name: "co2"},
+        // {expression: "ch4",agg_mode:"sum",name: "ch4"},
+        // {expression: "n2o",agg_mode:"sum",name: "n2o"},
+        // {expression: "sox",agg_mode:"sum",name: "sox"},
+        // {expression: "pm25",agg_mode:"sum",name: "pm25"},
+        // {expression: "pm10",agg_mode:"sum",name: "pm10"},
+        // {expression: "pm",agg_mode:"sum",name: "pm"},
+        // {expression: "bc",agg_mode:"sum",name: "bc"},
       ];
   },
   createClassChart:function(){

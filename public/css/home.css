@@ -116,13 +116,15 @@ div.dc-chart {
 }
 
 .header, .footer, .sidebar {
-    background: var(--barColor);
+    background-color: #F5F5F6;
     /*color: #fff;*/
     margin: 0;
     display: block;
     position: absolute;
+    pointer-events: auto;
     /*padding: 10px;*/
-    z-index: 10;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,.26);
     
 }
 
@@ -150,21 +152,30 @@ div.dc-chart {
     height:var(--barHeight);
     bottom: 0;
     left: var(--barWidth);
-    right: var(--barWidth);
+    right: 0;
+    z-index:3;
 }
 
 .gridContainer {
-    top:0;
+    position: absolute;
+    top: 0;
     bottom: 0;
-    right: 0;
-    left:var(--barWidth);
     margin: 0;
     display: block;
-    position: absolute;
     padding: 10px 20px 0;
     z-index: 2;
-    overflow: auto;
-    margin-top: 30px;
+    overflow: scroll;
+    margin-top: 100px;
+    pointer-events: auto;
+    
+}
+.gridContainerParent {
+    position: absolute;
+    top:0;
+    bottom: var(--barHeight);
+    right: 0;
+    left:var(--barWidth);
+    overflow: hidden;
 }
 
 .mapcontainer {
@@ -182,7 +193,10 @@ div.dc-chart {
     top: 0;
     bottom: 0;
     width: var(--barWidth);
-    background-color: red;
+    /*background-color: #F5F5F6;*/
+    /*pointer-events: auto;*/
+    /*box-shadow: 0 2px 5px rgba(0,0,0,.26);*/
+    z-index:3;
 }
 .left {
     left: 0;
@@ -206,7 +220,8 @@ div.dc-chart {
 .sidernav-list-item {
   cursor: pointer;
   padding: 10px 0px;
-  opacity: 0.75;
+  /*opacity: 0.75;*/
+  color:rgba(0, 0, 0, 0.54);
   font-size: 1.5em;
   text-align: center;
 
@@ -223,7 +238,7 @@ div.dc-chart {
 }
 
 .sidernav-list-item:hover {
-  color: #fff;
+  color: #a30000;
 }
 
 .sidernav-list-name {
@@ -312,10 +327,12 @@ div.dc-chart {
 }
 
 .tooltip > .tooltip-inner {
-    background-color: #5cb85c; 
+    background-color: #616161;
+    opacity: 0.9;
+    /*font-size:;*/
     color: #FFFFFF; 
-    border: 1px solid green;
-    padding: 15px;
+    /*border: 1px solid green;*/
+    padding: 3px 8px;
     font-size: 16px;
     
 }

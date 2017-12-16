@@ -57,6 +57,15 @@ h2 {
     column-break-inside: avoid;
     opacity: 1;
     transition: all .2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,.26);
+}
+.tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+    border-radius: .25rem;
 }
 .x_panel, .x_title {
     margin-bottom: 10px;
