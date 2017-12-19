@@ -15,20 +15,40 @@ App.prototype ={
     debug:true,
     language:'en',
     keywords:'en',
+    emission: 'nox',
+    divider: 1000000,
     keyTags:'',
     panels:'',
     charts:'',
+    emissions:'',
+    units:'',
   },
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
+  get emissions(){return this.options.emissions;},
+  
+  get emission(){return this.options.emission;},
+  set emission(value){this.options.emission=value;console.log(value);this.refresh()},
+  get divider(){return this.options.divider;},
+  set divider(value){this.options.divider=value;console.log(value);this.refresh()},
+  set unit(value){this.divider = this.units.find(item=>item.name===value).divider; },
+  
+  get units(){return this.options.units;},
   get keyTags(){return this.options.keyTags;},
   get panels(){return this.options.panels;},
   get geomaps(){return this.options.geomaps;},
   set geomaps(value){return this.options.geomaps=value;},
   get charts(){return this.options.charts;},
   set charts(value){this.options.charts=value;},
+  
   get debug(){return this.options.debug;},
+  refresh:function(){
+    if(this.mapd){
+      this.mapd.reSizeAll();
+      console.log("refresh")
+    }
+  },
   construct:function(){
     if(this.debug)console.log("Constructing App")
     this.websocket();
@@ -36,7 +56,8 @@ App.prototype ={
     this.Upload = new Modal(this.pointer,{container:"body",name:'upload'});
     this.Login  = new Login(this.pointer,{container:"#login"})
     this.Header = new Header(this.pointer,{container:"#header"})
-    this.LeftSide = new LeftSide(this.pointer,{})
+    this.Footer = new Footer(this.pointer,{container:".footer"})
+    // this.LeftSide = new LeftSide(this.pointer,{})
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     this.mapd = new MapD(this.pointer);

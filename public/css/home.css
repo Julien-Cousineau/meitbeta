@@ -90,20 +90,14 @@ a {
     right:var(--barWidth);
     bottom:var(--barHeight);
 }
-.footer-container {
-    position: fixed;
-    display: inline-block;
-}
+/*.footer-container {*/
+/*    position: fixed;*/
+/*    display: inline-block;*/
+/*}*/
 div.dc-chart {
     float: none;
 }
-.number-display {
-    font-size: 30px;
-    color: #fff;
-    display: inline;
-    margin: 15px 0px;
-    vertical-align: middle;
-}
+
 .headerGroup {
     z-index: 1000;
     position: absolute;
@@ -148,35 +142,16 @@ div.dc-chart {
    padding-top: 10px;
 }
 
-.footer {
-    height:var(--barHeight);
-    bottom: 0;
-    left: var(--barWidth);
-    right: 0;
-    z-index:3;
-}
+/*.footer {*/
+/*    height:var(--barHeight);*/
+/*    bottom: 0;*/
+/*    left: var(--barWidth);*/
+/*    right: 0;*/
+/*    z-index:3;*/
+/*}*/
 
-.gridContainer {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    margin: 0;
-    display: block;
-    padding: 10px 20px 0;
-    z-index: 2;
-    overflow: scroll;
-    margin-top: 100px;
-    pointer-events: auto;
-    
-}
-.gridContainerParent {
-    position: absolute;
-    top:0;
-    bottom: var(--barHeight);
-    right: 0;
-    left:var(--barWidth);
-    overflow: hidden;
-}
+
+
 
 .mapcontainer {
      position: absolute;

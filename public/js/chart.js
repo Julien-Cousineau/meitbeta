@@ -30,7 +30,7 @@ Chart.prototype = {
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get crossFilter(){return this.parent.crossFilter;},
-  get emissionType(){return this.parent.emissionType;},
+  get emission(){return this.parent.emission;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.parent.reduceFunc;},
   
@@ -120,7 +120,7 @@ Chart.prototype = {
                 .dimension(this.dimension)
                 .group(this.group)
                 .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
-                .valueAccessor(function (p) {return p[self.emissionType]/self.divider;});
+                .valueAccessor(function (p) {return p[self.emission]/self.divider;});
     
     for(let attr in this.attributes){
       this.dc[attr](this.attributes[attr]);

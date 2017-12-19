@@ -58,6 +58,28 @@ const options ={
     // hex4:{dim:'hex_4',minimum:8,maximum:12},
     // hex1:{dim:'hex_1',minimum:12,maximum:14},
   },
+  emissions: [
+  {id:0,name:'nox',dname:'Nitrogen Oxide'}, 
+  {id:1,name:'co',dname:'Carbon Monoxide'},
+  {id:2,name:'hc',dname:'Hydrocarbon'}, 
+  {id:3,name:'nh3',dname:'Ammonia'}, 
+  {id:4,name:'co2',dname:'Carbon Dioxide'}, 
+  {id:5,name:'ch4',dname: 'Methane'}, 
+  {id:6,name:'n2o',dname: 'Nitrous Oxide'}, 
+  {id:7,name:'sox',dname: 'Sulphur Oxide'}, 
+  {id:8,name:'pm25',dname: '2.5µm Particulate Matter'}, 
+  {id:9,name:'pm10',dname: '10µm Particulate Matter'}, 
+  {id:10,name:'pm',dname: 'Particulate Matter'}, 
+  {id:11,name:'bc',dname: 'Black Carbon'}
+  ],
+  units:[
+    {id:0,name:'g',dname:'grams',divider:1}, 
+    {id:1,name:'kg',dname:'kilograms',divider:1000},
+    {id:2,name:'t',dname:'tonnes',divider:1000000}, 
+    {id:3,name:'kt',dname:'kilotonnes',divider:1000000000}, 
+    {id:4,name:'Mt',dname:'megatonnes',divider:1000000000000}, 
+  ], 
+
   // charts:{
   //   // total:{keyword:'total',dim:'total',dctype:'numberDisplay',defaultscale:''},
   //   // datet:{keyword:'daterange',dim:'datet',dctype:'barChart',defaultscale:''},

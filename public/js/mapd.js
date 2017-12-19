@@ -5,13 +5,14 @@ function MapD(parent){
   const self = this;
   this.pointer = function(){return self;};
   this.construct()
-  this.emissionType = 'nox';
-  this.divider = 1000000;
+
   this.bounds=[-100,50,-40,60];
   this.mapLayer='hex16'
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get emission(){return this.parent.emission;},
+  get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
   get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
   construct:function(){
@@ -31,17 +32,17 @@ MapD.prototype = {
   reduceFunction:function(){
      return[
         {expression: "nox",agg_mode:"sum",name: "nox"},
-        // {expression: "co",agg_mode:"sum",name: "co"},
-        // {expression: "hc",agg_mode:"sum",name: "hc"},
-        // {expression: "nh3",agg_mode:"sum",name: "nh3"},
-        // {expression: "co2",agg_mode:"sum",name: "co2"},
-        // {expression: "ch4",agg_mode:"sum",name: "ch4"},
-        // {expression: "n2o",agg_mode:"sum",name: "n2o"},
-        // {expression: "sox",agg_mode:"sum",name: "sox"},
-        // {expression: "pm25",agg_mode:"sum",name: "pm25"},
-        // {expression: "pm10",agg_mode:"sum",name: "pm10"},
-        // {expression: "pm",agg_mode:"sum",name: "pm"},
-        // {expression: "bc",agg_mode:"sum",name: "bc"},
+        {expression: "co",agg_mode:"sum",name: "co"},
+        {expression: "hc",agg_mode:"sum",name: "hc"},
+        {expression: "nh3",agg_mode:"sum",name: "nh3"},
+        {expression: "co2",agg_mode:"sum",name: "co2"},
+        {expression: "ch4",agg_mode:"sum",name: "ch4"},
+        {expression: "n2o",agg_mode:"sum",name: "n2o"},
+        {expression: "sox",agg_mode:"sum",name: "sox"},
+        {expression: "pm25",agg_mode:"sum",name: "pm25"},
+        {expression: "pm10",agg_mode:"sum",name: "pm10"},
+        {expression: "pm",agg_mode:"sum",name: "pm"},
+        {expression: "bc",agg_mode:"sum",name: "bc"},
       ];
   },
   createClassChart:function(){
@@ -69,7 +70,8 @@ MapD.prototype = {
       if( err ) {console.log('A file failed to process');}
       console.log("done")
       self.createMapDim();
-      dc.renderAllAsync()
+      self.createNumberDisplay();
+      self.render();
       self.resizeFunc();
     });
 
@@ -82,16 +84,29 @@ MapD.prototype = {
       geomap.dc=new GeoMap(self.pointer,geomap)
     };
   },
+  createNumberDisplay:function(){
+    const self=this;
+    // var inlineND = dc.numberChart("#totalnumber")
+    this.total = this.crossFilter.groupAll().reduceMulti(self.reduceFunc);
+    // let group = this.crossFilter.groupAll().reduceMulti(self.reduceFunc);
+    // inlineND
+      // .valueAccessor(function (p) {return p[self.emission]/self.divider;})
+      // .dimension(this.crossFilter)
+      // .group(group);
+    // console.log(inlineND)
+  },
   filterMap:function(){
     const bounds = this.parent.mapContainer.bounds;
     this.parent.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(bounds[0],bounds[2]));
     this.parent.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(bounds[1],bounds[3]));
-    dc.redrawAllAsync();
+    this.draw();
+    // console.log(this.total)
+    // this.total.valuesAsync().then(data=>console.log(data))
   },
   getMapValue:function(){
-    console.log(this.mapLayer)
-    console.log(this.parent.geomaps[this.mapLayer])
-    console.log(this.parent.geomaps[this.mapLayer].dc.group.all());
+    // console.log(this.mapLayer)
+    // console.log(this.parent.geomaps[this.mapLayer])
+    // console.log(this.parent.geomaps[this.mapLayer].dc.group.all());
   },
   
   resizeFunc:function(){
@@ -109,7 +124,20 @@ MapD.prototype = {
       chart.dc.dc.height(height)
                  .width(width);
     }
+    this.draw();
+    // console.log(this.total.value());
+  },
+  draw:function(){
     dc.redrawAllAsync();
+    this.getTotal();
+  },
+  render:function(){
+    dc.renderAllAsync()
+    this.getTotal()
+  },
+  getTotal:function(){
+    const self=this;
+    this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
   },
   debounce:function(func, wait, immediate) {
     var timeout;
