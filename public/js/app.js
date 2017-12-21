@@ -63,7 +63,7 @@ App.prototype ={
     // this.LeftSide = new LeftSide(this.pointer,{})
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
-    this.mapd = new MapD(this.pointer);
+    // this.mapd = new MapD(this.pointer);
     this.mapContainer = new MapContainer(this.pointer,{},function(){})
   },
   websocket:function(){

@@ -9,7 +9,8 @@ function MapD(parent){
   this.bounds=[-100,50,-40,60];
   this.mapLayer='hex16';
   this.first = true;
-  this.createCrossFilter('table5');
+  this.tablename = 'table5'
+  this.createCrossFilter(this.tablename);
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
@@ -17,7 +18,7 @@ MapD.prototype = {
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
   get mapLayer(){return this.parent.mapLayer;},
-  get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
+  // get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
   // construct:function(){
   //   const self=this;
   //   this.con=new MapdCon()
@@ -33,7 +34,7 @@ MapD.prototype = {
   // },
   createCrossFilter:function(name){
     const self=this;
-    this.con=new MapdCon()
+    new MapdCon()
     .protocol("http")
     .host("52.242.33.125")
     .port("9092")
@@ -41,6 +42,7 @@ MapD.prototype = {
     .user("mapd")
     .password("HyperInteractive")
     .connect(function(error, con) {
+       self.con=con;
        crossfilter.crossfilter(con, name).then(function(crossFilter){return self.crossFilterSetup(crossFilter);})
     });
   },
@@ -90,7 +92,7 @@ MapD.prototype = {
     async.each(array, createChartFunc,function(err){
       if( err ) {console.log('A file failed to process');}
       console.log("done")
-      self.createMapDim();
+      // self.createMapDim();
       self.createNumberDisplay();
       self.render();
       self.resizeFunc();
@@ -98,14 +100,14 @@ MapD.prototype = {
     });
 
   },
-  createMapDim:function(){
-    const self=this;
-    const geomaps=this.parent.geomaps;
-    for(let key in geomaps){
-      const geomap = geomaps[key];
-      geomap.dc=new GeoMap(self.pointer,geomap)
-    };
-  },
+  // createMapDim:function(){
+  //   const self=this;
+  //   const geomaps=this.parent.geomaps;
+  //   for(let key in geomaps){
+  //     const geomap = geomaps[key];
+  //     geomap.dc=new GeoMap(self.pointer,geomap)
+  //   };
+  // },
   createNumberDisplay:function(){
     const self=this;
     // var inlineND = dc.numberChart("#totalnumber")
@@ -117,10 +119,19 @@ MapD.prototype = {
       // .group(group);
     // console.log(inlineND)
   },
-  filterMap:function(){
-    const bounds = this.parent.mapContainer.bounds;
-    this.parent.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(bounds[0],bounds[2]));
-    this.parent.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(bounds[1],bounds[3]));
+  filterMap:function(bounds){
+    // const bounds = this.parent.mapContainer.bounds;
+    const minx=bounds[0],miny=bounds[1],maxx=bounds[2],maxy=bounds[3];
+    const maplayer=this.mapLayer,emission=this.emission,table=this.tablename;
+    const query =`SELECT {0},sum({1}) AS {1} FROM table5 WHERE lng>={2} AND lng<={3} AND lat>={4} AND lat<={5}  GROUP BY {0};`.format(maplayer,emission,table,minx,maxx,miny,maxy);
+    // this.parent.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(bounds[0],bounds[2]));
+    // this.parent.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(bounds[1],bounds[3]));
+    // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
+    // self.parent.mapContainer.updateHexPaint(data)
+    const self = this;
+    this.con.query(query, {}, function(err, data) {
+      self.parent.mapContainer.updateHexPaint(data)
+    });
     this.draw();
   },
 
@@ -145,35 +156,17 @@ MapD.prototype = {
   draw:function(){
     const self=this;
     dc.redrawAllAsync();
-    debounce(self.getTotalMap, 1000,true);
-    
-    // this.getTotal();
-    // this.getMapValue()
+    self.getTotalMap();
   },
   render:function(){
     dc.renderAllAsync()
     this.getTotalMap();
-    // this.getTotal()
-    // this.getMapValue()
   },
   getTotalMap:function(){
     const self=this;
     this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
-    this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
-  },
-  getTotal:function(){
-    // const self=this;
-    // this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
-  },
-  getMapValue:function(){
-    const self=this;
-    // console.log(this.mapLayer)
-    // console.log(this.parent.geomaps[this.mapLayer].dc.group)
-    // this.parent.geomaps[this.mapLayer].dc.group.allAsync(function(data){console.log(data)});
-    // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
     
-    // data=>self.parent.mapContainer.updateHexPaint()
+  
+    
   },
-
-
 };

@@ -9,6 +9,78 @@ a {
     cursor: pointer;
 }
 
+.mapboxgl-control-container{
+    top: var(--headerH2);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+    pointer-events: none;
+}
+.mapboxgl-ctrl-bottom-left{
+    top:auto;
+    
+}
+.form-control.coord{
+    width: 90px
+}
+.mapboxgl-ctrl-top-left .selectpanel {
+    position: absolute;
+    top: 48px;
+    height: 140px;
+    left: 8px;
+    width: 240px;
+    overflow: hidden;
+}
+.mapboxgl-ctrl-top-left .selectpanel label {
+    margin-bottom: 0; 
+}
+
+.mapboxgl-ctrl-top-left .selectpanel .inside{
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    margin-top: -140px;
+    /*margin-top: 0;*/
+    padding: 5px 10px;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+    pointer-events: auto;
+}
+.mapboxgl-ctrl-top-left .selectpanel .inside a{
+    color: #007bff;
+}
+.mapboxgl-ctrl-top-left .selectbtn {
+   margin: 10px 20px;
+    float: left;
+   pointer-events: auto;
+    
+}
+.selectbtn .btn {
+    padding-right: 0px;
+    /*background: white;*/
+    border-radius: 50%;
+    font-size: 12px;
+    /*box-shadow: 0px 0px 3px 2px rgba(0,0,0,.26);*/
+    cursor: pointer;
+}
+.selectbtn .btn:hover {
+    /*background-color: #f2f2f2;*/
+}
+.selectbtn .btn.active {
+    /*background-color: #f2f2f2;*/
+    /*box-shadow: 0px 0px 3px 2px rgba(3,155,229,.25);*/
+}
+
+.selectbtn .mpicon {
+    font-size: 16px;
+    left: -7px;
+    top: 3px;
+    position: relative;
+}
+
 .btn-circle {
   width: 30px;
   height: 30px;

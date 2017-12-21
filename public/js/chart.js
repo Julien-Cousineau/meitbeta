@@ -87,7 +87,7 @@ Chart.prototype = {
   filteredFunc:function(chart,filter){
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
-    debounce(this.parent.getTotalMap, 1000,true);
+    this.parent.getTotalMap();
     // this.parent.getMapValue();
   },
   preCreateChart:function(){

@@ -7,6 +7,7 @@
   --topCHEW:25px;
   --sizeCHE:26px;
   --headerH:calc(var(--bannerHeight) + var(--linkHeight));
+  --headerH2:calc(var(--bannerHeight) + var(--linkHeight) + var(--bannermargin));
   --bannermargin:0px;
   --logoWidth:calc(var(--bannerHeight)*1.105);
   --logoHeight:calc(var(--bannerHeight));
