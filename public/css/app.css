@@ -28,8 +28,7 @@ body {
     background-color: #fbfbfb;
 }
 #login {
-
-  width: 334px;
+  
   color: #999;
   /*padding: 20px;*/
   display: flex;
@@ -37,9 +36,14 @@ body {
   justify-content: center;
   margin:auto;
   min-height: 100vh;
-  
   font-family: 'Raleway';
   
+  
+}
+.loginchild {
+    box-shadow: 0 0px 20px 1px rgba(0,0,0,.26);
+    padding: 60px;
+    width: 460px;
 }
 .logoTitle{
   text-align: center;

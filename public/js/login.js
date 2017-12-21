@@ -137,7 +137,7 @@ Login.prototype ={
     localStorage.setItem('id_token', authResult.idToken);
   },
   get renderhtml(){
-    return `<div>
+    return `<div class="loginchild">
         <div style="padding: 50px 30px 30px 0px;">
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 213 20" preserveAspectRatio="xMinYMin meet">
               	<defs>

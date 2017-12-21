@@ -3,7 +3,7 @@ const HEX = require('./hex');
 const MEITREGION = require('./meitregion');
 const CONSTANTS= require('./constants');
 const ENGINES  = CONSTANTS.ENGINES;
-const MODES    = CONSTANTS.MODES;
+// const MODES    = CONSTANTS.MODES;
 const EMISSIONS= CONSTANTS.EMISSIONS;
 const FIELDS   = CONSTANTS.FIELDS;
 const MAPFIELDS= CONSTANTS.MAPFIELDS;
@@ -53,7 +53,7 @@ Convert.prototype = {
     hexinput:[
        {id:16,file:'hex_16.hex'},
       {id:4,file:'hex_4.hex'},
-      // {id:1,file:'hex_1.hex'}
+      {id:1,file:'hex_1.hex'}
        ],
     shipinput:[
      {id:0,file:'pacific_growth_factors_11212017.csv'},
@@ -162,10 +162,12 @@ Convert.prototype = {
     outstream.write(FIELDS.join(",") + "\n");
     Papa.parse(instream, {
       header: true,
+      // fastMode:true,
 	    step: function(row) {
-        if(tcount>=100000){
+        if(tcount>=50000){
           self.meta.progress=row.meta.cursor / instream.size * 100;
           self.print();
+          // console.log(row.data[0])
           console.log(count);tcount=0;
         }
         count++;tcount++;
@@ -229,7 +231,8 @@ Convert.prototype = {
         ping.type    = ships[ship_id].type;
         // ping.ip      = ip;
         ping.point_id= point_id;
-        ping.mode    = MODES[mode];
+        // ping.mode    = MODES[mode];
+        ping.mode    = mode;
         ping.engine  = ENGINES[engine];
         ping.datetime= datetime/1E3;
         ping.lng     = this.lng[this.points[point_id]];

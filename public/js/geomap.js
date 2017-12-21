@@ -29,7 +29,7 @@ GeoMap.prototype = {
       this.dimension;
       this.group;
   },
-  getValue:function(){
+  getValue:function(callback){
     //   console.log(this.group)
       //   console.log(this.group.all());
   }

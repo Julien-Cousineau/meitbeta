@@ -37,7 +37,9 @@ function main(){
             // {name:"hex_16",file:"hex_16.hex"},
             // {name:"pacific_growth_factors_11212017",file:"pacific_growth_factors_11212017.csv"},
             // {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
-            {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"},
+            // {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"},
+            // {name:"nov30_grid",file:"nov30_grid.zip"},
+            {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"},
           ]
   
   download(list,function(e){

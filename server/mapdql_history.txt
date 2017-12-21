@@ -1,0 +1,8 @@
+copy table5 from '/home/cousineauju/meitveta/data/convert/pacific_emissions_11162017.csv2';
+copy table5 from '/home/cousineauju/meitbeta/data/convert/pacific_emissions_11162017.csv2';
+\copy table5
+\copy '/home/cousineauju/meitbeta/data/convert/pacific_emissions_11162017.csv2'
+\copy /home/cousineauju/meitbeta/data/convert/pacific_emissions_11162017.csv2
+\t
+\copy /home/cousineauju/meitbeta/data/convert/pacific_emissions_11162017.csv2
+copy table5 from '/home/cousineauju/meitbeta/data/convert/pacific_emissions_11162017.csv2' limit 100;

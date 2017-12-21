@@ -142,7 +142,7 @@ Test.prototype = {
         MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      var myquery = { name: "arcticWIG_09212017.csv" };
+      var myquery = { name: "arcticWIG_09212017.csv2" };
       dbase.collection(collection).deleteMany(myquery,function(err, result) {
         if (err) throw err;
         db.close();

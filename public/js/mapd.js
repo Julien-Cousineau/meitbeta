@@ -4,18 +4,34 @@ function MapD(parent){
   this._parent = parent;
   const self = this;
   this.pointer = function(){return self;};
-  this.construct()
+  // this.construct()
 
   this.bounds=[-100,50,-40,60];
-  this.mapLayer='hex16'
+  this.mapLayer='hex16';
+  this.first = true;
+  this.createCrossFilter('table5');
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get emission(){return this.parent.emission;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
+  get mapLayer(){return this.parent.mapLayer;},
   get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
-  construct:function(){
+  // construct:function(){
+  //   const self=this;
+  //   this.con=new MapdCon()
+  //   .protocol("http")
+  //   .host("52.242.33.125")
+  //   .port("9092")
+  //   .dbName("mapd")
+  //   .user("mapd")
+  //   .password("HyperInteractive")
+  //   .connect(function(error, con) {
+  //     crossfilter.crossfilter(con, "table5").then(function(crossFilter){return self.createCharts(crossFilter);})
+  //   });
+  // },
+  createCrossFilter:function(name){
     const self=this;
     this.con=new MapdCon()
     .protocol("http")
@@ -25,32 +41,37 @@ MapD.prototype = {
     .user("mapd")
     .password("HyperInteractive")
     .connect(function(error, con) {
-       crossfilter.crossfilter(con, "table3").then(function(crossFilter){return self.createCharts(crossFilter);})
+       crossfilter.crossfilter(con, name).then(function(crossFilter){return self.crossFilterSetup(crossFilter);})
     });
   },
-  
+  crossFilterSetup:function(crossFilter){
+    console.log(crossFilter)
+    this.crossFilter = crossFilter;
+    if(this.first)this.createCharts();
+  },
   reduceFunction:function(){
      return[
         {expression: "nox",agg_mode:"sum",name: "nox"},
-        {expression: "co",agg_mode:"sum",name: "co"},
-        {expression: "hc",agg_mode:"sum",name: "hc"},
-        {expression: "nh3",agg_mode:"sum",name: "nh3"},
-        {expression: "co2",agg_mode:"sum",name: "co2"},
-        {expression: "ch4",agg_mode:"sum",name: "ch4"},
-        {expression: "n2o",agg_mode:"sum",name: "n2o"},
-        {expression: "sox",agg_mode:"sum",name: "sox"},
-        {expression: "pm25",agg_mode:"sum",name: "pm25"},
-        {expression: "pm10",agg_mode:"sum",name: "pm10"},
-        {expression: "pm",agg_mode:"sum",name: "pm"},
-        {expression: "bc",agg_mode:"sum",name: "bc"},
+        // {expression: "co",agg_mode:"sum",name: "co"},
+        // {expression: "hc",agg_mode:"sum",name: "hc"},
+        // {expression: "nh3",agg_mode:"sum",name: "nh3"},
+        // {expression: "co2",agg_mode:"sum",name: "co2"},
+        // {expression: "ch4",agg_mode:"sum",name: "ch4"},
+        // {expression: "n2o",agg_mode:"sum",name: "n2o"},
+        // {expression: "sox",agg_mode:"sum",name: "sox"},
+        // {expression: "pm25",agg_mode:"sum",name: "pm25"},
+        // {expression: "pm10",agg_mode:"sum",name: "pm10"},
+        // {expression: "pm",agg_mode:"sum",name: "pm"},
+        // {expression: "bc",agg_mode:"sum",name: "bc"},
       ];
   },
   createClassChart:function(){
   },
   colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
-  createCharts:function(crossFilter){
+  createCharts:function(){
     const self=this;
-    this.crossFilter = crossFilter;
+    const crossFilter = this.crossFilter;
+    console.log(crossFilter)
     let allColumns = crossFilter.getColumns();
     const charts=this.parent.charts;
     
@@ -73,6 +94,7 @@ MapD.prototype = {
       self.createNumberDisplay();
       self.render();
       self.resizeFunc();
+      self.first = false;
     });
 
   },
@@ -100,18 +122,12 @@ MapD.prototype = {
     this.parent.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(bounds[0],bounds[2]));
     this.parent.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(bounds[1],bounds[3]));
     this.draw();
-    // console.log(this.total)
-    // this.total.valuesAsync().then(data=>console.log(data))
   },
-  getMapValue:function(){
-    // console.log(this.mapLayer)
-    // console.log(this.parent.geomaps[this.mapLayer])
-    // console.log(this.parent.geomaps[this.mapLayer].dc.group.all());
-  },
+
   
   resizeFunc:function(){
     const self=this;
-    window.addEventListener("resize", this.debounce(function(){self.reSizeAll()}, 100));
+    window.addEventListener("resize", debounce(function(){self.reSizeAll()}, 100));
   },
   reSizeAll:function(){
     const charts=this.parent.charts;
@@ -125,33 +141,39 @@ MapD.prototype = {
                  .width(width);
     }
     this.draw();
-    // console.log(this.total.value());
   },
   draw:function(){
+    const self=this;
     dc.redrawAllAsync();
-    this.getTotal();
+    debounce(self.getTotalMap, 1000,true);
+    
+    // this.getTotal();
+    // this.getMapValue()
   },
   render:function(){
     dc.renderAllAsync()
-    this.getTotal()
+    this.getTotalMap();
+    // this.getTotal()
+    // this.getMapValue()
   },
-  getTotal:function(){
+  getTotalMap:function(){
     const self=this;
     this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
+    this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
   },
-  debounce:function(func, wait, immediate) {
-    var timeout;
-    return function() {
-      var context = this, args = arguments;
-      var later = function() {
-        timeout = null;
-        if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
-    };
+  getTotal:function(){
+    // const self=this;
+    // this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
   },
+  getMapValue:function(){
+    const self=this;
+    // console.log(this.mapLayer)
+    // console.log(this.parent.geomaps[this.mapLayer].dc.group)
+    // this.parent.geomaps[this.mapLayer].dc.group.allAsync(function(data){console.log(data)});
+    // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
+    
+    // data=>self.parent.mapContainer.updateHexPaint()
+  },
+
 
 };

@@ -16,6 +16,7 @@ App.prototype ={
     language:'en',
     keywords:'en',
     emission: 'nox',
+    mapLayer:'hex16',
     divider: 1000000,
     keyTags:'',
     panels:'',
@@ -27,6 +28,8 @@ App.prototype ={
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
   get emissions(){return this.options.emissions;},
+  get mapLayer(){return this.options.mapLayer;},
+  set mapLayer(value){this.options.mapLayer=value;},
   
   get emission(){return this.options.emission;},
   set emission(value){this.options.emission=value;console.log(value);this.refresh()},

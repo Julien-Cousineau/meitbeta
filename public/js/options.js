@@ -5,7 +5,7 @@ const options ={
   AUTH0_DOMAIN:'nrc-ocre.auth0.com',
   // AUTH0_SECRET:'31dlg3bM_Sc1xS8rpeEUYx0n5H635UbdKvnDWLWcphyJ5R-tyBN76k-fmskC9HbA',
   AUTH0_CALLBACK_URL:window.location.href,
-  // IP : 'http://ec-meit-dev.ca:8080/',
+  IP : 'http://52.242.33.125:8080/',
   keywords:{
     username:{'en':"Username",'fr':"Nom d'utilisateur"},
     password:{'en':"Password",'fr':"Mot de passe"},
@@ -51,8 +51,8 @@ const options ={
   {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
   ],
   geomaps:{
-    lng:{dim:'lng'},
-    lat:{dim:'lat'},
+    lng:{dim:'lng',minimum:-1,maximum:-1},
+    lat:{dim:'lat',minimum:-1,maximum:-1},
     mapmeit:{dim:'mapmeit',minimum:0,maximum:3},
     hex16:{dim:'hex_16',minimum:4,maximum:7},
     // hex4:{dim:'hex_4',minimum:8,maximum:12},

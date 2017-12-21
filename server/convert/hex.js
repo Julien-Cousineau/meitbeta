@@ -151,7 +151,7 @@ Hex.prototype={
   },
   getHexIndex:function(lng,lat){
     const closestpoint = geokdbush.around(this.index, lng, lat, 1)[0];
-    return closestpoint;
+    return this.hexes.id[closestpoint];
   },
   
 };

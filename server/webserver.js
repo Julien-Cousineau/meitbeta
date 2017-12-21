@@ -16,6 +16,7 @@ const socketio = require('socket.io');
 const Papa= require('papaparse');
 
 const DataServer = require('./dataserver');
+const MBTileServer = require('./mbtileserver');
 
 
 const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
@@ -57,6 +58,7 @@ WebServer.prototype = {
       res.sendFile(path.resolve(__dirname, '../public/index.html'));
     });
     this.dataserver = new DataServer(this.pointer);
+    this.mbtileserver = new MBTileServer(this.pointer);
     // this.dataserver.newTable(function(){
       
     // })
