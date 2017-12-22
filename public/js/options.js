@@ -1,3 +1,4 @@
+const DOW={0:"Mon",1:"Tue",2:"Wed",3:"Thu",4:"Fri",5:"Sat",6:"Sun"};
 const options ={
   debug:true,
   language:'en',
@@ -25,8 +26,8 @@ const options ={
     // datetime:{'en':"Date Time",'fr':"Temps"},
     // year:{'en':"Year",'fr':"Année"},
     // month:{'en':"Month",'fr':"Mois"},
-    // dow:{'en':"Day of Week",'fr':"Jour de semaine"},
-    // hour:{'en':"Hour",'fr':"Heure"},
+    dow:{'en':"Day of Week",'fr':"Jour de semaine"},
+    hour:{'en':"Hour",'fr':"Heure"},
     total:{'en':"Total",'fr':"Filtres"},
     hidepanels:{'en':"Hide Panels",'fr':"Cacher les panneaux"},
     unhidepanels:{'en':"Unhide Panels",'fr':"Décacher les panneaux"}
@@ -43,12 +44,42 @@ const options ={
   {tag:".LGbtn2",type:'text',id:"language"},
   ],
   charts:[
-  {id:"paneldate",active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',attributes:{}},
-  {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
-  {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
-  {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"paneldate",active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
+    attributes:{xAxis:{tickFormat:dc.utils.customTimeFormat,orient:'bottom',},
+                yAxis:{ticks:5}
+    },   
+    attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 400,binBounds: [minMax.minimum,minMax.maximum]};}},
+                            x:{minMax:function(minMax){return d3.time.scale.utc().domain([minMax.minimum,minMax.maximum]) }},
+                   }
+  },
+  {id:"paneldow",active:false,keyword:"dow",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
+  attributes:{binParams:{timeBin: "dow",extract: true,numBins: 7,binBounds: [new Date(), new Date()]},
+              xAxis:{tickFormat:function(p) {return DOW[p];},orient:'bottom'},
+              yAxis:{ticks:5},
+              x:d3.scale.ordinal(),
+              xUnits:dc.units.ordinal,
+              barPadding:0.1,
+              outerPadding:0.05,
+             }
+    
+  },
+  {id:"panelhour",active:false,keyword:"hour",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
+  attributes:{binParams:{timeBin: "hour",extract: true,numBins: 24,binBounds: [new Date(), new Date()]},
+              xAxis:{orient:'bottom'},
+              yAxis:{ticks:5},
+              // x:d3.scale.linear().domain([0,24]),
+              x:d3.scale.ordinal(),
+              xUnits:dc.units.ordinal,
+              barPadding:0.1,
+              outerPadding:0.05,
+             }
+    
+  },
+  // {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  // {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  // {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  // {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  // {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
   ],
   geomaps:{
     lng:{dim:'lng',minimum:-1,maximum:-1},

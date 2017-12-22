@@ -51,7 +51,7 @@ Grid.prototype = {
     // } else {
     //   panelcontent=this.renderPanelContent(panel.dimensionids[0]);
     // }
-    panelcontent=this.renderPanelContent(panel.dim);
+    panelcontent=this.renderPanelContent(panel.id);
     
     return `
           <div class="x_panel tile fixed_height_320" panelid="{0}">

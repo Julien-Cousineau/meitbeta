@@ -86,14 +86,14 @@ Footer.prototype ={
     return `<div class="handle"></div>
             <div class="footer-title">
               <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                   <span class="number-display">Total</span>
                   {0}
                   <span class="number-display">&nbsp: </span>
                   <div class="number-display" id="totalnumber"></div>
                   {1}
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                 </div>
               </div>
             </div>

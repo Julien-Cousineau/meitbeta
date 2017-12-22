@@ -51,7 +51,7 @@ MapD.prototype = {
   },
   reduceFunction:function(){
      return[
-        {expression: "nox",agg_mode:"sum",name: "nox"},
+        {expression: "nox*co",agg_mode:"sum",name: "nox"},
         // {expression: "co",agg_mode:"sum",name: "co"},
         // {expression: "hc",agg_mode:"sum",name: "hc"},
         // {expression: "nh3",agg_mode:"sum",name: "nh3"},
@@ -169,12 +169,29 @@ MapD.prototype = {
   },
   getTotalMap:function(){
     const self=this;
-    this.total.valuesAsync().then(data=>$('#totalnumber').text(data[self.emission]/self.divider));
+    this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
     console.log(this.mapLayer)
     console.log(this.parent.geomaps)
     console.log(this.parent.geomaps[this.mapLayer])
     this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
   
     
+  },
+  formatTotal:function(x){
+    var formatSi = d3.format(".3s");
+    var formate = d3.format(".1e");
+    var formatf = d3.format(".2n");
+    var s = formatSi(x);
+    switch (s[s.length - 1]) {
+        case "k": return s.slice(0, -1) + " thousand";
+        case "M": return s.slice(0, -1) + " million";
+        case "G": return s.slice(0, -1) + " billion";
+        case "T": return s.slice(0, -1) + " trillion";
+        case "m": return formatf(x);
+     }
+     if(x==0){return s;}
+     if (x< 0.001){return formate(x);}
+    
+     return s;
   },
 };

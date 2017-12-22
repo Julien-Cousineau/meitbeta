@@ -42,14 +42,14 @@ function Ship(parent,id){
 }
 Ship.prototype={
     get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
-    parseCSV:function(obj){
+    parseCSV:function(obj,con){
     
     const ship_id = obj.ship_id;
     const year    = obj.forecast_year;
     const region  = obj.meit_region;
     const _class  = obj.ship_class;
     const type    = obj.ship_type;
-    
+    if(con)console.log(ship_id)
     if(!(this.ships[ship_id])){this.ships[ship_id]=new Ship(null,this.iship++)}
     if(!(this.classes[_class])){this.classes[_class]=this.iclass++;}
     if(!(this.types[type])){this.types[type]=this.itype++;}
@@ -73,7 +73,7 @@ Ship.prototype={
           const code = ENGINES[engine];
           // this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]);
           this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]);
-          
+          if(con)console.log(this.ships[ship_id].forecast[year][code][region][emission])
         }      
       }
     }
@@ -82,21 +82,39 @@ Ship.prototype={
     const self=this;
     console.log(filename)
     const instream = fs.createReadStream(filename);
-    self.parent.meta.action='Reading ' + path.basename(filename);
+    // self.parent.meta.action='Reading ' + path.basename(filename);
     let hrstart = process.hrtime();
     let tcount=0,count=0;
+    let tempdata;
     Papa.parse(instream, {
       header: true,
     	step: function(row) {
-    	  if(tcount>=100){
-          self.parent.meta.progress=row.meta.cursor / instream.size * 100;
-          self.parent.print();
-          console.log(count);tcount=0;
+    	  if(tcount>=1000){
+          // self.parent.meta.progress=row.meta.cursor / instream.size * 100;
+          // self.parent.print();
+          console.log(count);
+          tcount=0;
+          // console.log(row.data[0])
         }
+        tcount++;count++
+        tempdata=row.data[0];
   	    self.parseCSV(row.data[0]);
     	},    	
-    	error:function(e){self.parent.meta.time.readship=process.hrtime(hrstart)[0];self.parent.meta.action=null;callback(true,e);},
-    	complete: function(){self.parent.meta.time.readship=process.hrtime(hrstart)[0];self.parent.meta.action=null;;callback(false);}
+    	error:function(e){
+    	 // self.parent.meta.time.readship=process.hrtime(hrstart)[0];
+    	 // self.parent.meta.action=null;
+    	 //console.log(tempdata)
+    	 //self.parseCSV(tempdata,true);
+    	 // callback(true,e);
+    	  
+    	},
+    	complete: function(){
+    	 // self.parent.meta.time.readship=process.hrtime(hrstart)[0];
+    	 // self.parent.meta.action=null;;
+    	  console.log("here")
+    	  callback(false);
+    	  
+    	}
     }); 
   },
 

@@ -4,6 +4,11 @@ const CONVERT = require('./convert');
 const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
 const CONVERTFOLDER = path.join(__dirname, '../data/convert');
 
+const CONSTANTS= require('./convert/constants');
+const EMISSIONS= CONSTANTS.EMISSIONS;
+const Ship = require('./convert/ship');
+const async = require('async');
+
 function ManualInsert(){
     const self=this;
     this.pointer = function(){return self;};
@@ -36,5 +41,52 @@ function processFile(obj,callback){
     });
 }
 
+function readSHIP(){
+  const self=this;
+  this.pointer = function(){return self;};
+  const ship=new Ship(this.pointer)
+  const shipinput=[
+     {id:0,file:'pacific_growth_factors_11212017.csv'},
+     {id:1,file:'east_arctic_greatlakes_growth_factors_11212017.csv'}
+     ]
+  const folder ='data/ship'
+  const funcShip =function(input,ccallback){
+      ship.readCSV(path.resolve(folder,input.file),function(e,message){
+        if(e)console.log(message);
+        ccallback(e,message);
+      });
+    };
+  async.eachSeries(shipinput, funcShip, function(e,message){
+    
+      let i=0;
+      let count=0
+      // console.log(ship.ships)
+      for(let id in ship.ships){
+        // if(i===1000){
+        for(let ii=0;ii<22;ii++){
+        EMISSIONS.forEach((e,ei)=>{
+          if(ei>0){
+            if(ship.ships[id].forecast[2025][1][4][e] !==ship.ships[id].forecast[2025][1][ii][e]){
+              count++;
+              
+              // console.log(ship.ships[id].forecast[2020][1][ii].nox)
+            }  
+          }
+        })
+        
+        }  // console.log(ship.ships[id].forecast['2020']['1'])
+        // }
+        i++;
+      }
+      console.log(count)
+        
+      
+      
+  });
+  
+  
+}
 // new ManualInsert();
-new processFile({name:"arcticWIG_09212017.csv"},function(){})
+// new processFile({name:"arcticWIG_09212017.csv"},function(){})
+
+new readSHIP()

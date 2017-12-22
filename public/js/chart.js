@@ -3,8 +3,10 @@
 function Chart(parent,options,callback){
   this._parent = parent;
   this.options = extend(Object.create(this.options), options);
-  this.callback=callback;
-  this.preCreateChart();
+  // this.callback=callback;
+  this.createChart(function(){
+    callback();
+  });
 }
 
 Chart.prototype = {
@@ -13,16 +15,15 @@ Chart.prototype = {
     dctype:'',
     colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
   },
-  pieoptions:{cap:9},
   defaultChartAttributes:{
     pieChart:{cap:9,othersGrouper:false},
-    rowChart:{cap:20,autoScroll:true,elasticX:true,margins:{top:10,right:50,bottom:30,left:10},othersGrouper:false},
+    rowChart:{cap:20,autoScroll:true,elasticX:true,margins:{top:10,right:50,bottom:50,left:10},othersGrouper:false},
     barChart:{elasticX:true,elasticY:true},
   },
   defaultChartAttributesFunc:{
-    barChart:{binParams:{minMax:function(minMax){return {numBins: 400,binBounds: [minMax.minimum,minMax.maximum]};}},
-              x:{minMax:function(minMax){return d3.time.scale.utc().domain([minMax.minimum,minMax.maximum]) }},
-             },
+    barChart:{},
+    rowChart:{},
+    barChart:{},
     
              
     
@@ -63,7 +64,7 @@ Chart.prototype = {
                            ]},
   get minMax(){return this.options.minMax;},
   set minMax(value){this.options.minMax=value;},
-  get container(){return "._" + this.dim;},
+  get container(){return "._" + this.id;},
   get colorScheme(){return this.options.colorScheme;},
   // get group(){return this.dimension.group().reduce(this.reduceFunc);}, 
   get group(){
@@ -87,35 +88,66 @@ Chart.prototype = {
   filteredFunc:function(chart,filter){
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
+    console.log(this.group.getReduceExpression())
     this.parent.getTotalMap();
     // this.parent.getMapValue();
   },
-  preCreateChart:function(){
-    const self=this;
-    if(this.dctype==="barChart"){
+  // preCreateChart:function(){
+  //   const self=this;
+  //   if(this.dctype==="barChart"){
       
-      this.crossFilter
+  //     this.crossFilter
+  //       .groupAll()
+  //       .reduceMulti(this.minMaxFunc)
+  //       .valuesAsync(true).then(function(minMax) {
+  //           self.minMax=minMax;
+  //           self.createChart();
+  //       });
+          
+  //   } else {
+  //     self.createChart();
+  //   }
+    
+  // },
+  getMinMax:function(callback){
+    const self=this;
+    this.crossFilter
          .groupAll()
          .reduceMulti(this.minMaxFunc)
          .valuesAsync(true).then(function(minMax) {
             self.minMax=minMax;
-            self.createChart();
+            callback();
          });
-          
-    } else {
-      self.createChart();
-    }
-    
   },
-  createChart:function(){
+  // rowChart:function(callback){this.createChart(function(){callback();});},
+  // pieChart:function(callback){this.createChart(function(){callback();});},
+  // barChart:function(callback){
+  //   const self=this;
+  //   this.createChart(function(){
+  //     // self.dc.yAxis().ticks(5);
+  //     // self.dc.xAxis()
+  //     //       .scale(self.dc.x())
+  //     //       .tickFormat(self.attributes.xAxis.tickFormat)
+  //     //       // .tickFormat(function(p) { return names[p]; })
+  //     //         // .tickFormat(dc.utils.customTimeFormat)
+  //     //       .orient('bottom');
+  //     callback();
+  //   });
+  // },
+  createChart:function(callback){
+    const self=this;
+    if(this.options.getMinMax){
+      this.getMinMax(function(){self._createChart();callback();})}
+    else{self._createChart();callback();}
+  },
+  _createChart:function(){
     const self = this;
     const width = $('div[panelid="{0}"] .x_content'.format(this.id)).width();
     const height = $('div[panelid="{0}"] .x_content'.format(this.id)).height();
+    
     this.dc = dc[this.dctype](this.container)
                 .height(height)
                 .width(width)
-                // .minHeight(100)
-                // .minWidth(100)
                 .ordinalColors(this.colorScheme)
                 .measureLabelsOn(true)
                 .dimension(this.dimension)
@@ -123,27 +155,46 @@ Chart.prototype = {
                 .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
                 .valueAccessor(function (p) {return p[self.emission]/self.divider;});
     
+    this.dc.measureValue=function (d) {return self.formatValue(self.dc.cappedValueAccessor(d));}
+    // console.log(this.group.getReduceExpression())
     for(let attr in this.attributes){
-      this.dc[attr](this.attributes[attr]);
+      if(attr!=='xAxis' && attr!=='yAxis'){this.dc[attr](this.attributes[attr])}
+      else{
+        for(let xattr in this.attributes[attr]){
+          this.dc.xAxis()[xattr](this.attributes[attr][xattr]);
+        }
+      }
     }
+    //TODO : Chnage this below...too complicated
     for(let attr in this.attributesFunc){
       const obj = this.attributesFunc[attr];
       for(let key in obj){
+        console.log(key)
+        console.log(this[key])
         const value =obj[key](this[key]);
-        console.log(value)
+        
         this.dc[attr](value);
       }
       
     }
-    if(this.dctype==="barChart"){
-      this.dc.yAxis().ticks(5);
-      this.dc.xAxis()
-              .scale(this.dc.x())
-              .tickFormat(dc.utils.customTimeFormat)
-              .orient('bottom');
-    }
+    if(this.dc.xAxis)this.dc.xAxis().scale(this.dc.x());
     
-    this.callback();
+  },
+  formatValue:function(x){
+    var formatSi = d3.format(".2s");
+    var formate = d3.format(".1e");
+    var formatf = d3.format(".2n");
+    
+    if(x<0.001){return formate(x);}
+    var s = formatSi(x);
+    if(x==0){return s;}
+    switch (s[s.length - 1]) {
+        case "G": return s.slice(0, -1) + "B";
+        case "M": return s.slice(0, -1) + "M";
+        case "k": return s.slice(0, -1) + "k";
+        case "m": return formatf(x);
+        default:return s;
+     }
   },
     
 }

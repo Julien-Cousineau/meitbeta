@@ -11,15 +11,18 @@
 /*   background-color:red; */
 }
 .footer-title {
+    color: #868686;
     width: 100%;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
-    margin-left: auto;
+    box-shadow: 0px 1px 1px 0px rgba(0,0,0,.26);
+}
+#totalnumber {
+    color: #22a7f0;
 }
 .number-display {
     font-size: 24px;
-    /*color: #fff;*/
     display: inline;
     margin: 15px 0px;
     vertical-align: middle;
