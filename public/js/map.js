@@ -43,6 +43,9 @@ MapContainer.prototype = {
       style: 'mapbox://styles/mapbox/light-v9',
       center: [ -100.00, 60.0 ],
       zoom: this.zoom, 
+      pitchWithRotate:false,
+      dragRotate:false,
+      touchZoomRotate:false,
     });
     const self=this;
     map.addControl(new mapboxgl.NavigationControl());
@@ -81,30 +84,45 @@ MapContainer.prototype = {
     let html = `
     <div class="selectpanel">
       <div class="inside">
-        <form>
           <div>
-            <div><label for="point1" class="control-label">Point #1</label>
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="extentheader">Extent</div>
+            </div>
+            <div class="col-sm-4">
                 <a class="clearpanel" style="float: right;">clear</a>
             </div>
-            <div class="form-inline">
-              <input type="number" step="0.01" placeholder="Latitude" class="form-control coord" id="lat1" group="box" name="point1">
-              <input type="number" step="0.01" placeholder="Longitude" class="form-control coord" id="lon1" group="box" name="point1">
-            </div>
           </div>
-          <div>
-            <label for="point2" class="control-label">Point #2</label>
-            <div class="form-inline">
-              <input type="number" step="0.01" placeholder="Latitude" class="form-control coord" id="lat2" group="box" name="point2">
-              <input type="number" step="0.01" placeholder="Longitude" class="form-control coord" id="lon2" group="box" name="point2">
+            <div class="row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4">
+                <input type="number" step="0.01" placeholder="Latitude" class="form-control coord" id="lat2" group="box" name="point2">
+              </div>
+              
             </div>
+            <div class="row">
+              <div class="col-sm-5">
+                <input type="number" step="0.01" placeholder="Longitude" class="form-control coord" id="lon1" group="box" name="point1">
+              </div>
+              <div class="col-sm-2"></div>
+              <div class="col-sm-5">
+                <input type="number" step="0.01" placeholder="Longitude" class="form-control coord" id="lon2" group="box" name="point2">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4">
+                <input type="number" step="0.01" placeholder="Latitude" class="form-control coord" id="lat1" group="box" name="point1">
+              </div>
+              <div class="col-sm-4"></div>
+            </div>
+            
           </div>
-        </form> 
       </div>
-      
     </div>
     <div class="selectbtn">
-                  <button class="btn btn-light"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
-                </div>`
+      <button class="btn btn-light"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
+    </div>`
     $(".mapboxgl-ctrl-top-left").append(html);
     $('.selectbtn button').on("click",function(){self.selectBox.activate();})
     
@@ -128,21 +146,21 @@ MapContainer.prototype = {
     if(data && this.map.getLayer('hexgrid')){
       console.time("inside")
       
-        // if(data.values===null)return;
+        if(data.values===null)return;
         // let max = Math.max.apply(Math,data.map(function(row){return row[emission]}))
         // max=(max<1) ? 1:max;
-      //   var x = d3.scale.log()
-      //     .domain([1, 1000000])
-      //     .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']);
-      //   var stops = data.map(function(row) {
-      //     var color = x(row[emission]);
-      //     return [row.key0, color];
-      //   });
-      // if(this.zoom<4){
-      //   self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
-      // } else {
-      //   self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
-      // }
+        var x = d3.scale.log()
+          .domain([1, 1000000])
+          .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']);
+        var stops = data.map(function(row) {
+          var color = x(row[emission]);
+          return [row.key0, color];
+        });
+      if(this.zoom<4){
+        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+      } else {
+        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+      }
       console.timeEnd("inside")
     }
 
@@ -264,9 +282,7 @@ SelectBox.prototype = {
                    .setData(this.view);
   },
   updateMap:function(){
-    
-    
-    // this.parent.parent.mapd.filterMap(this.bounds);
+    this.parent.parent.mapd.filterMap(this.bounds);
   },
   show:function(){
     this.map.setLayoutProperty(this.id, 'visibility', 'visible');

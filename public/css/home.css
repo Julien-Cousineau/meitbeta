@@ -24,30 +24,46 @@ a {
     
 }
 .form-control.coord{
-    width: 90px
+    /*width: 90px*/
+}
+
+.extentheader {
+    font-size: 17px;
+    color: #73879C;
+    font-family: 'Roboto';
+    font-weight: 400;
+}
+
+.inside .form-control {
+    padding: .375rem .25rem;
+    font-size: 0.75rem;
 }
 .mapboxgl-ctrl-top-left .selectpanel {
     position: absolute;
-    top: 48px;
+    top: 46px;
     height: 140px;
-    left: 8px;
-    width: 240px;
+    left: 6px;
+    width: 244px;
     overflow: hidden;
+    /*-webkit-transition: all 0.5s;*/
+    /*transition: all 0.5s;*/
+    
 }
 .mapboxgl-ctrl-top-left .selectpanel label {
     margin-bottom: 0; 
 }
 
 .mapboxgl-ctrl-top-left .selectpanel .inside{
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
     background-color: white;
+    margin: 2px;
     margin-top: -140px;
-    /*margin-top: 0;*/
-    padding: 5px 10px;
+    padding: 10px 10px 5px 10px;
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
     pointer-events: auto;
+    box-shadow: 0 0px 4px rgba(0,0,0,.26);
 }
 .mapboxgl-ctrl-top-left .selectpanel .inside a{
     color: #007bff;

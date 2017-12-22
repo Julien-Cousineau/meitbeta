@@ -57,13 +57,13 @@ Footer.prototype ={
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
   },
-  dropdownMenu:function(name,list){
+  dropdownMenu:function(name,list,title){
     let lis=list.map(item=>`<li><a href="#" _id="{0}">{1}</a></li>`.format(item.name,item.dname)).join("");
     let ul = `<ul class="dropdown-menu" id="ul_{0}">{1}</ul>`.format(name,lis);
     let html =`<div class="btn-group dropup">
-                <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropup</div>
+                <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{1}</div>
                   {0}
-               </div>`.format(ul);               
+               </div>`.format(ul,title);               
     return html;
   },
   dropdownMenuFunc:function(name){
@@ -79,6 +79,10 @@ Footer.prototype ={
   html:function(){
     const emissions=this.parent.options.emissions;
     const units=this.parent.options.units;
+    const emission = this.parent.emission;
+    const divider = this.parent.divider;
+    const emissionT = this.parent.emissions.find(item=>item.name===emission).dname;
+    const unitT = this.parent.units.find(item=>item.divider===divider).dname;
     return `<div class="handle"></div>
             <div class="footer-title">
               <div class="row">
@@ -96,8 +100,8 @@ Footer.prototype ={
           <div class="gridContainerParent">
             <div class="gridContainer"></div>
           </div>
-            `.format(this.dropdownMenu('emissions',emissions),
-                     this.dropdownMenu('units',units)
+            `.format(this.dropdownMenu('emissions',emissions,emissionT),
+                     this.dropdownMenu('units',units,unitT)
                      )
   },
 }

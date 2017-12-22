@@ -16,7 +16,7 @@ App.prototype ={
     language:'en',
     keywords:'en',
     emission: 'nox',
-    mapLayer:'hex16',
+    mapLayer:'mapmeit',
     divider: 1000000,
     keyTags:'',
     panels:'',
@@ -53,6 +53,7 @@ App.prototype ={
     }
   },
   construct:function(){
+    const self=this;
     if(this.debug)console.log("Constructing App")
     this.websocket();
     this.constructFunc();
@@ -64,7 +65,10 @@ App.prototype ={
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     // this.mapd = new MapD(this.pointer);
-    this.mapContainer = new MapContainer(this.pointer,{},function(){})
+    this.mapContainer = new MapContainer(this.pointer,{},function(){
+      self.mapd = new MapD(self.pointer);
+      $('#bannerChevron').trigger("click");
+    })
   },
   websocket:function(){
     const self=this;
