@@ -138,6 +138,7 @@ WebServer.prototype = {
             const tempdataset = obj.dataset;
             self.dataserver.datasetExist(tempdataset.name,function(err,results){
               const dataset = results[0];
+              console.log(obj)
               self.dataserver.uploadtodatabase(obj,dataset,function(err,meta){
                 meta.htmlid = obj.htmlid;
                 io.emit('addfiledataset', meta);

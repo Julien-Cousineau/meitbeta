@@ -51,7 +51,7 @@ MapD.prototype = {
   },
   reduceFunction:function(){
      return[
-        {expression: "nox*co",agg_mode:"sum",name: "nox"},
+        {expression: "nox*2",agg_mode:"sum",name: "nox"},
         // {expression: "co",agg_mode:"sum",name: "co"},
         // {expression: "hc",agg_mode:"sum",name: "hc"},
         // {expression: "nh3",agg_mode:"sum",name: "nh3"},

@@ -2,8 +2,8 @@ var MongoClient = require('mongodb').MongoClient;
 const IP = process.env.IP;
 var url = "mongodb://" + IP +":27017/meitdata";
 
-const collection = "convert";
-// const collection = "table";
+// const collection = "convert";
+const collection = "table";
 
 function Test(){
   // this.createdb();
@@ -142,7 +142,7 @@ Test.prototype = {
         MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      var myquery = { name: "arcticWIG_09212017.csv2" };
+      var myquery = { name: "dummy.table1.csv2" };
       dbase.collection(collection).deleteMany(myquery,function(err, result) {
         if (err) throw err;
         db.close();

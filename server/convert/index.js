@@ -3,6 +3,7 @@ const HEX = require('./hex');
 const MEITREGION = require('./meitregion');
 const CONSTANTS= require('./constants');
 const ENGINES  = CONSTANTS.ENGINES;
+const YEARS  = CONSTANTS.YEARS;
 // const MODES    = CONSTANTS.MODES;
 const EMISSIONS= CONSTANTS.EMISSIONS;
 const FIELDS   = CONSTANTS.FIELDS;
@@ -52,8 +53,8 @@ Convert.prototype = {
     meitinput:'meitregions.geojson',
     hexinput:[
        {id:16,file:'hex_16.hex'},
-      {id:4,file:'hex_4.hex'},
-      {id:1,file:'hex_1.hex'}
+       {id:4,file:'hex_4.hex'},
+      // {id:1,file:'hex_1.hex'}
        ],
     shipinput:[
      {id:0,file:'pacific_growth_factors_11212017.csv'},
@@ -167,7 +168,6 @@ Convert.prototype = {
         if(tcount>=50000){
           self.meta.progress=row.meta.cursor / instream.size * 100;
           self.print();
-          // console.log(row.data[0])
           console.log(count);tcount=0;
         }
         count++;tcount++;
@@ -183,7 +183,7 @@ Convert.prototype = {
   parseCSV:function(obj,callback){
     this.irow++;
     const ships = this.SHIP.ships;
-    for(var engine in ENGINES){
+    for(let engine in ENGINES){
       const ping = {};
       let allzeros = true;
       for(let i=0,n=EMISSIONS.length;i<n;i++){
@@ -226,11 +226,11 @@ Convert.prototype = {
           this.ipoint++;
         }
         
-        ping.ship_id = ships[ship_id].id;
+        // ping.ship_id = ships[ship_id].id;
         ping.class   = ships[ship_id].Class;
         ping.type    = ships[ship_id].type;
         // ping.ip      = ip;
-        ping.point_id= point_id;
+        // ping.point_id= point_id;
         // ping.mode    = MODES[mode];
         ping.mode    = mode;
         ping.engine  = ENGINES[engine];
@@ -242,6 +242,13 @@ Convert.prototype = {
         ping.hex_16  = this.hex_16[this.points[point_id]];
         ping.hex_4   = this.hex_4[this.points[point_id]];
         // ping.hex_1   = this.hex_1[this.points[point_id]];
+        
+        
+        for(let i=0,n=YEARS.length;i<n;i++){
+          const year=YEARS[i];
+          ping['nox'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].nox / 4.0 *256.0;
+          ping['other'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].sox / 4.0 *256.0;
+        }
 
         const data=FIELDS.map(f=>ping[f]);
         this.iping++;

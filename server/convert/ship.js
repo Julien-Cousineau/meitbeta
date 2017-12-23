@@ -49,69 +49,54 @@ Ship.prototype={
     const region  = obj.meit_region;
     const _class  = obj.ship_class;
     const type    = obj.ship_type;
-    if(con)console.log(ship_id)
     if(!(this.ships[ship_id])){this.ships[ship_id]=new Ship(null,this.iship++)}
     if(!(this.classes[_class])){this.classes[_class]=this.iclass++;}
     if(!(this.types[type])){this.types[type]=this.itype++;}
-    const id = this.ships[ship_id].id;
-    
-    
-    // if(!(this.rships[id])){this.rships[id]=new Ship(id);}
-    // if(this.iship===1){console.log(this.ships[ship_id]);}
+    // const id = this.ships[ship_id].id;
     
     if(REGIONS.includes(parseFloat(region))){
-      
       this.ships[ship_id].type  = type;   
       this.ships[ship_id].Class= _class;
-      // this.ships[ship_id].Class = _class;
-      // this.ships[ship_id].type  = type  ; 
       
       for(var propertyName in obj) {      
         let [engine,emission] = propertyName.split("_");
         
-        if(ENGINES[engine]){
+        if(typeof ENGINES[engine]!=="undefined"){
           const code = ENGINES[engine];
-          // this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]);
           this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]);
-          if(con)console.log(this.ships[ship_id].forecast[year][code][region][emission])
         }      
       }
     }
   },
   readCSV:function(filename,callback){
     const self=this;
-    console.log(filename)
+    // console.log(filename)
     const instream = fs.createReadStream(filename);
-    // self.parent.meta.action='Reading ' + path.basename(filename);
+    self.parent.meta.action='Reading ' + path.basename(filename);
     let hrstart = process.hrtime();
     let tcount=0,count=0;
-    let tempdata;
+    
     Papa.parse(instream, {
       header: true,
     	step: function(row) {
-    	  if(tcount>=1000){
-          // self.parent.meta.progress=row.meta.cursor / instream.size * 100;
-          // self.parent.print();
+    	  if(tcount>=10000){
+          self.parent.meta.progress=row.meta.cursor / instream.size * 100;
+          self.parent.print();
           console.log(count);
           tcount=0;
-          // console.log(row.data[0])
         }
-        tcount++;count++
-        tempdata=row.data[0];
+        tcount++;count++;
   	    self.parseCSV(row.data[0]);
     	},    	
     	error:function(e){
-    	 // self.parent.meta.time.readship=process.hrtime(hrstart)[0];
-    	 // self.parent.meta.action=null;
-    	 //console.log(tempdata)
-    	 //self.parseCSV(tempdata,true);
-    	 // callback(true,e);
+    	  self.parent.meta.time.readship=process.hrtime(hrstart)[0];
+    	  self.parent.meta.action=null;
+    	  callback(true,e);
     	  
     	},
     	complete: function(){
-    	 // self.parent.meta.time.readship=process.hrtime(hrstart)[0];
-    	 // self.parent.meta.action=null;;
-    	  console.log("here")
+    	  self.parent.meta.time.readship=process.hrtime(hrstart)[0];
+    	  self.parent.meta.action=null;;
     	  callback(false);
     	  
     	}

@@ -6,14 +6,18 @@ const CONVERTFOLDER = path.join(__dirname, '../data/convert');
 
 const CONSTANTS= require('./convert/constants');
 const EMISSIONS= CONSTANTS.EMISSIONS;
+const YEARS= CONSTANTS.YEARS;
 const Ship = require('./convert/ship');
 const async = require('async');
+
+// const filename='arcticWIG_09212017.csv';
+const filename='pacific_emissions_11162017.csv';
 
 function ManualInsert(){
     const self=this;
     this.pointer = function(){return self;};
     const dataserver = new DataServer(this.pointer,{web:false});
-    const filepath = path.resolve(UPLOADFOLDER,"pacific_emissions_11162017.csv")
+    const filepath = path.resolve(UPLOADFOLDER,filename)
     dataserver.insert(filepath,function(){
         console.log("Done")
     })
@@ -60,25 +64,33 @@ function readSHIP(){
     
       let i=0;
       let count=0
+      let min=10;
+      let max=0;
       // console.log(ship.ships)
       for(let id in ship.ships){
         // if(i===1000){
         for(let ii=0;ii<22;ii++){
         EMISSIONS.forEach((e,ei)=>{
-          if(ei>0){
-            if(ship.ships[id].forecast[2025][1][4][e] !==ship.ships[id].forecast[2025][1][ii][e]){
-              count++;
+          YEARS.forEach((year)=>{
+            let value =ship.ships[id].forecast[year][2][ii][e];
+            min=(value<min)?value:min;
+            max=(value>max)?value:max;  
+          })
+          
+          // if(ei>0){
+            // if(ship.ships[id].forecast[2025][1][4][e] !==ship.ships[id].forecast[2025][1][ii][e]){
+              // count++;
               
               // console.log(ship.ships[id].forecast[2020][1][ii].nox)
-            }  
-          }
+            // }  
+          // }
         })
         
         }  // console.log(ship.ships[id].forecast['2020']['1'])
         // }
         i++;
       }
-      console.log(count)
+      console.log(max,min)
         
       
       
@@ -86,7 +98,7 @@ function readSHIP(){
   
   
 }
-// new ManualInsert();
+new ManualInsert();
 // new processFile({name:"arcticWIG_09212017.csv"},function(){})
 
-new readSHIP()
+// new readSHIP()

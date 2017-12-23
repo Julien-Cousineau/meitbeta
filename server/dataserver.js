@@ -167,7 +167,10 @@ DataServer.prototype = {
     const self=this;
     const filename = obj.name;
     const input = path.resolve(UPLOADFOLDER,filename);
-    const output = path.resolve(CONVERTFOLDER,filename +"2");
+    const datasetname = obj.dataset.name;
+    const newfile = path.parse(input).name + "." + datasetname +".csv2";
+    console.log(newfile)
+    const output = path.resolve(CONVERTFOLDER,newfile);
     const options={
       csvinput:[input],
       csvoutput:[output],
@@ -176,7 +179,7 @@ DataServer.prototype = {
     new CONVERT(options,function(meta){
       console.log("here here")
       self.insert(output,function(){
-        self.setids(input,output,function(){
+        self.setids(input,output,obj.dataset,function(){
           meta.action="convert done";
           callback(false,meta);
         });
@@ -209,14 +212,15 @@ DataServer.prototype = {
   },
   isconverted:function(obj,callback){
     let meta={action:'0'};
-    if(obj.childid){meta.action="convert done";callback(false,meta)}
-    else{
+    if(obj.datasetids.find(item=>item===obj.dataset._id)){
+      meta.action="convert done";callback(false,meta);
+    }else{
       this.processFile(obj,function(err,meta){
         callback(err,meta);
       });
     }
   },
-  setids:function(parentpath,childpath,callback){
+  setids:function(parentpath,childpath,dataset,callback){
     const childname =this.getfileinfo(childpath).name;
     const parentname =this.getfileinfo(parentpath).name;
     // console.log("setids")
@@ -227,7 +231,7 @@ DataServer.prototype = {
         if (err) throw err;
         dbase.collection(collectionconvert).findOne({ name: childname }, function(err, child) {
           if (err) throw err;
-          dbase.collection(collectionconvert).updateOne({ name: parent.name }, { $set: { childid: child._id } }, function(err, res) {
+          dbase.collection(collectionconvert).updateOne({ name: parent.name }, { $push: { datasetids: dataset._id } }, function(err, res) {
             if (err) throw err;
             dbase.collection(collectionconvert).updateOne({ name: child.name }, { $set: { parentid: parent._id } }, function(err, res) {
               if (err) throw err;
@@ -277,7 +281,6 @@ DataServer.prototype = {
         filepath:filepath,
         size:size,
         datecreated:datecreated,
-        childid:null,
         parentid:null,
         datasetids:[],
       };
@@ -340,9 +343,12 @@ DataServer.prototype = {
     
     self.datasetExist(name,function(err,result){
       if(err) throw Error(result);
+      
       if(result.length!==0){maincallback(true,"Dataset exist!");}
       else{
+        console.log("inside here")
         self.mapdserver.createTable(name,schemafilepath,function(err,results){
+          console.log(err)
           if(err){maincallback(err,results);return;}  
           MongoClient.connect(mongourl, function(err, db) {
             if (err) throw err;
