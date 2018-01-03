@@ -30,6 +30,70 @@ name
 datecreated
 getlist(all file) + check parentid =fileid
 
+hex16=all, hex4=bounds+xkm, hex1-bounds+xkm
+new float32array(100000)
+cache array
+{gid:{inside:true/false,value:xxx}}
+data=>worker=>key0
+
+
+cacheObj
+this.gid
+this.inside
+this.value
+
+
+----------Move Action----------------
+lng,lat=>query=>closest 100000=>[[gid,gid][gid,gid]]=>front-end
+
+for(let gid in cache)
+    cache[gid].inside=false;
+
+
+groups.each(group=>{
+    let requestids=[];
+    group.each(gid=>{
+        const obj=cache[gid];
+        if(obj){cache[gid].inside=true}
+        else{cache[gid]={inside:true,value=0;};requestids.push(gid);}
+    }
+    if(!(requestids.length))q.push(requestids)
+}
+
+function(data){
+    data.foreach(item=>
+        cache[item.key0].value=item.nox
+        
+
+}
+function cleanup(){
+    for(let gid in cache)
+        if(!(cache[gid].inside)del cache[gid];
+}
+--------------------------------
+
+-------Filter Action--------------
+let requestids=[];
+let count=0;
+for(let gid in cache)
+    requestids.push(gid);
+    count++;
+    if(count===10000){
+        q.push(requestids)
+        requestids=[];
+        count=0;
+    }
+
+function(data){
+    data.foreach(item=>
+    cache[item.key0].value=item.nox
+}    
+-------------------------------------------
+
+
+
+
+
 
 
 

@@ -13,10 +13,12 @@ const http = require('http');
 const url = require('url');
 // const WebSocket = require('ws');
 const socketio = require('socket.io');
-const Papa= require('papaparse');
-
+// const Papa= require('papaparse');
+const HEX = require('./convert/hex');
 const DataServer = require('./dataserver');
 const MBTileServer = require('./mbtileserver');
+
+const async = require("async");
 
 
 const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
@@ -31,11 +33,25 @@ function WebServer(parent){
   this._parent = parent;
   const self=this;
   this.pointer = function(){return self;};
+  this.hex={};
   this.construct();
 }
 WebServer.prototype = {
+  
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},  
+  
+  options:{
+    folder:{hex:'data/hex'},
+    hexinput:[
+       {id:16,file:'hex_16.hex'},
+       {id:4,file:'hex_4.hex'},
+      // {id:1,file:'hex_1.hex'}
+       ],
+  },
+  get folder(){return this.options.folder},
+  get hexinput(){return this.options.hexinput},
   construct:function(){
+    const self=this;
     const app = this.app = express();
     // app.use(cors());
     // app.use(compress()); 
@@ -59,18 +75,31 @@ WebServer.prototype = {
     });
     this.dataserver = new DataServer(this.pointer);
     this.mbtileserver = new MBTileServer(this.pointer);
-    // this.dataserver.newTable(function(){
-      
-    // })
     this.websocketSetup();
-    this.startServer();
-    
+    this.getHex(function(){
+      self.startServer();  
+    });
   },
   startServer:function(){
     const PORT = 8080;
     this.server.listen(PORT, function() {
       console.log('EC-MEIT app listening on port %d!',PORT);
     });
+  },
+  getHex:function(callback){
+    const self=this;
+    const funcHex =function(input,_callback){
+      const hex = self.hex[input.id] = new HEX(self.pointer,{web:false});
+      hex.readHex(input.id,path.resolve(self.folder.hex,input.file),function(e,message){
+        // if(e)
+        _callback();
+      });
+    };
+    async.eachSeries(this.hexinput, funcHex, function(e,message){
+      // if(e)
+      callback();
+    });
+    
   },
   websocketSetup:function(){
     const server = this.server = http.createServer(this.app);
@@ -100,6 +129,18 @@ WebServer.prototype = {
       //     io.emit('convertcsv', meta);
       //   });
       // });
+      
+      
+      socket.on('moving', function(obj){
+        console.log('moving')
+        console.log(self.hex)
+        const array = self.hex[obj.mapLayer].getHexIndex(obj.center.lng,obj.center.lat,50000);
+        let groups=[];
+        for(let i=0;i<5;i++){
+          groups.push(array.slice[i*10000,(i+1)*10000]);
+        }
+        io.emit('moving',{mapLayer:obj.mapLayer,subarrays:groups});
+      });
       
       socket.on('getfiles', function(){
         getfiles();

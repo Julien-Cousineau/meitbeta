@@ -5,14 +5,20 @@ const Prop = require('./prop');
 const kdbush = require('./kdbush/kdbush');
 const geokdbush = require('./geokdbush');
 const path = require('path');
+const util     = require('../util');
 
-function Hex(parent){
+function Hex(parent,options){
   this._parent = parent;
+  this.options = util.extend(Object.create(this.options), options);
   this.hexes = {};
   this.ihex=0;
   this.minmax={};
 }
 Hex.prototype={
+  options:{
+    web:true,
+  },
+  get web(){return this.options.web;},
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get Props(){
     if(!(this._Props)){
@@ -107,7 +113,7 @@ Hex.prototype={
   readHex:function(id,filename,callback){
     const self=this;
     const instream = fs.createReadStream(filename);
-    self.parent.meta.action='Reading ' + path.basename(filename);
+    if(self.web)self.parent.meta.action='Reading ' + path.basename(filename);
     let hrstart = process.hrtime();
     
   	
@@ -125,8 +131,8 @@ Hex.prototype={
       }
       while ((chunk = instream.read(chunksize)) ) {
         if(tcount>=100000){
-          self.parent.meta.progress=parseFloat(count) / parseFloat(nhex) * 100;
-          self.parent.print();
+          if(self.web)self.parent.meta.progress=parseFloat(count) / parseFloat(nhex) * 100;
+          if(self.web)self.parent.print();
           console.log(count + " of " + nhex);
           tcount=0
         }
@@ -134,7 +140,7 @@ Hex.prototype={
         self.parseHex(chunk);
       }
     })
-    .on("end",function() {self.parent.meta.time.readhex=process.hrtime(hrstart)[0];self.parent.meta.action=null;self.createIndex();callback(false);});
+    .on("end",function() {if(self.web)self.parent.meta.time.readhex=process.hrtime(hrstart)[0];if(self.web)self.parent.meta.action=null;self.createIndex();callback(false);});
   },
   createIndex:function(){
     this.index = kdbush(this.hexes.lng,this.hexes.lat,64);
@@ -149,9 +155,10 @@ Hex.prototype={
     }
     this.ihex++;
   },
-  getHexIndex:function(lng,lat){
-    const closestpoint = geokdbush.around(this.index, lng, lat, 1)[0];
-    return this.hexes.id[closestpoint];
+  getHexIndex:function(lng,lat,_n){
+    const n=_n||1;
+    const closestpoints = geokdbush.around(this.index, lng, lat, n);
+    return (n===1)?this.hexes.id[closestpoints[0]]:closestpoints.map(i=>this.hexes.id[closestpoints[i]]);
   },
   
 };

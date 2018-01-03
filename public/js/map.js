@@ -15,12 +15,15 @@ function MapContainer(parent,options,callback){
 MapContainer.prototype = {
   options:{
     zoom:3,
+    center:[-100.00,60.0],
     paint:{
       hex:{"fill-outline-color": "rgba(0,0,0,0.0)","fill-color": "rgba(0,0,0,0.5)"},
       meit: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
     },
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get center(){return this.options.center;},
+  set center(value){this.options.center=value;},
   get zoom(){return this.options.zoom;},
   set zoom(value){
     if(value !==this.options.zoom){
@@ -41,7 +44,7 @@ MapContainer.prototype = {
     const map =this.map = new mapboxgl.Map({
       container: 'map', // container id
       style: 'mapbox://styles/mapbox/light-v9',
-      center: [ -100.00, 60.0 ],
+      center: this.center,
       zoom: this.zoom, 
       pitchWithRotate:false,
       dragRotate:false,
@@ -140,11 +143,9 @@ MapContainer.prototype = {
     this.map.addLayer({"id": "meit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
     this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex","paint": this.options.paint.hex});
   },
-  xscale:d3.scale.log()
-          .domain([1, 1000000])
-          .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']),
-  stops:[],
-  resetStops:function(){this.stops=[];},
+
+  // stops:[],
+  // resetStops:function(){this.stops=[];},
   updateHexPaint:function(data){
     const self=this;
     const emission = this.parent.emission;
@@ -153,15 +154,19 @@ MapContainer.prototype = {
       
         // let max = Math.max.apply(Math,data.map(function(row){return row[emission]}))
         // max=(max<1) ? 1:max;
-        
-      this.stops = data.map(function(row) {
-        var color = self.xscale(row[emission]);
-        return [row.key0, color];
-      },this.stops);
+      let stops=[];
+      for(let gid in data){
+        stops.push([gid,data[gid].color])
+      }
+      // const stops = data.map(function(row) {
+      //   // var color = self.xscale(row[emission]);
+      //   return [row.key0, color];
+      // },this.stops);
+      console.log(stops)
       if(this.zoom<4){
-        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": this.stops});
+        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
       } else {
-        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": this.stops});
+        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
       }
       console.timeEnd("inside")
     }
@@ -188,9 +193,12 @@ MapContainer.prototype = {
     var lat2=this.map.getBounds()._ne.lat;
     this.zoom=Math.floor(this.map.getZoom());
     this.bounds =[lon1,lat1,lon2,lat2];
+    this.center = this.map.getCenter();
     // this.parent.mapd.filterMap();
     // this.parent.mapd.getTotalMap();
-    console.log("moving")
+    const obj = {mapLayer:this.parent.mapLayer,center:this.center};
+    this.parent.socket.emit("moving",obj);
+    console.log("moving");
   },
   get bounds(){
     var lon1=this.map.getBounds()._sw.lng;
@@ -231,8 +239,7 @@ SelectBox.prototype = {
   // },
   inputFunc:function(){
     const self=this;
-    console.log("HERHERHEH")
-    $("#lat1").change(function(e){console.log('HEHEHE');self.updateBBox();});
+    $("#lat1").change(function(e){self.updateBBox();});
     $("#lon1").change(function(e){self.updateBBox();});
     $("#lat2").change(function(e){self.updateBBox();});
     $("#lon2").change(function(e){self.updateBBox();});  

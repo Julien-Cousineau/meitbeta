@@ -181,14 +181,14 @@ MapD.prototype = {
     // console.log(this.parent.geomaps)
     // console.log(this.parent.geomaps[this.mapLayer])
     console.log(this.parent.geomaps[this.mapLayer].dc.group)
-    this.parent.geomaps[this.mapLayer].dc.group.sizeAsync().then(function(size){
-      const steps=Math.ceil(size / 10000.0);
-      const array=range(steps)
+    // this.parent.geomaps[this.mapLayer].dc.group.sizeAsync().then(function(size){
+      // const steps=Math.ceil(size / 10000.0);
+      // const array=range(steps)
       // console.log(size,steps)
-      self.parent.mapContainer.resetStops();
+      // self.parent.mapContainer.resetStops();
       // self.filterMap(self.parent.mapContainer.bounds);
-      console.time("download")
-      self.parent.geomaps[self.mapLayer].dc.group.all(function(err,data){console.timeEnd("download");self.parent.mapContainer.updateHexPaint(data)});
+      // console.time("download")
+      // self.parent.geomaps[self.mapLayer].dc.group.all(function(err,data){console.timeEnd("download");self.parent.mapContainer.updateHexPaint(data)});
       
       // self.filterMap([0,0,0,0]);
       // var q = async.queue(function(i, callback) {
@@ -219,7 +219,7 @@ MapD.prototype = {
       // //   console.log('all items have been processed');
       // //     };
       // // });
-    });
+    // });
     // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
   
     
