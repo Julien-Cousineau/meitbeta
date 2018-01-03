@@ -51,7 +51,7 @@ DatesetTable.prototype = {
       var obj = row.data();
       var rowid = row[0][0];
       $('.panelleft').css("margin-left","-49%");
-      self.parent.socket.emit("getfilesanddatasets",obj);
+      self.parent.socket.emit("getview",obj);
       
       
       // $(this).children("i").toggleClass("fa-plus fa-minus")

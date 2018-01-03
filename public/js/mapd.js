@@ -7,7 +7,7 @@ function MapD(parent){
 
   this.bounds=[-100,50,-40,60];
   this.first = true;
-  this.tablename = 'table5'
+  this.tablename = 'table1'
   this.createCrossFilter(this.tablename);
 }
 MapD.prototype = {
@@ -45,13 +45,13 @@ MapD.prototype = {
     });
   },
   crossFilterSetup:function(crossFilter){
-    console.log(crossFilter)
+    // console.log(crossFilter)
     this.crossFilter = crossFilter;
     if(this.first)this.createCharts();
   },
-  reduceFunction:function(){
+  reduceFunctionOld:function(){
      return[
-        {expression: "nox*2",agg_mode:"sum",name: "nox"},
+        {expression: "nox",agg_mode:"sum",name: "nox"},
         // {expression: "co",agg_mode:"sum",name: "co"},
         // {expression: "hc",agg_mode:"sum",name: "hc"},
         // {expression: "nh3",agg_mode:"sum",name: "nh3"},
@@ -65,13 +65,16 @@ MapD.prototype = {
         // {expression: "bc",agg_mode:"sum",name: "bc"},
       ];
   },
+  reduceFunction:function(){
+     return [{expression: this.emission,agg_mode:"sum",name: this.emission}]
+  },
   createClassChart:function(){
   },
   colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
   createCharts:function(){
     const self=this;
     const crossFilter = this.crossFilter;
-    console.log(crossFilter)
+    // console.log(crossFilter)
     let allColumns = crossFilter.getColumns();
     const charts=this.parent.charts;
     
@@ -83,7 +86,7 @@ MapD.prototype = {
     const createChartFunc = function(i,callback){
       let chart=charts[i];
       chart.dc = new Chart(self.pointer,chart,function(){
-        console.log("done chart")
+        // console.log("done chart")
         callback();
       });
     }
@@ -98,23 +101,27 @@ MapD.prototype = {
 
   },
   createMapDim:function(){
-    const self=this;
     const geomaps=this.parent.geomaps;
     for(let key in geomaps){
       const geomap = geomaps[key];
-      geomap.dc=new GeoMap(self.pointer,geomap)
+      geomap.dc=new GeoMap(this.pointer,geomap)
     };
   },
   createNumberDisplay:function(){
-    const self=this;
-    // var inlineND = dc.numberChart("#totalnumber")
-    this.total = this.crossFilter.groupAll().reduceMulti(self.reduceFunc);
-    // let group = this.crossFilter.groupAll().reduceMulti(self.reduceFunc);
-    // inlineND
-      // .valueAccessor(function (p) {return p[self.emission]/self.divider;})
-      // .dimension(this.crossFilter)
-      // .group(group);
-    // console.log(inlineND)
+    this.total = this.crossFilter.groupAll().reduceMulti(this.reduceFunc);
+  },
+  changeGroup:function(){
+    const charts=this.parent.charts;
+    const geomaps=this.parent.geomaps;
+    for(let key in charts){
+      let chart=charts[key];
+      chart.dc.changeGroup();
+    }
+    for(let key in geomaps){
+      const geomap = geomaps[key];
+      geomap.dc.changeGroup();
+    };
+    this.total.reduceMulti(this.reduceFunc);
   },
   filterMap:function(bounds){
     // const bounds = this.parent.mapContainer.bounds;
@@ -137,7 +144,7 @@ MapD.prototype = {
     // this.con.query(query, {}, function(err, data) {
     //   self.parent.mapContainer.updateHexPaint(data)
     // });
-    this.draw();
+    // this.draw();
   },
 
   
@@ -170,10 +177,50 @@ MapD.prototype = {
   getTotalMap:function(){
     const self=this;
     this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
-    console.log(this.mapLayer)
-    console.log(this.parent.geomaps)
-    console.log(this.parent.geomaps[this.mapLayer])
-    this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
+    // console.log(this.mapLayer)
+    // console.log(this.parent.geomaps)
+    // console.log(this.parent.geomaps[this.mapLayer])
+    console.log(this.parent.geomaps[this.mapLayer].dc.group)
+    this.parent.geomaps[this.mapLayer].dc.group.sizeAsync().then(function(size){
+      const steps=Math.ceil(size / 10000.0);
+      const array=range(steps)
+      // console.log(size,steps)
+      self.parent.mapContainer.resetStops();
+      // self.filterMap(self.parent.mapContainer.bounds);
+      console.time("download")
+      self.parent.geomaps[self.mapLayer].dc.group.all(function(err,data){console.timeEnd("download");self.parent.mapContainer.updateHexPaint(data)});
+      
+      // self.filterMap([0,0,0,0]);
+      // var q = async.queue(function(i, callback) {
+      //     // console.log(i)
+      //     self.parent.geomaps[self.mapLayer].dc.group.topAsync(10000,10000*i).then(function(data){
+      //     // console.log(data[0])
+      //     self.parent.mapContainer.updateHexPaint(data)
+      //     callback();
+      //   })
+      //   // console.log("In here")
+      //   // callback();
+      // }, 2);
+      
+      
+      // q.drain = function() {
+      //   console.log('all items have been processed');
+      // };
+      // array.forEach(item=>{
+      //   q.push(item,function(err){});
+      // })
+      
+      // // const func = function(i,_callback){
+      // //   q.push(i,function(){_callback});
+      // // }
+      // // async.each(array,func,function(err,result){
+      // //   console.log("done")
+      // //   q.drain = function() {
+      // //   console.log('all items have been processed');
+      // //     };
+      // // });
+    });
+    // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
   
     
   },

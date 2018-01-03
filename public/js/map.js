@@ -140,26 +140,28 @@ MapContainer.prototype = {
     this.map.addLayer({"id": "meit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
     this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex","paint": this.options.paint.hex});
   },
+  xscale:d3.scale.log()
+          .domain([1, 1000000])
+          .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']),
+  stops:[],
+  resetStops:function(){this.stops=[];},
   updateHexPaint:function(data){
     const self=this;
     const emission = this.parent.emission;
     if(data && this.map.getLayer('hexgrid')){
       console.time("inside")
       
-        if(data.values===null)return;
         // let max = Math.max.apply(Math,data.map(function(row){return row[emission]}))
         // max=(max<1) ? 1:max;
-        var x = d3.scale.log()
-          .domain([1, 1000000])
-          .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']);
-        var stops = data.map(function(row) {
-          var color = x(row[emission]);
-          return [row.key0, color];
-        });
+        
+      this.stops = data.map(function(row) {
+        var color = self.xscale(row[emission]);
+        return [row.key0, color];
+      },this.stops);
       if(this.zoom<4){
-        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": this.stops});
       } else {
-        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": this.stops});
       }
       console.timeEnd("inside")
     }
@@ -187,6 +189,7 @@ MapContainer.prototype = {
     this.zoom=Math.floor(this.map.getZoom());
     this.bounds =[lon1,lat1,lon2,lat2];
     // this.parent.mapd.filterMap();
+    // this.parent.mapd.getTotalMap();
     console.log("moving")
   },
   get bounds(){

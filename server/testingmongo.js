@@ -3,7 +3,7 @@ const IP = process.env.IP;
 var url = "mongodb://" + IP +":27017/meitdata";
 
 // const collection = "convert";
-const collection = "table";
+const collection = "ofiles";
 
 function Test(){
   // this.createdb();

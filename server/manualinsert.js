@@ -9,18 +9,58 @@ const EMISSIONS= CONSTANTS.EMISSIONS;
 const YEARS= CONSTANTS.YEARS;
 const Ship = require('./convert/ship');
 const async = require('async');
+const MapDServer = require("./mapdserver");
 
-// const filename='arcticWIG_09212017.csv';
-const filename='pacific_emissions_11162017.csv';
+// const filename='dummy.csv';
+const filename='arcticWIG_09212017.csv';
+// const filename='pacific_emissions_11162017.csv';
 
 function ManualInsert(){
     const self=this;
     this.pointer = function(){return self;};
     const dataserver = new DataServer(this.pointer,{web:false});
-    const filepath = path.resolve(UPLOADFOLDER,filename)
-    dataserver.insert(filepath,function(){
-        console.log("Done")
-    })
+    const filepath = path.resolve(UPLOADFOLDER,filename);
+    // dataserver.files.delete(function(){
+    //   dataserver.files.create(function(){
+    //     dataserver.files.add(filepath,function(){
+    //       console.log("Done")
+    //     })
+    //   });  
+    // });
+    // dataserver.files.add(filepath,function(){console.log("Done")});
+    // dataserver.converts.add({name:"dummy.csv",dataset:{name:'test6'},htmlid:""},function(err,meta){
+      // console.log(meta)
+    // });
+    // dataserver.files.delete(function(){});
+    // dataserver.converts.delete(function(){});
+    // dataserver.datasets.delete(function(){});
+    
+    dataserver.files.getList(function(err,result){console.log(result)})
+    
+    dataserver.converts.getList(function(err,result){console.log(result)})
+    
+    dataserver.datasets.getList(function(err,list){console.log(list);})
+    
+    // dataserver.datasets.getView({name:'test7'},function(err,list){console.log(list);})
+    
+    // dataserver.datasets.add("test6",function(err,results){
+    //   console.log("Done")
+    // })
+    
+    
+    
+    
+
+    // dataserver.datasets.remove("test8",function(err,results){
+      // console.log("Done")
+    // })    
+    
+    // dataserver.datasets.getList(function(err,result){
+    //   console.log(result)
+    // })
+    
+    
+
 }
 
 function processFile(obj,callback){

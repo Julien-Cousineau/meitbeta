@@ -32,7 +32,7 @@ App.prototype ={
   set mapLayer(value){this.options.mapLayer=value;},
   
   get emission(){return this.options.emission;},
-  set emission(value){this.options.emission=value;console.log(value);this.refresh()},
+  set emission(value){this.options.emission=value;console.log(value);this.refresh(true)},
   get divider(){return this.options.divider;},
   set divider(value){this.options.divider=value;console.log(value);this.refresh()},
   set unit(value){this.divider = this.units.find(item=>item.name===value).divider; },
@@ -46,10 +46,17 @@ App.prototype ={
   set charts(value){this.options.charts=value;},
   
   get debug(){return this.options.debug;},
-  refresh:function(){
+  refresh:function(changeGroup){
     if(this.mapd){
-      this.mapd.reSizeAll();
-      console.log("refresh")
+      if(changeGroup){
+        this.mapd.changeGroup();
+        this.mapd.reSizeAll();
+      } else{
+        this.mapd.reSizeAll();
+        console.log("refresh");    
+      }
+    
+    
     }
   },
   construct:function(){

@@ -71,7 +71,7 @@ Convert.prototype = {
   get shipinput(){return this.options.shipinput},
   get meitinput(){return this.options.meitinput},
   print:function(){
-    this.printfunc(this.meta);
+    this.printfunc(false,this.meta);
   },
   construct:function(callback){
     const self=this;
@@ -154,7 +154,8 @@ Convert.prototype = {
   },
   readCSV:function(input,outstream,callback){
     const instream = fs.createReadStream(input);
-    console.log(input)
+    const stats   = fs.statSync(input);
+    
   
     const self=this;
     let tcount=0,count=0;
@@ -166,7 +167,7 @@ Convert.prototype = {
       // fastMode:true,
 	    step: function(row) {
         if(tcount>=50000){
-          self.meta.progress=row.meta.cursor / instream.size * 100;
+          self.meta.progress=row.meta.cursor / stats.size * 100;
           self.print();
           console.log(count);tcount=0;
         }

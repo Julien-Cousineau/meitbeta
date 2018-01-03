@@ -71,6 +71,12 @@ Chart.prototype = {
     if(!(this._group))this._group=this.dimension.group().reduce(this.reduceFunc);
     return this._group;
   },
+  changeGroup(){
+    
+    // console.log(this.group)
+    // this.dc.group(this.group);
+    this.group.reduce(this.reduceFunc);
+  },
   removeFilters:function(){
     this.dc.filterAll();
     this.removeReset();
@@ -88,7 +94,7 @@ Chart.prototype = {
   filteredFunc:function(chart,filter){
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
-    console.log(this.group.getReduceExpression())
+    // console.log(this.group.getReduceExpression())
     this.parent.getTotalMap();
     // this.parent.getMapValue();
   },
@@ -169,8 +175,8 @@ Chart.prototype = {
     for(let attr in this.attributesFunc){
       const obj = this.attributesFunc[attr];
       for(let key in obj){
-        console.log(key)
-        console.log(this[key])
+        // console.log(key)
+        // console.log(this[key])
         const value =obj[key](this[key]);
         
         this.dc[attr](value);

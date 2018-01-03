@@ -78,101 +78,74 @@ WebServer.prototype = {
     const self=this;
     io.on('connection', function(socket){
       console.log('a user connected');
-      socket.on('convertcsv', function(obj){
-        self.dataserver.processFile(obj,function(meta){
-          meta.htmlid = obj.htmlid;
-          io.emit('convertcsv', meta);
-          if(meta.action==="convert done"){
-            self.datasetExist(obj.name,function(err,results){
-              const newobj = results[0];
-              self.dataserver.uploadtodatabase(newobj,function(meta){
-                meta.htmlid = obj.htmlid;
-                io.emit('convertcsv', meta);
-              })
-            });
-            
-          }
-        });
-        // io.emit('chat message', msg);
-      });
-      socket.on('getdatasets', function(){
-        self.dataserver.getdatasets(function(err,array){
-          if(err)console.log("Error on getdatasets")
-          const obj={meta:"",data:array}
-          console.log(obj)
-          io.emit('getdatasets', obj);
-        });
-        // io.emit('chat message', msg);
-      });
-      socket.on('getfiles', function(){
-        self.dataserver.fileList(function(err,array){
-          if(err)console.log("Error on getfiles")
+      
+      const getfiles = function(){
+        self.dataserver.files.getList(function(err,array){
+          if(err)console.log("Error on getfiles");
           const obj={meta:'',data:array};
           io.emit('getfiles', obj);
         });
-      });
-        // io.emit('chat message', msg);
-      socket.on('newdataset', function(name){
-        self.dataserver.newDataset(name,function(err,results){
-          if(err){io.emit('newdataseterror', results);}
-          else{
-            const obj={meta:'',data:results};
-            io.emit('getdatasets', obj);
-          }
-        });
-        // io.emit('chat message', msg);
-      });  
-      socket.on('getfilesanddatasets', function(dataset){
-        // console.log(dataset)
-        self.dataserver.getFilesandDatasets(dataset,function(err,array){
-          const obj={meta:{dataset:dataset},data:array};
-          io.emit('getfilesanddatasets', obj);
-        });
-        // io.emit('chat message', msg);
-      });
-      socket.on('addfiledataset', function(obj){
-        self.dataserver.isconverted(obj,function(err,meta){
-          meta.htmlid = obj.htmlid;
-          io.emit('addfiledataset', meta);
-          if(meta.action==="convert done"){
-            const tempdataset = obj.dataset;
-            self.dataserver.datasetExist(tempdataset.name,function(err,results){
-              const dataset = results[0];
-              console.log(obj)
-              self.dataserver.uploadtodatabase(obj,dataset,function(err,meta){
-                meta.htmlid = obj.htmlid;
-                io.emit('addfiledataset', meta);
-                self.dataserver.setDatasetFileids(obj,function(err,meta){
-                  meta.htmlid=obj.htmlid;
-                  io.emit('addfiledataset', meta);
-                });
-              });
-            });
-          }
-        });
-      });
-      
-
-      
-      
-      socket.on('deletedataset', function(obj){
-        self.dataserver.deletedataset(obj,function(err,results){
-          if(err)console.log("Error on deletedataset")
-          const obj={meta:"",data:results};
+      };
+      const getdatasets = function(){
+        self.dataserver.datasets.getList(function(err,list){
+          if(err)return io.emit('newdataseterror', list);
+          const obj={meta:'',data:list};
           io.emit('getdatasets', obj);
         });
-        // io.emit('chat message', msg);
-      });  
-      socket.on('deletefile', function(obj){
-        self.dataserver.deletefile(obj,function(){
-          self.dataserver.fileList(function(err,results){
-            const obj={meta:"",data:results};
-            if(err)console.log("Error on getfiles")
-            io.emit('getfiles', obj);
-          });
-        });
-        // io.emit('chat message', msg);
+      };      
+      
+      // socket.on('convertcsv', function(obj){
+      //   self.dataserver.converts.add(obj,function(err,meta){
+      //     console.log(err,meta)
+      //     io.emit('convertcsv', meta);
+      //   });
+      // });
+      
+      socket.on('getfiles', function(){
+        getfiles();
       });
+      
+      socket.on('deletefile', function(obj){
+        self.dataserver.files.remove(obj,function(){
+          getfiles();
+        });
+      });
+      
+      socket.on('getdatasets', function(){
+        getdatasets();
+      });
+      
+      socket.on('newdataset', function(name){
+        self.dataserver.datasets.add(name,function(err,results){
+          if(err)return io.emit('newdataseterror', results);
+          getdatasets();
+        });
+      });  
+      socket.on('deletedataset', function(obj){
+        self.dataserver.datasets.remove(obj,function(err,results){
+          if(err)console.log(results)
+          getdatasets();
+        });
+      });
+      const getview = function(dataset){
+        self.dataserver.datasets.getView(dataset,function(err,array){
+          const obj={meta:{dataset:dataset},data:array};
+          io.emit('getview', obj);
+        });
+      };
+      socket.on('getview', function(dataset){
+        getview(dataset);
+      });
+      socket.on('addfiledataset', function(obj){
+          self.dataserver.converts.add(obj,function(err,meta){
+            meta.htmlid = obj.htmlid;
+            io.emit('addfiledataset', meta);
+            if(meta.action==="upload done"){
+              getview(obj.dataset)
+            }
+          });
+      });
+      
       socket.on('disconnect', function () {
        console.log('a user disconnected');
       });

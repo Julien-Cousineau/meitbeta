@@ -19,7 +19,7 @@ DatesetFileTable.prototype = {
     {
       container:".datasetfileplaceholder",
       id:'datasetfile',
-      apiFuncName:'getfilesanddatasets',
+      apiFuncName:'getview',
       actionbuttons:function(id){return self.htmlBackButton(id);},
       columns:{
         name:{title:"CSV Files",data:""},
@@ -46,7 +46,7 @@ DatesetFileTable.prototype = {
       var tr = $(this).closest('tr');      
       var row = self.base.datatable.row( tr );
       var obj = row.data();
-      obj.htmlid = obj.name.replace(".","");
+      obj.htmlid = obj.name.replace(/\./g,'');
       obj.dataset = self.dataset;
       self.parent.socket.emit('addfiledataset',obj);
       $(this).parent().empty().append(getprogressbar(obj.htmlid));

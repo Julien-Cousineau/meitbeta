@@ -1,0 +1,37 @@
+upload file
+
+create new table
+
+get list of files
+get list of tables
+
+get list of files in table
+
+
+file format
+id
+name
+file
+datecreated
+
+file convert format
+id
+name
+file
+datecreated
+parentid
+datasetid
+addFile (parent=>convert=>)
+
+
+dataset format
+id
+name
+datecreated
+getlist(all file) + check parentid =fileid
+
+
+
+
+
+

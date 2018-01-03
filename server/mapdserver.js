@@ -64,6 +64,7 @@ MapDServer.prototype = {
     });
   },
   copyData:function(tablename,csvpath,callback){
+    console.log("In Here",tablename,csvpath)
     let query = "copy {0} from '{1}'".format(tablename,csvpath);
     this.query(query,{},function(err,result){
        callback(err,result);
