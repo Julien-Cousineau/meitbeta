@@ -4,19 +4,25 @@ const turfextent = require('turf-extent');
 const inside = require('turf-inside');
 const turfpoint = require('turf-point');
 const path = require('path');
+const util     = require('../util');
 
-function MeitRegion(parent){
+function MeitRegion(parent,options){
   this._parent = parent;
+  this.options = util.extend(Object.create(this.options), options);
   
 }
 MeitRegion.prototype={
+  options:{
+    web:true,
+  },  
+  get web(){return this.options.web;},
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   read:function(file,callback){
     const self = this;
     const geojson = fs.readFileSync(file, 'utf8')
     const data = JSON.parse(geojson);
     const tree = this.tree = rbush();
-    self.parent.meta.action='Reading ' + path.basename(file);
+    if(self.web)self.parent.meta.action='Reading ' + path.basename(file);
 
     const features = data.features;
 
@@ -33,8 +39,8 @@ MeitRegion.prototype={
             geom:feature
             };
         tree.insert(item);
-      self.parent.meta.progress=parseFloat(i)/parseFloat(n-1) *100;
-      self.parent.print();
+      if(self.web)self.parent.meta.progress=parseFloat(i)/parseFloat(n-1) *100;
+      if(self.web)self.parent.print();
     }
     callback();
   },

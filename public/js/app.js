@@ -23,15 +23,12 @@ App.prototype ={
     charts:'',
     emissions:'',
     units:'',
-    cache:{meitmap:{},'16':{},'4':{},'1':{}},
   },
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
   get emissions(){return this.options.emissions;},
   get mapLayer(){return this.options.mapLayer;},
-  get cache(){return this.options.cache;},
-  set cache(value){this.options.cache=value;},
   set mapLayer(value){this.options.mapLayer=value;},
   
   get emission(){return this.options.emission;},
@@ -76,46 +73,13 @@ App.prototype ={
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     // this.mapd = new MapD(this.pointer);
-    this.queueSetup();
     this.mapContainer = new MapContainer(this.pointer,{},function(){
       self.mapd = new MapD(self.pointer);
     
       $('#bannerChevron').trigger("click");
     })
   },
-  queueSetup:function(){
-    const self=this;
-    const xscale=d3.scale.log()
-            .domain([1, 1000000])
-            .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']);
-      
-      
-      
-      const queueFunc = function(array,callback){
-        const emission = self.emission;
-        const cache=self.cache[self.mapLayer];
-        self.geomaps[self.mapLayer].dc.group.all(function(err,data){
-          data.forEach(item=>{
-            cache[item.key0].value=item[emission];  
-            cache[item.key0].color=xscale(item[emission]);  
-          })
-          callback();
-        });
-      }
-      const endFunc = function(){
-        const cache=self.cache[self.mapLayer];
-        console.log("END of Queue")  
-        for(let gid in cache){
-          if(!(cache[gid].inside))delete cache[gid];
-        }
-        self.map.updateHexPaint(cache)
-      }
-      
-      const q = this.queue = async.queue(queueFunc, 2);
-      q.drain = endFunc;
-      
-    
-  },
+  
   websocket:function(){
     const self=this;
     const socket = this.socket = io.connect();
@@ -123,22 +87,7 @@ App.prototype ={
     socket.on('chat message', function(msg){
         console.log('message: ' + msg);
       });
-    socket.on('moving', function(obj){
-      const cache=self.cache[obj.mapLayer];
-      for(let gid in cache){
-        cache[gid].inside=false;    
-      }
-      
-      obj.groups.forEach(group=>{
-        let requestids=[];
-        group.forEach(gid=>{
-            const obj=cache[gid];
-            if(obj){cache[gid].inside=true}
-            else{cache[gid]={inside:true,value:0};requestids.push(gid);}
-        });
-        if(!(requestids.length))self.queue.push(requestids,function(){});
-      });
-    });    
+        
     // socket.on('refreshfilelist', function(msg){
     //     self.Upload.getFileList();
     //   });

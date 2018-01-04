@@ -211,9 +211,9 @@ Convert.prototype = {
           meit = (meit >= 0 && meit <= 22)? meit:0;
           
           const mapmeit = this.MEITREGION.getIndex(lng,lat);
-          const hex_16  = this.hex[16].getHexIndex(lng,lat);
-          const hex_4   = this.hex[4].getHexIndex(lng,lat);
-          // const hex_1   = this.hex[1].getHexIndex(lng,lat);
+          const hex_16  = this.hex[16].getIndex(lng,lat);
+          const hex_4   = this.hex[4].getIndex(lng,lat);
+          // const hex_1   = this.hex[1].getIndex(lng,lat);
           
           this.points[point_id]    = this.ipoint;
           this.lng[this.ipoint]    = lng;

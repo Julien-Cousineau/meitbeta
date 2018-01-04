@@ -146,23 +146,23 @@ MapContainer.prototype = {
 
   // stops:[],
   // resetStops:function(){this.stops=[];},
-  updateHexPaint:function(data){
+  updateHexPaint:function(stops){
     const self=this;
-    const emission = this.parent.emission;
-    if(data && this.map.getLayer('hexgrid')){
+    // const emission = this.parent.emission;
+    if(stops && this.map.getLayer('hexgrid')){
       console.time("inside")
       
         // let max = Math.max.apply(Math,data.map(function(row){return row[emission]}))
         // max=(max<1) ? 1:max;
-      let stops=[];
-      for(let gid in data){
-        stops.push([gid,data[gid].color])
-      }
+      // let stops=[];
+      // for(let gid in data){
+      //   if(data[gid].inside)stops.push([parseInt(gid),data[gid].color])
+      // }
       // const stops = data.map(function(row) {
       //   // var color = self.xscale(row[emission]);
       //   return [row.key0, color];
       // },this.stops);
-      console.log(stops)
+      
       if(this.zoom<4){
         self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
       } else {
@@ -196,8 +196,10 @@ MapContainer.prototype = {
     this.center = this.map.getCenter();
     // this.parent.mapd.filterMap();
     // this.parent.mapd.getTotalMap();
-    const obj = {mapLayer:this.parent.mapLayer,center:this.center};
-    this.parent.socket.emit("moving",obj);
+    
+    // const obj = {mapLayer:this.parent.mapLayer,center:this.center};
+    // this.parent.socket.emit("moving",obj);
+    this.parent.mapd.getMap();
     console.log("moving");
   },
   get bounds(){

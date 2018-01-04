@@ -4,11 +4,13 @@ function MapD(parent){
   this._parent = parent;
   const self = this;
   this.pointer = function(){return self;};
-
+  this.cache={mapmeit:{},'hex16':{},'hex4':{},'hex1':{}},
   this.bounds=[-100,50,-40,60];
   this.first = true;
   this.tablename = 'table1'
   this.createCrossFilter(this.tablename);
+  this.queueSetup();
+  this.getMapSetup();
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
@@ -17,6 +19,8 @@ MapD.prototype = {
   get reduceFunc(){return this.reduceFunction();},
   get mapLayer(){return this.parent.mapLayer;},
   get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
+  get geomaps(){return this.parent.geomaps},
+  get mapContainer(){return this.parent.mapContainer},
   // construct:function(){
   //   const self=this;
   //   this.con=new MapdCon()
@@ -101,7 +105,7 @@ MapD.prototype = {
 
   },
   createMapDim:function(){
-    const geomaps=this.parent.geomaps;
+    const geomaps=this.geomaps;
     for(let key in geomaps){
       const geomap = geomaps[key];
       geomap.dc=new GeoMap(this.pointer,geomap)
@@ -112,7 +116,7 @@ MapD.prototype = {
   },
   changeGroup:function(){
     const charts=this.parent.charts;
-    const geomaps=this.parent.geomaps;
+    const geomaps=this.geomaps;
     for(let key in charts){
       let chart=charts[key];
       chart.dc.changeGroup();
@@ -124,25 +128,25 @@ MapD.prototype = {
     this.total.reduceMulti(this.reduceFunc);
   },
   filterMap:function(bounds){
-    // const bounds = this.parent.mapContainer.bounds;
+    // const bounds = this.mapContainer.bounds;
     const minx=bounds[0],miny=bounds[1],maxx=bounds[2],maxy=bounds[3];
     
     (minx===maxx) ? 
-      this.parent.geomaps['lng'].dc.dimension.filterAll():
-      this.parent.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(minx,maxx));;
+      this.geomaps['lng'].dc.dimension.filterAll():
+      this.geomaps['lng'].dc.dimension.filter(dc.filters.RangedFilter(minx,maxx));;
     
     (miny===maxy) ?
-      this.parent.geomaps['lat'].dc.dimension.filterAll():
-      this.parent.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(miny,maxy));
+      this.geomaps['lat'].dc.dimension.filterAll():
+      this.geomaps['lat'].dc.dimension.filter(dc.filters.RangedFilter(miny,maxy));
 
     // const maplayer=this.mapLayer,emission=this.emission,table=this.tablename;
     // const query =`SELECT {0},sum({1}) AS {1} FROM table5 WHERE lng>={2} AND lng<={3} AND lat>={4} AND lat<={5}  GROUP BY {0};`.format(maplayer,emission,table,minx,maxx,miny,maxy);
     const self=this;
     // this.parent.geomaps[this.mapLayer].dc.group.all(function(err,data){self.parent.mapContainer.updateHexPaint(data)});
-    // self.parent.mapContainer.updateHexPaint(data)
+    // self.mapContainer.updateHexPaint(data)
     // const self = this;
     // this.con.query(query, {}, function(err, data) {
-    //   self.parent.mapContainer.updateHexPaint(data)
+    //   self.mapContainer.updateHexPaint(data)
     // });
     // this.draw();
   },
@@ -174,13 +178,140 @@ MapD.prototype = {
     dc.renderAllAsync()
     this.getTotalMap();
   },
+  xscale:d3.scale.log()
+            .domain([1, 100000000])
+            .range(['rgba(255, 255, 255, 0)', 'rgba(239, 59, 54, 0.7)']),
+  updateData:function(data){
+    // const xscale = this.xscale;
+    const emission = this.emission;
+    const cache=this.cache[this.mapLayer];
+    
+    console.log(this.mapLayer)
+    this.worker.postMessage({
+      data: data,
+      cache: cache,
+      emission: emission
+    });
+    
+    
+    // data.forEach(item=>{
+    //       if(!(cache[item.key0]))cache[item.key0]={};
+    //       cache[item.key0].inside=true;
+    //       cache[item.key0].value=item[emission];  
+    //       cache[item.key0].color=xscale(item[emission]);  
+    // })
+    // console.log("Update Data");
+    // this.mapContainer.updateHexPaint(cache)
+  },
+  _updateData:function(cache){
+    this.cache[this.mapLayer] = cache;
+    console.log("_updateData")
+    // const newcache =Object.assign({},this.cache[this.mapLayer] , cache);
+    this.mapContainer.updateHexPaint(cache);
+  },
+  queueFunc:function(array,callback){
+    const self=this;
+    // console.log(self.mapLayer)
+    // console.log(self.geomaps)
+    
+      
+      
+    if(array){
+      self.geomaps[self.mapLayer].dc.dimension.filterExact(334215);
+    }
+    else{self.geomaps[self.mapLayer].dc.dimension.filterAll()}
+    // console.log("inside")
+    console.log(array.length)
+    self.geomaps[self.mapLayer].dc.group.all(function(err,data){
+      console.log(data.length)
+      // console.log("queueFunc")
+      // 
+      callback(data);
+    });
+    
+  },
+  queueSetup:function(){
+    const self=this;
+    const endFunc = function(){
+      console.log("END of Queue");
+      const cache=self.cache[self.mapLayer];
+      for(let gid in cache){if(!(cache[gid].inside))delete cache[gid];}
+      self.geomaps[self.mapLayer].dc.dimension.filterAll();
+    };
+    const queueFunc=function(obj,callback){
+      self.queueFunc(obj,callback);
+    };
+    const q = this.queue = async.queue(queueFunc, 2);
+    
+    q.drain = endFunc;
+    
+    const worker = this.worker = new Worker("js/myworker.js");
+
+    worker.onmessage = function(event) {
+      // console.log(event)
+      switch (event.data.type) {
+        case "tick": return self._updateData(event.data.data);
+        case "end": return self._updateData(event.data.data);
+      }
+    };
+    
+    
+    
+    
+  },
+  getMapSetup:function(){
+    const self=this;
+    const socket = this.parent.socket;
+    socket.on('moving', function(obj){
+      const cache=self.cache[obj.mapLayer];
+      for(let gid in cache){cache[gid].inside=false;}
+      
+      // obj.groups.forEach(group=>{
+        let requestids=[];
+        obj.array.forEach(gid=>{
+            const obj=cache[gid];
+            if(obj){cache[gid].inside=true}
+            else{requestids.push(gid);}
+        });
+        console.log("queue push")
+        // if(requestids.length)self.queue.push({array:requestids},function(data){
+        //   self.updateData(data);
+        // });
+        if(requestids.length)self.queueFunc(requestids,function(data){
+          for(let gid in cache){if(!(cache[gid].inside))delete cache[gid];}
+          self.geomaps[self.mapLayer].dc.dimension.filterAll();
+          self.updateData(data);
+        });
+      });
+    // });
+    
+  },
+  getMap:function(){
+    const self=this;
+    if(self.mapLayer==='hex16' || self.mapLayer==='hex4' || self.mapLayer==='hex1'){
+      const center=self.mapContainer.center;
+      const obj = {mapLayer:self.mapLayer,center:center};
+      this.parent.socket.emit("moving",obj);
+      
+    } else{
+      self.queueFunc(null,function(data){
+        self.updateData(data);
+      });
+    }
+  },
+  // self.parent.geomaps[self.mapLayer].dc.group.all(function(err,array){
+  //       const data = array.map(item=>{
+  //         return {gid:item.key0,value:item[emission],color:self.xscale(item[emission])};
+  //         })
+  //       self.parent.mapContainer.updateHexPaint(data)
+  //     });
   getTotalMap:function(){
     const self=this;
     this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
     // console.log(this.mapLayer)
     // console.log(this.parent.geomaps)
     // console.log(this.parent.geomaps[this.mapLayer])
-    console.log(this.parent.geomaps[this.mapLayer].dc.group)
+    console.log(this.geomaps[this.mapLayer].dc.group)
     // this.parent.geomaps[this.mapLayer].dc.group.sizeAsync().then(function(size){
       // const steps=Math.ceil(size / 10000.0);
       // const array=range(steps)

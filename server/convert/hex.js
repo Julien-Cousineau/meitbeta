@@ -155,10 +155,10 @@ Hex.prototype={
     }
     this.ihex++;
   },
-  getHexIndex:function(lng,lat,_n){
+  getIndex:function(lng,lat,_n){
     const n=_n||1;
     const closestpoints = geokdbush.around(this.index, lng, lat, n);
-    return (n===1)?this.hexes.id[closestpoints[0]]:closestpoints.map(i=>this.hexes.id[closestpoints[i]]);
+    return (n===1)?this.hexes.id[closestpoints[0]]:closestpoints.map(i=>this.hexes.id[i]);
   },
   
 };
