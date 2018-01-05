@@ -34,7 +34,9 @@ wget https://cdnjs.cloudflare.com/ajax/libs/async/2.6.0/async.min.js
 
 wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js
 wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css
-
+wget https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.16/xlsx.min.js
+wget http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js
+wget http://sheetjs.com/demos/FileSaver.js
 
 
 npm install --save express compression cors body-parser cookie-parser node-uuid express-session formidable pretty-bytes

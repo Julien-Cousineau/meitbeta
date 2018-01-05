@@ -43,6 +43,10 @@ Footer.prototype ={
         self.active=false;
       }
     });
+    
+    let exportElement = $('.export');
+    exportElement.on("click",function(){return self.parent.ExportC.export();});
+    
   },  
   construct:function(){
     if(this.parent.debug)console.log("Constructing Header")
@@ -73,8 +77,33 @@ Footer.prototype ={
       $(this).closest('div').children('div').text(selText);
       var _id = $(this).attr('_id');
       self.parent[name] = _id;
+      self.parent.refresh();
       
     });
+    
+    var options = [];
+    
+    $('.dropdown-menu.menuforchart li').on( 'click', function( event ) {
+
+     var $target = $( event.currentTarget ),
+         val = $target.attr( 'data-value' ),
+         $inp = $target.find( 'input' ),
+         idx;
+  
+     if ( ( idx = options.indexOf( val ) ) > -1 ) {
+        options.splice( idx, 1 );
+        setTimeout( function() { $inp.prop( 'checked', false ) }, 0);
+     } else {
+        options.push( val );
+        setTimeout( function() { $inp.prop( 'checked', true ) }, 0);
+     }
+  
+     $( event.target ).blur();
+        
+     console.log( options );
+     return false;
+  });
+    
   },
   html:function(){
     const emissions=this.parent.options.emissions;
@@ -94,6 +123,65 @@ Footer.prototype ={
                   {1}
                 </div>
                 <div class="col-sm-4">
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
+                      <div class="dropdown-menu menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <ul class="list-group">
+                          <li class="list-group-item">
+                              Bootstrap Switch Default
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionDefault" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionDefault" class="switch-color"></label>
+                              </div>
+                          </li>
+                          <li class="list-group-item">
+                              Bootstrap Switch Primary
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionPrimary" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionPrimary" class="switch-color"></label>
+                              </div>
+                          </li>
+                          <li class="list-group-item">
+                              Bootstrap Switch Success
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionSuccess" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionSuccess" class="switch-color"></label>
+                              </div>
+                          </li>
+                          <li class="list-group-item">
+                              Bootstrap Switch Info
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionInfo" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionInfo" class="switch-color"></label>
+                              </div>
+                          </li>
+                          <li class="list-group-item">
+                              Bootstrap Switch Warning
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionWarning" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionWarning" class="switch-color"></label>
+                              </div>
+                          </li>
+                          <li class="list-group-item">
+                              Bootstrap Switch Danger
+                              <div class="material-switch pull-right">
+                                  <input id="someSwitchOptionDanger" name="someSwitchOption001" type="checkbox"/>
+                                  <label for="someSwitchOptionDanger" class="switch-color"></label>
+                              </div>
+                          </li>
+                      </ul>
+                      </div>
+                    </li>
+                    <li>
+                      <a class="foorterbtn export">
+                        <i class="fa fa-table fa-2x" aria-hidden="true"></i>
+                        <i class="fa fa-circle mpicon circle" aria-hidden="true"></i>
+                        <i class="fa fa-download mpicon download" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                  </ul>
+                  </div>
                 </div>
               </div>
             </div>

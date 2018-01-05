@@ -17,6 +17,7 @@ App.prototype ={
     keywords:'en',
     emission: 'nox',
     mapLayer:'mapmeit',
+    table:'table1',
     divider: 1000000,
     keyTags:'',
     panels:'',
@@ -24,6 +25,8 @@ App.prototype ={
     emissions:'',
     units:'',
   },
+  get table(){return this.options.table;},
+  set table(value){this.options.table=value;},
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
@@ -32,9 +35,9 @@ App.prototype ={
   set mapLayer(value){this.options.mapLayer=value;},
   
   get emission(){return this.options.emission;},
-  set emission(value){this.options.emission=value;console.log(value);this.refresh(true)},
+  set emission(value){this.options.emission=value;this.mapd.changeGroup();},
   get divider(){return this.options.divider;},
-  set divider(value){this.options.divider=value;console.log(value);this.refresh()},
+  set divider(value){this.options.divider=value},
   set unit(value){this.divider = this.units.find(item=>item.name===value).divider; },
   
   get units(){return this.options.units;},
@@ -47,18 +50,8 @@ App.prototype ={
   
   
   get debug(){return this.options.debug;},
-  refresh:function(changeGroup){
-    if(this.mapd){
-      if(changeGroup){
-        this.mapd.changeGroup();
-        this.mapd.reSizeAll();
-      } else{
-        this.mapd.reSizeAll();
-        console.log("refresh");    
-      }
-    
-    
-    }
+  refresh:function(){
+    if(this.mapd){this.mapd.reSizeAll();}
   },
   construct:function(){
     const self=this;
@@ -69,6 +62,7 @@ App.prototype ={
     this.Login  = new Login(this.pointer,{container:"#login"})
     this.Header = new Header(this.pointer,{container:"#header"})
     this.Footer = new Footer(this.pointer,{container:".footer"})
+    this.ExportC = new ExportC(this.pointer,{});
     // this.LeftSide = new LeftSide(this.pointer,{})
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
