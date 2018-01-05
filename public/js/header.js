@@ -59,18 +59,18 @@ Header.prototype ={
         <a class="nav-link active LGbtn2" href="#">Français</a>
       </li>
       
-        <div class="btn-group">
-      <button type="button" class="headerdrop btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-user fa-fw"></i>
-          <span id="usernameHome">Username</span><span class="caret"></span>
-      </button>
-      <div id="headerdroplist" class="dropdown-menu dropdown-menu-right">
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item btn-logout" type="button"><i class="fa fa-sign-out fa-fw"></i><span>Log out</span></button>
+      <div class="btn-group">
+        <button type="button" class="headerdrop btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user fa-fw"></i>
+            <span id="usernameHome">Username</span><span class="caret"></span>
+        </button>
+        <div id="headerdroplist" class="dropdown-menu dropdown-menu-right">
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item btn-logout" type="button"><i class="fa fa-sign-out fa-fw"></i><span>Log out</span></button>
+        </div>
       </div>
-    </div>
       
-  </ul>
+    </ul>
   </div>
 
   <div id="banner">
