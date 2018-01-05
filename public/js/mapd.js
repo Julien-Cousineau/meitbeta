@@ -17,6 +17,7 @@ function MapD(parent){
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get emission(){return this.parent.emission;},
+  get year(){return this.parent.year;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
   get mapLayer(){return this.parent.mapLayer;},
@@ -73,7 +74,12 @@ MapD.prototype = {
       ];
   },
   reduceFunction:function(){
-     return [{expression: this.emission,agg_mode:"sum",name: this.emission}]
+    const stre=(this.emission==='nox')?'nox':'other';
+    const factor = stre + this.year;
+    const exp = (this.year==='2015')?
+                  this.emission:
+                  "{0}*{1}".format(this.emission,factor);
+    return [{expression: exp,agg_mode:"sum",name: this.emission}];
   },
   createClassChart:function(){
   },
@@ -166,11 +172,16 @@ MapD.prototype = {
   },
   draw:function(){
     dc.redrawAllAsync();
+    this.fixWidth();
     this.getTotalMap();
   },
   render:function(){
     dc.renderAllAsync()
+    this.fixWidth();
     this.getTotalMap();
+  },
+  fixWidth(){
+    $('.forchart').width('auto')
   },
   workerSetup:function(){
     const self=this;

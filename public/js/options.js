@@ -75,18 +75,18 @@ const options ={
              }
     
   },
-  // {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
-  // {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
-  // {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
-  // {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
-  // {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelclass",active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"paneltype",active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"panelmeit",active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelmode",active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelengine",active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
   ],
   geomaps:{
     lng:{dim:'lng',minimum:-1,maximum:-1},
     lat:{dim:'lat',minimum:-1,maximum:-1},
     mapmeit:{dim:'mapmeit',minimum:0,maximum:3},
     hex16:{dim:'hex_16',minimum:4,maximum:7},
-    // hex4:{dim:'hex_4',minimum:8,maximum:12},
+    hex4:{dim:'hex_4',minimum:8,maximum:12},
     // hex1:{dim:'hex_1',minimum:12,maximum:14},
   },
   emissions: [
@@ -109,7 +109,17 @@ const options ={
     {id:2,name:'t',dname:'tonnes',divider:1000000}, 
     {id:3,name:'kt',dname:'kilotonnes',divider:1000000000}, 
     {id:4,name:'Mt',dname:'megatonnes',divider:1000000000000}, 
-  ], 
+  ],
+  years:[
+    {id:0,name:'2015',dname:'2015'},
+    {id:1,name:'2020',dname:'2020'},
+    {id:2,name:'2025',dname:'2025'},
+    {id:3,name:'2030',dname:'2030'},
+    {id:4,name:'2035',dname:'2035'},
+    {id:5,name:'2040',dname:'2040'},
+    {id:6,name:'2045',dname:'2045'},
+    {id:7,name:'2050',dname:'2050'},
+  ],
 
   // charts:{
   //   // total:{keyword:'total',dim:'total',dctype:'numberDisplay',defaultscale:''},

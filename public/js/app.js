@@ -24,6 +24,8 @@ App.prototype ={
     charts:'',
     emissions:'',
     units:'',
+    years:'',
+    year:'2015',
   },
   get table(){return this.options.table;},
   set table(value){this.options.table=value;},
@@ -39,8 +41,11 @@ App.prototype ={
   get divider(){return this.options.divider;},
   set divider(value){this.options.divider=value},
   set unit(value){this.divider = this.units.find(item=>item.name===value).divider; },
+  get year(){return this.options.year;},
+  set year(value){this.options.year=value;this.mapd.changeGroup();},
   
   get units(){return this.options.units;},
+  get years(){return this.options.years;},
   get keyTags(){return this.options.keyTags;},
   get panels(){return this.options.panels;},
   get geomaps(){return this.options.geomaps;},
@@ -69,7 +74,6 @@ App.prototype ={
     // this.mapd = new MapD(this.pointer);
     this.mapContainer = new MapContainer(this.pointer,{},function(){
       self.mapd = new MapD(self.pointer);
-    
       $('#bannerChevron').trigger("click");
     })
   },

@@ -275,9 +275,9 @@ body {
   text-decoration: none;
   cursor: pointer;
 }
-.hide {
-  display:none;
-}
+/*.hide {*/
+/*  display:none;*/
+/*}*/
 
 .box {
   /*width :200px;*/

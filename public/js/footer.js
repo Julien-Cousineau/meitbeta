@@ -57,6 +57,8 @@ Footer.prototype ={
     $('.footer').append(this.html());
     this.dropdownMenuFunc('emission');
     this.dropdownMenuFunc('unit');
+    this.dropdownMenuFunc('year');
+    this.dropdownChart();
     // $('[data-toggle="tooltip"]').tooltip();
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
@@ -70,6 +72,24 @@ Footer.prototype ={
                </div>`.format(ul,title);               
     return html;
   },
+  dropdownChart:function(){
+    $('.dropdown-menu.menuforchart li').on( 'click', function( event ) {
+
+      const $target = $( event.currentTarget ),
+            panelid = $target.attr( 'panelid' ),
+            $inp = $target.find( 'input' );
+         
+      const $panel=$('.x_panel_container[panelid={0}]'.format(panelid));
+      $inp.prop("checked", !$inp.prop("checked"))
+      // setTimeout( function() { $inp.prop("checked", !$inp.prop("checked")) }, 0);
+      // $panel.toggleClass("show hide");
+      $inp.prop("checked")?$panel.show():$panel.hide();
+
+      $( event.target ).blur();
+      return false; //to keep dropdown open!important
+    });
+    
+  },
   dropdownMenuFunc:function(name){
     const self=this;
     $("#ul_{0}s li a".format(name)).click(function(){
@@ -80,38 +100,35 @@ Footer.prototype ={
       self.parent.refresh();
       
     });
-    
-    var options = [];
-    
-    $('.dropdown-menu.menuforchart li').on( 'click', function( event ) {
-
-     var $target = $( event.currentTarget ),
-         val = $target.attr( 'data-value' ),
-         $inp = $target.find( 'input' ),
-         idx;
-  
-     if ( ( idx = options.indexOf( val ) ) > -1 ) {
-        options.splice( idx, 1 );
-        setTimeout( function() { $inp.prop( 'checked', false ) }, 0);
-     } else {
-        options.push( val );
-        setTimeout( function() { $inp.prop( 'checked', true ) }, 0);
-     }
-  
-     $( event.target ).blur();
-        
-     console.log( options );
-     return false;
-  });
-    
+  },
+  htmlchartli:function(){
+    const charts=this.parent.charts;
+    const language = this.parent.language;
+    const keywords = this.parent.keywords;
+    return charts.map(chart=>{
+      return `<li class="list-group-item" panelid="{0}">
+                {1}
+                <div class="material-switch pull-right">
+                    <input id="switch_{0}" type="checkbox" checked/>
+                    <label for="switch_{0}" class="switch-color"></label>
+                </div>
+              </li>`
+            .format(chart.id,keywords[chart.keyword][language]);
+    }).join("");
   },
   html:function(){
     const emissions=this.parent.options.emissions;
     const units=this.parent.options.units;
+    const years=this.parent.options.years;
     const emission = this.parent.emission;
     const divider = this.parent.divider;
+    const year = this.parent.year;
     const emissionT = this.parent.emissions.find(item=>item.name===emission).dname;
-    const unitT = this.parent.units.find(item=>item.divider===divider).dname;
+    const unitT = units.find(item=>item.divider===divider).dname;
+    const yearT = years.find(item=>item.name===year).dname;
+    const chartlis = this.htmlchartli();
+    
+    
     return `<div class="handle"></div>
             <div class="footer-title">
               <div class="row">
@@ -121,56 +138,18 @@ Footer.prototype ={
                   <span class="number-display">&nbsp: </span>
                   <div class="number-display" id="totalnumber"></div>
                   {1}
+                  <span>&nbsp(</span>
+                  {2}
+                  <span>)</span>
                 </div>
                 <div class="col-sm-4">
                   <ul class="nav navbar-right panel_toolbox">
                     <li>
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
-                      <div class="dropdown-menu menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                      <div class="dropdown-menu dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
                         <ul class="list-group">
-                          <li class="list-group-item">
-                              Bootstrap Switch Default
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionDefault" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionDefault" class="switch-color"></label>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              Bootstrap Switch Primary
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionPrimary" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionPrimary" class="switch-color"></label>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              Bootstrap Switch Success
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionSuccess" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionSuccess" class="switch-color"></label>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              Bootstrap Switch Info
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionInfo" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionInfo" class="switch-color"></label>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              Bootstrap Switch Warning
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionWarning" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionWarning" class="switch-color"></label>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              Bootstrap Switch Danger
-                              <div class="material-switch pull-right">
-                                  <input id="someSwitchOptionDanger" name="someSwitchOption001" type="checkbox"/>
-                                  <label for="someSwitchOptionDanger" class="switch-color"></label>
-                              </div>
-                          </li>
-                      </ul>
+                          {3}
+                        </ul>
                       </div>
                     </li>
                     <li>
@@ -189,7 +168,9 @@ Footer.prototype ={
             <div class="gridContainer"></div>
           </div>
             `.format(this.dropdownMenu('emissions',emissions,emissionT),
-                     this.dropdownMenu('units',units,unitT)
+                     this.dropdownMenu('units',units,unitT),
+                     this.dropdownMenu('years',years,yearT),
+                     chartlis
                      )
   },
 }
