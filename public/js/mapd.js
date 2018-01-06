@@ -171,13 +171,17 @@ MapD.prototype = {
     this.draw();
   },
   draw:function(){
+    const self=this;
     dc.redrawAllAsync();
     this.fixWidth();
+    // debounce(function(){self.getTotalMap()}, 100)
     this.getTotalMap();
   },
   render:function(){
+    const self=this;
     dc.renderAllAsync()
     this.fixWidth();
+    // debounce(function(){self.getTotalMap()}, 100)
     this.getTotalMap();
   },
   fixWidth(){

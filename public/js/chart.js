@@ -92,6 +92,7 @@ Chart.prototype = {
     $('div[panelid="{0}"] .x_title .nav .resetbtn'.format(this.id)).one("click",function(){self.removeFilters();});
   },
   filteredFunc:function(chart,filter){
+    const self=this;
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
     // console.log(this.group.getReduceExpression())

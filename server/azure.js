@@ -39,7 +39,8 @@ function main(){
             // {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
             // {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"},
             // {name:"nov30_grid",file:"nov30_grid.zip"},
-            {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"},
+            {name:"east_arctic_emissions_10252017",file:"east_arctic_emissions_10252017.zip"},
+            // {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"},
           ]
   
   download(list,function(e){

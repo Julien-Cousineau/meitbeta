@@ -12,8 +12,9 @@ const async = require('async');
 const MapDServer = require("./mapdserver");
 
 // const filename='dummy.csv';
-const filename='arcticWIG_09212017.csv';
+// const filename='arcticWIG_09212017.csv';
 // const filename='pacific_emissions_11162017.csv';
+const filename='east_arctic_emissions_10252017.csv';
 
 function ManualInsert(){
     const self=this;
@@ -27,7 +28,7 @@ function ManualInsert(){
     //     })
     //   });  
     // });
-    // dataserver.files.add(filepath,function(){console.log("Done")});
+    dataserver.files.add(filepath,function(){console.log("Done")});
     // dataserver.converts.add({name:"dummy.csv",dataset:{name:'test6'},htmlid:""},function(err,meta){
       // console.log(meta)
     // });
@@ -35,11 +36,11 @@ function ManualInsert(){
     // dataserver.converts.delete(function(){});
     // dataserver.datasets.delete(function(){});
     
-    dataserver.files.getList(function(err,result){console.log(result)})
+    // dataserver.files.getList(function(err,result){console.log(result)})
     
-    dataserver.converts.getList(function(err,result){console.log(result)})
+    // dataserver.converts.getList(function(err,result){console.log(result)})
     
-    dataserver.datasets.getList(function(err,list){console.log(list);})
+    // dataserver.datasets.getList(function(err,list){console.log(list);})
     
     // dataserver.datasets.getView({name:'test7'},function(err,list){console.log(list);})
     

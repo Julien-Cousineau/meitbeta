@@ -56,7 +56,12 @@ App.prototype ={
   
   get debug(){return this.options.debug;},
   refresh:function(){
-    if(this.mapd){this.mapd.reSizeAll();}
+    const self=this;
+    if(this.mapd){
+      console.log("refresh")
+      self.mapd.reSizeAll()
+      // debounce(function(){self.mapd.reSizeAll()}, 100)
+    }
   },
   construct:function(){
     const self=this;
