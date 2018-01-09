@@ -45,7 +45,6 @@ Header.prototype ={
       $("#usernameHome").text(userInfo.user_metadata.first);
       if(userInfo.app_metadata.roles[0]=="admin"){
           $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal"><span><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i></span>Upload</button>`);
-          $(".upload").click(function(){self.parent.upload()});
       }
     }
   },

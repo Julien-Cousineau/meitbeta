@@ -64,9 +64,11 @@ MBTileServer.prototype={
             x = req.params.x | 0,
             y = req.params.y | 0;
     
+     
         if (z < tileJSON.minzoom || 0 || x < 0 || y < 0 ||
             z > tileJSON.maxzoom ||
             x >= Math.pow(2, z) || y >= Math.pow(2, z)) {
+          
           return res.status(204).send('Out of bounds');
         }
         source.getTile(z, x, y, function(err, data, headers) {

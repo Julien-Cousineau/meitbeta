@@ -126,6 +126,11 @@ Footer.prototype ={
             .format(id,keyword,checked);
     }).join("");
   },
+  updateTableList:function(){
+    const tablelis = this.htmlli(this.parent.tables);
+    $('.menufortable ul').empty();
+    $('.menufortable ul').append(tablelis)
+  },
   html:function(){
     const emissions=this.parent.options.emissions;
     const units=this.parent.options.units;

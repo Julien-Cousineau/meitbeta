@@ -49,7 +49,7 @@ const options ={
   {tag:".LGbtn2",type:'text',id:"language"},
   ],
   gis:[
-    {id:"meit",keyword:"meitregion",checked:true},
+    {id:"mapmeit",keyword:"meitregion",checked:true},
     {id:"prov",keyword:"prov",checked:false},
     {id:"hexgrid",keyword:"hexgrid",checked:false}
     ],
@@ -94,8 +94,9 @@ const options ={
   geomaps:{
     lng:{dim:'lng',minimum:-1,maximum:-1},
     lat:{dim:'lat',minimum:-1,maximum:-1},
-    mapmeit:{dim:'mapmeit',minimum:0,maximum:3},
-    hex16:{dim:'hex_16',minimum:4,maximum:7},
+    mapmeit:{dim:'mapmeit',minimum:-1,maximum:-1},
+    prov:{dim:'prov',minimum:-1,maximum:-1},
+    hex16:{dim:'hex_16',minimum:0,maximum:7},
     hex4:{dim:'hex_4',minimum:8,maximum:12},
     // hex1:{dim:'hex_1',minimum:12,maximum:14},
   },

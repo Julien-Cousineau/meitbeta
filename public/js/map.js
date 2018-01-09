@@ -1,4 +1,4 @@
-
+/*global $,extend,localStorage*/
 
 
 function MapContainer(parent,options,callback){
@@ -15,6 +15,7 @@ function MapContainer(parent,options,callback){
 MapContainer.prototype = {
   options:{
     zoom:3,
+    hoverquery:false,
     center:[-100.00,60.0],
     paint:{
       hex:{"fill-outline-color": "rgba(0,0,0,0.0)","fill-color": "rgba(0,0,0,0.5)"},
@@ -39,25 +40,36 @@ MapContainer.prototype = {
             },            
     },
     viewlayers:{
-      meit:{geo:'meit',label:'meitlabels'},
+      mapmeit:{geo:'mapmeit',label:'meitlabels'},
       prov:{geo:'prov',label:'provlabels'},
       hexgrid:{geo:"hexgrid"},
     }
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get mapd(){return this.parent.mapd;},
+  get hoverquery(){return this.options.hoverquery;},
+  set hoverquery(value){this.options.hoverquery=value;},
+  get unitdname(){return this.parent.unitdname;},
+  get divider(){return this.parent.divider;},
+  get mapLayer(){return this.parent.mapLayer;},
+  set mapLayer(value){this.parent.mapLayer=value;},
+  get mapDLayer(){return this.parent.mapDLayer;},
   get KEYS(){return this.parent.KEYS;},
+  get cache(){return this.mapd.cache;},
   get center(){return this.options.center;},
   set center(value){this.options.center=value;},
   get zoom(){return this.options.zoom;},
-  set zoom(value){
-    if(value !==this.options.zoom){
-      this.options.zoom=value;
-      for(let key in this.parent.geomaps){
-        let layer = this.parent.geomaps[key];
-        if(value >=layer.minimum && value<=layer.maximum)this.parent.mapLayer=key;
-      }
-    }
-  },
+  set zoom(value){this.options.zoom=value;},
+  // set zoom(value){
+  //   if(value !==this.options.zoom){
+  //     this.options.zoom=value;
+  //     for(let key in this.parent.geomaps){
+  //       let layer = this.parent.geomaps[key];
+  //       if(value >=layer.minimum && value<=layer.maximum)this.parent.mapLayer=key;
+  //     }
+  //   }
+  // },
+  
   construct:function(){
     const self=this;
     mapboxgl.accessToken=this.KEYS.mapbox;
@@ -79,8 +91,9 @@ MapContainer.prototype = {
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new MapboxGeocoder({accessToken: mapboxgl.accessToken,country:'CA',zoom:12,limit:10,terminals:this.terminals}),'top-left');
     map.on("error",function(e){return self.error(e);});
-    map.on("zoomend",debounce(function(){self.onMove()}, 1000));
-    map.on("dragend",debounce(function(){self.onMove()}, 1000));
+    map.on("zoomend",debounce(function(e){self.onMove(e)}, 1000));
+    map.on("click",debounce(function(e){self.onClick(e)}, 1000));
+    map.on("dragend",debounce(function(e){self.onMove(e)}, 1000));
     map.on('mousedown', debounce(function(e){self.mouseDown(e)}, 10));
     map.on('touchstart',debounce(function(e){self.mouseDown(e)}, 10));
     map.on('mouseup', debounce(function(e){self.mouseUp(e)}, 10));
@@ -104,7 +117,7 @@ MapContainer.prototype = {
     this.addLayers();
     this.addSelectButton();
     this.selectBox = new SelectBox(this.pointer);
-    
+    this.popup = new mapboxgl.Popup({closeButton: false,closeOnClick: false});
     this.callback();
   },
   addSelectButton:function(){
@@ -148,12 +161,25 @@ MapContainer.prototype = {
           </div>
       </div>
     </div>
-    <div class="selectbtn">
+    <div class="selectbtn boxselect">
       <button class="btn btn-light"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
-    </div>`
-    $(".mapboxgl-ctrl-top-left").append(html);
-    $('.selectbtn button').on("click",function(){self.selectBox.activate();})
+    </div>
+    <div class="selectbtn hoverquery">
+      <button class="btn btn-light"><i class="fa fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
+    </div>
+    `;
     
+    $(".mapboxgl-ctrl-top-left").append(html);
+    $('.selectbtn.boxselect button').on("click",function(){self.selectBox.activate();})
+    
+    $('.selectbtn.hoverquery button').on("click",function(e){
+      
+      self.hoverquery=!self.hoverquery;
+     
+      (self.hoverquery)?$('.selectbtn.hoverquery button').addClass("active"):
+                        $('.selectbtn.hoverquery button').removeClass("active");
+      if(!(self.hoverquery))self.popup.remove();                   
+    });
   },
   error:function(e){
     if (e && e.error !== 'Error: Not Found')console.error(e);
@@ -168,11 +194,11 @@ MapContainer.prototype = {
     this.map.addSource('terminalS', {type: 'vector',tiles: [URL + "tiles/terminals/{z}/{x}/{y}.pbf"]});
   },
   addLayers:function(){
-    this.map.addLayer({"id": "meit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
+    this.map.addLayer({"id": "mapmeit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
     this.map.addLayer({"id": "meitlabels","type": "symbol","source": 'meit_C',"source-layer": "cmeitregions",layout: this.options.layout.meitlabel,"paint": this.options.paint.label});
     this.map.addLayer({"id": "prov","type": "fill","source": 'prov',"source-layer": "provinces",layout:this.options.layout.hide,"paint": this.options.paint.prov});
     this.map.addLayer({"id": "provlabels","type": "symbol","source": 'cprov',"source-layer": "cprovinces",layout: this.options.layout.provlabel,"paint": this.options.paint.label});
-    this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex","paint": this.options.paint.hex});
+    this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
     this.map.addLayer({"id": "terminals","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal, "filter": ["==", "zoom", "0"]});
     this.map.addLayer({"id": "terminals5","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 10, "filter": ["==", "zoom", "1"]});
     this.map.addLayer({"id": "terminals2","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 11, "filter": ["==", "zoom", "2"]});
@@ -183,54 +209,73 @@ MapContainer.prototype = {
   // resetStops:function(){this.stops=[];},
   updateHexPaint:function(stops){
     const self=this;
-    // const emission = this.parent.emission;
-    if(stops && this.map.getLayer('hexgrid')){
-      console.time("inside")
-      
-        // let max = Math.max.apply(Math,data.map(function(row){return row[emission]}))
-        // max=(max<1) ? 1:max;
-      // let stops=[];
-      // for(let gid in data){
-      //   if(data[gid].inside)stops.push([parseInt(gid),data[gid].color])
-      // }
-      // const stops = data.map(function(row) {
-      //   // var color = self.xscale(row[emission]);
-      //   return [row.key0, color];
-      // },this.stops);
-      
-      if(this.zoom<4){
-        self.map.setPaintProperty('meit', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
-      } else {
-        self.map.setPaintProperty('hexgrid', 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
-      }
-      console.timeEnd("inside")
+    const mapLayer = this.mapLayer;
+    // console.log(mapLayer);
+    if(stops && this.map.getLayer(mapLayer)){
+      console.time("inside");
+      self.map.setPaintProperty(mapLayer, 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+      this.showLayer();
+      console.timeEnd("inside");
     }
 
   },
   changeLayer:function(_id){
+    this.mapLayer = _id;
     const layers=this.options.viewlayers;
     for(let id in layers){
       const layer=layers[id];
        this.map.setLayoutProperty(layer.geo, 'visibility', 'none');
        if(layer.label)this.map.setLayoutProperty(layer.label, 'visibility', 'none');
     }
+    this.mapd.getMap();
+  },
+
+  showLayer:function(){
+    const layers=this.options.viewlayers;
+    const _id =this.mapLayer;
     this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
     if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
   },
   mouseDown:function(e){
     // e.originalEvent.preventDefault();
-    
-    if(this.selectBox && this.selectBox.active)this.selectBox.down(e);
+    if(this.selectBox && this.selectBox.active)return this.selectBox.down(e);
   },
   mouseMove:function(e){
     // e.originalEvent.preventDefault();
-    if(this.selectBox && this.selectBox.active && this.selectBox.dragging)this.selectBox.move(e);
+    if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.move(e);
+    if(!(this.selectBox && this.selectBox.active) && this.hoverquery)this.hoverFeature(e);
   },
   mouseUp:function(e){
     // e.originalEvent.preventDefault();
-    if(this.selectBox && this.selectBox.active && this.selectBox.dragging)this.selectBox.up(e);
+    if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.up(e);
   },
-  onMove:function(){
+  onClick:function(e){
+    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapLayer]});
+    
+    
+  },
+  htmlPopup:function(feature){
+    // console.log(feature)
+    const gid=feature.properties.gid;
+    const value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
+    switch (this.mapDLayer) {
+      case "mapmeit": return `Meit Region {0} <br> Emission {1} - {2}`.format(feature.properties.meitid,value,this.unitdname);
+      case "prov": return `{0} <br> Emission {1} - {2}`.format(feature.properties.province,value,this.unitdname);
+       
+      default: return `GID({0}) <br> Emission {1} - {2}`.format(feature.properties.gid,value,this.unitdname);
+    }
+    
+  },
+  hoverFeature:function(e){
+    if(!(this.map.getLayer(this.mapLayer)))return;
+    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapLayer]});
+    this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    if (!features.length)return this.popup.remove();
+    this.popup.setLngLat(e.lngLat).setHTML(this.htmlPopup(features[0])).addTo(this.map);
+  },
+  onMove:function(e){
+    const distance = e.target.dragPan._startPos.dist(e.target.dragPan._pos);
+    if (distance < 10)return this.map.fire('click');
     var lon1=this.map.getBounds()._sw.lng;
     var lat1=this.map.getBounds()._sw.lat;
     var lon2=this.map.getBounds()._ne.lng;
@@ -238,6 +283,8 @@ MapContainer.prototype = {
     this.zoom=Math.floor(this.map.getZoom());
     this.bounds =[lon1,lat1,lon2,lat2];
     this.center = this.map.getCenter();
+    
+    
     // this.parent.mapd.filterMap();
     // this.parent.mapd.getTotalMap();
     
@@ -271,7 +318,7 @@ function SelectBox(parent){
   this.construct();
 }
 SelectBox.prototype = {
-  get divbutton(){return $('.selectbtn button')},
+  get divbutton(){return $('.selectbtn.boxselect button')},
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   construct:function(){
     this.reset();

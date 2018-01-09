@@ -16,6 +16,7 @@ const MapDServer = require("./mapdserver");
 
 
 
+
 const async = require("async");
 const fs = require('fs');
 const prettyBytes = require('pretty-bytes');
@@ -34,6 +35,7 @@ DataServer.prototype = {
   options:{web:true
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get sqltemplate(){return this.parent.sqltemplate;},
   construct:function(){
     if(this.options.web)this.postfile();
     if(this.options.web)this.postfilelist();
@@ -454,7 +456,8 @@ Table.prototype ={
     MongoClient.connect(mongourl, function(err, db) {
       if (err) throw err;
       var dbase = db.db(mongodatabase); //here
-      dbase.collection(name).find({ att: obj[att] }).toArray(function(err, result) {
+      const findobj={};findobj[att]=obj[att];
+      dbase.collection(name).find(findobj).toArray(function(err, result) {
         if (err) throw err;
         db.close();
         callback(err,result);
@@ -551,7 +554,7 @@ FileTable.prototype={
   remove:function(obj,callback){
     if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);
     this._remove(obj,function(err,result){callback(err,result);});
-    this.converts.remove(obj,function(err,result){callback(err,result)})
+    this.converts.remove('parentname',obj,function(err,result){callback(err,result)})
     
   }
 };
@@ -607,9 +610,9 @@ ConvertTable.prototype={
       callback(err,result);
     });
   },
-  remove:function(obj,callback){
+  remove:function(key,obj,callback){
     const self=this;
-    this.find('parentname',obj,function(err,results){
+    this.find(key,obj,function(err,results){
       // console.log(results)
       if(err)throw Error(results);
       const func = function(item,_callback){
@@ -633,12 +636,15 @@ function DatasetTable(parent,callback){
 }
 DatasetTable.prototype= {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get sqltemplate(){return this.parent.sqltemplate;},
   get filestable(){return this.parent.files},
   get convertstable(){return this.parent.converts},
   get mapdserver(){return this.parent.mapdserver},
   add:function(name,callback){
     const self=this;
-    const schemafilepath=path.resolve(SCHEMAFOLDER,"template1.sql");
+    console.log(this.sqltemplate)
+    const schemafilepath=path.resolve(SCHEMAFOLDER,this.sqltemplate);
+    
     self.rowExist({name:name},function(err,exist){
       if(err)return callback(err);
       if(exist)return callback(true,"Dataset exist!");
@@ -657,7 +663,11 @@ DatasetTable.prototype= {
     self.mapdserver.dropTable(obj.name,function(err,results){
       console.log(obj.name,err,results)
       if(err)return callback(err,results);
-      self._remove({name:obj.name},function(err,result){callback(err,result);});  
+      self._remove({name:obj.name},function(err,result){
+        console.log(obj.name)
+        self.convertstable.remove('datasetname',{datasetname:obj.name},function(err,result){callback(err,result)})
+        callback(err,result);}
+      );  
     });  
   },
   getView:function(dataset,callback){

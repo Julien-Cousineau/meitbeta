@@ -28,10 +28,10 @@ function ManualInsert(){
     //     })
     //   });  
     // });
-    dataserver.files.add(filepath,function(){console.log("Done")});
-    // dataserver.converts.add({name:"dummy.csv",dataset:{name:'test6'},htmlid:""},function(err,meta){
-      // console.log(meta)
-    // });
+    // dataserver.files.add(filepath,function(){console.log("Done")});
+    dataserver.converts.add({name:"dummy.csv",dataset:{name:'table4'},htmlid:""},function(err,meta){
+      console.log(meta)
+    });
     // dataserver.files.delete(function(){});
     // dataserver.converts.delete(function(){});
     // dataserver.datasets.delete(function(){});

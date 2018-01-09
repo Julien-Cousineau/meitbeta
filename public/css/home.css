@@ -69,7 +69,7 @@ a {
     color: #007bff;
 }
 .mapboxgl-ctrl-top-left .selectbtn {
-   margin: 10px 20px;
+   margin: 10px 5px;
     float: left;
    pointer-events: auto;
     
@@ -91,12 +91,14 @@ a {
 }
 
 .selectbtn .mpicon {
-    font-size: 16px;
-    left: -7px;
-    top: 3px;
+    font-size: 14px;
+    left: -6px;
+    top: 5px;
     position: relative;
 }
-
+.selectbtn .mpicon2 {
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
 .btn-circle {
   width: 30px;
   height: 30px;

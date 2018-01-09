@@ -13,21 +13,10 @@ const util = require("./util");
 function MapDServer(parent){
   // parent,options
     this._parent = parent;
-
-    // this.construct();
 }
 MapDServer.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
-  construct:function(){
-    const name="dummy2";
-    const schemafilepath=path.resolve(SCHEMAFOLDER,"template1.sql");
-    const csv=path.resolve(CONVERTFOLDER,"dummy.csv2");
-    // console.log("inside")
-    // this.createTable(name,schemafilepath,function(err,result){console.log(result);})
-    // this.dropTable(name,function(err,results){if(err)throw Error(results);})
-    // this.copyData(name,csv,function(err,result){if(err)throw Error(result);console.log("Done",result)})
-    
-  },
+
   connect:function(callback){
     const connector = new Connector()
     connector

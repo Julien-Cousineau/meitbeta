@@ -98,6 +98,7 @@ Convert.prototype = {
     this.lat=new Float32Array(size);
     this.mapmeit=new Uint8Array(size);
     this.meit=new Uint8Array(size);
+    this.prov=new Uint8Array(size);
     this.hex_16=new Uint32Array(size);
     this.hex_4=new Uint32Array(size);
     this.hex_1=new Uint32Array(size);

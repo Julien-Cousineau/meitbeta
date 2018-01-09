@@ -19,13 +19,15 @@ App.prototype ={
     keywords:'en',
     emission: 'nox',
     mapLayer:'mapmeit',
-    table:'table1',
+    mapDLayer:'mapmeit',
+    table:'table4',
     tables:[],
     divider: 1000000,
     keyTags:'',
     panels:'',
     charts:'',
     emissions:'',
+    unit:'t',
     units:'',
     years:'',
     year:'2015',
@@ -45,13 +47,25 @@ App.prototype ={
   get keywords(){return this.options.keywords;},
   get emissions(){return this.options.emissions;},
   get mapLayer(){return this.options.mapLayer;},
-  set mapLayer(value){this.options.mapLayer=value;},
+  set mapLayer(value){this.options.mapLayer=value;this.setmapDLayer();},
+  get mapDLayer(){return this.options.mapDLayer;},
+  setmapDLayer:function(){
+    const mapLayer=this.mapLayer;
+    const zoom = this.mapContainer.zoom;
+    if(mapLayer==='mapmeit'||mapLayer==='prov'){this.options.mapDLayer=mapLayer;return;}
+    for(let key in this.geomaps){
+        let layer = this.geomaps[key];
+        if(zoom >=layer.minimum && zoom<=layer.maximum)this.options.mapDLayer=key;
+    }
+  },
   
   get emission(){return this.options.emission;},
   set emission(value){this.options.emission=value;this.mapd.changeGroup();},
   get divider(){return this.options.divider;},
   set divider(value){this.options.divider=value},
-  set unit(value){this.divider = this.units.find(item=>item.name===value).divider; },
+  get unit(){return this.options.unit;},
+  get unitdname(){return this.units.find(item=>item.name===this.unit).dname;},
+  set unit(value){this.options.unit=value;this.divider = this.units.find(item=>item.name===value).divider; },
   get year(){return this.options.year;},
   set year(value){this.options.year=value;this.mapd.changeGroup();},
   

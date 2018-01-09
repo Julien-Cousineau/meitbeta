@@ -1,12 +1,13 @@
-
+/*global $,extend,localStorage*/
 
 function MapD(parent){
   this._parent = parent;
   const self = this;
   this.pointer = function(){return self;};
-  this.cache={mapmeit:{},'hex16':{},'hex4':{},'hex1':{}},
+  this.cache={mapmeit:{},'hex16':{},'hex4':{},'hex1':{},prov:{}},
   this.bounds=[-100,50,-40,60];
   // this.first = true;
+  this.createQueue();
   this.createCrossFilter();
   this.workerSetup();
   // this.queueSetup();
@@ -14,14 +15,18 @@ function MapD(parent){
   // this.getMapSetup();
 }
 MapD.prototype = {
+  options:{
+    priorityindex:0,
+  },
+  get priorityindex(){return this.options.priorityindex;},
+  set priorityindex(value){this.options.priorityindex=value;},
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get IP(){return this.parent.options.IP},
   get emission(){return this.parent.emission;},
   get year(){return this.parent.year;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
-  get mapLayer(){return this.parent.mapLayer;},
-  get geoMapLayer(){return this.parent.geomaps[this.mapLayer].dc;},
+  get mapDLayer(){return this.parent.mapDLayer;},
   get geomaps(){return this.parent.geomaps},
   get mapContainer(){return this.parent.mapContainer},
   get filters(){return this.crossFilter.getFilter()},
@@ -40,6 +45,7 @@ MapD.prototype = {
   //     crossfilter.crossfilter(con, "table5").then(function(crossFilter){return self.createCharts(crossFilter);})
   //   });
   // },
+
   createCrossFilter:function(){
     const self=this;
     const table=this.table;
@@ -83,7 +89,7 @@ MapD.prototype = {
     const factor = stre + this.year;
     const exp = (this.year==='2015')?
                   this.emission:
-                  "{0}*{1}".format(this.emission,factor);
+                  "{0}*{1}*0.015625".format(this.emission,factor);
     return [{expression: exp,agg_mode:"sum",name: this.emission}];
   },
   createClassChart:function(){
@@ -203,29 +209,54 @@ MapD.prototype = {
   updateData:function(data){
     this.worker.postMessage({
       data: data,
-      cache: this.cache[this.mapLayer],
       emission: this.emission
     });
   },
-  postupdateData:function(cache){
-    this.cache[this.mapLayer] = cache;
-    this.mapContainer.updateHexPaint(cache);
+  postupdateData:function(data){
+    // console.log(data)
+    this.cache[this.mapDLayer] = data.cache;
+    this.mapContainer.updateHexPaint(data.stops);
   },
-  queueFunc:function(obj,callback){
+  getTotalMap:function(){
     const self=this;
-    let querystring = self.geomaps[self.mapLayer].dc.group.writeTopQuery(50);
+    this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
+    this.getMap();
+  },  
+  getMap:function(){
+    const self=this;
+    let bounds=null;
+    $('#map').addClass("chart-loading-overlay");
+    $('#map').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
+    // console.log(self.mapDLayer)
+    if(self.mapDLayer==='hex16' || self.mapDLayer==='hex4' || self.mapDLayer==='hex1'){bounds=self.mapContainer.bounds;} 
+    this.queue.unshift({priorityindex:++this.priorityindex,bounds:bounds});
+  },
+  createQueue:function(){
+    const self=this;
+    this.queue = async.queue(function(obj, callback) {
+      // console.log(obj.priorityindex,self.priorityindex)
+      if(obj.priorityindex!==self.priorityindex)return callback();
+      self.queueFunc(obj.bounds,function(data){
+        // console.log("updateData")
+        self.updateData(data);
+        $('#map').removeClass("chart-loading-overlay");
+        $('.loading-widget-dc').remove();
+        callback();
+      });
+    }, 1);
+  },
+  queueFunc:function(bounds,callback){
+    const self=this;
     
-    console.log();
-   
-   
-    if(obj){
-      const dim = this.geomaps[self.mapLayer].dim;
+    let querystring = self.geomaps[self.mapDLayer].dc.group.writeTopQuery(50);
+    if(bounds){
+      const dim = this.geomaps[self.mapDLayer].dim;
       const table = this.parent.table;
       const limit = 1000000;
       
       const filters = this.crossFilter.getFilterString();
       const filtersstr = (filters)?"{0} AND ".format(filters):"";
-      const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(obj[0],obj[1],obj[2],obj[3]);
+      const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(bounds[0],bounds[1],bounds[2],bounds[3]);
       querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"
                             .format(dim,this.emission,table,limit,con,filtersstr);
       // console.log(querystring)
@@ -238,18 +269,6 @@ MapD.prototype = {
   },
 
 
-  getMap:function(){
-    const self=this;
-    let bounds=null;
-    if(self.mapLayer==='hex16' || self.mapLayer==='hex4' || self.mapLayer==='hex1'){bounds=self.mapContainer.bounds;} 
-    self.queueFunc(bounds,function(data){self.updateData(data);});
-  },
-
-  getTotalMap:function(){
-    const self=this;
-    this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
-    this.getMap();
-  },
   export:function(maincallback){
     const self=this;
     const filters = this.crossFilter.getFilterString();

@@ -2,6 +2,7 @@
 function Socket(parent){
   this._parent = parent;
   this.construct();
+  this.loadmap=true;
     
 }
 Socket.prototype ={
@@ -34,13 +35,16 @@ Socket.prototype ={
           if(item.name ===self.parent.table)item.checked=true;
         });
         self.parent.tables=list;
-        self.parent.loadMapD();
+        if(self.parent.Footer)self.parent.Footer.updateTableList();
+        if(self.loadmap)self.parent.loadMapD();
+        self.loadmap=false;
       });
-      socket.emit('getkeys');
+      if(!(self.loaded))socket.emit('getkeys');
     })
     .on('unauthorized', function(msg){
-      console.log("unauthorized: " + JSON.stringify(msg.data));
-      throw new Error(msg.data.type);
+      // console.log("unauthorized: " + JSON.stringify(msg.data));
+      self.parent.login.logout();
+      // throw new Error(msg.data.type);
     })
 
     // self.func1=function(){return console.log("func2")}

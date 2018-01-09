@@ -94,7 +94,7 @@ Test.prototype = {
     MongoClient.connect(url, function(err, db) {
       if (err) throw err;
       var dbase = db.db("meitdata"); //here
-      dbase.collection(collection).find({}).toArray(function(err, result) {
+      dbase.collection("cfiles").find({}).toArray(function(err, result) {
         if (err) throw err;
         console.log(result);
         db.close();

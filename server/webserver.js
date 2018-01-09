@@ -47,6 +47,7 @@ WebServer.prototype = {
   options:{
     folder:{hex:'data/hex'},
     meitinput:'meitregions.geojson',
+    sqltemplate: "template2.sql",
     hexinput:[
        {id:16,file:'hex_16.hex',webid:'hex16'},
        {id:4,file:'hex_4.hex',webid:'hex4'},
@@ -56,6 +57,7 @@ WebServer.prototype = {
   get folder(){return this.options.folder},
   get hexinput(){return this.options.hexinput},
   get meitinput(){return this.options.meitinput},
+  get sqltemplate(){return this.options.sqltemplate;},
   construct:function(){
     const self=this;
     const app = this.app = express();
