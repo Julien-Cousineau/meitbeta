@@ -12,12 +12,15 @@ function App(options){
 
 App.prototype ={
   options:{
+    KEYS:{},
     debug:true,
+    loaded:false,
     language:'en',
     keywords:'en',
     emission: 'nox',
     mapLayer:'mapmeit',
     table:'table1',
+    tables:[],
     divider: 1000000,
     keyTags:'',
     panels:'',
@@ -26,9 +29,17 @@ App.prototype ={
     units:'',
     years:'',
     year:'2015',
+    container:"#home",
   },
+  get KEYS(){return this.options.KEYS;},
+  set KEYS(value){this.options.KEYS=value;},
+  get loaded(){return this.options.loaded;},
+  set loaded(value){this.options.loaded=value;},
+  get container(){return this.options.container;},
   get table(){return this.options.table;},
-  set table(value){this.options.table=value;},
+  set table(value){this.options.table=value;this.mapd.createCrossFilter();},
+  get tables(){return this.options.tables;},
+  set tables(value){this.options.tables=value;},
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
@@ -44,12 +55,14 @@ App.prototype ={
   get year(){return this.options.year;},
   set year(value){this.options.year=value;this.mapd.changeGroup();},
   
+  get AUTH0(){return this.options.AUTH0;},
   get units(){return this.options.units;},
   get years(){return this.options.years;},
   get keyTags(){return this.options.keyTags;},
   get panels(){return this.options.panels;},
   get geomaps(){return this.options.geomaps;},
   set geomaps(value){return this.options.geomaps=value;},
+  get gis(){return this.options.gis;},
   get charts(){return this.options.charts;},
   set charts(value){this.options.charts=value;},
   
@@ -66,141 +79,68 @@ App.prototype ={
   construct:function(){
     const self=this;
     if(this.debug)console.log("Constructing App")
-    this.websocket();
-    this.constructFunc();
+    
+    this.login = new Login(this.pointer,{container:"#login"});
+    this.login.parseHash();
+    this.changeLabels();
+  },
+  show:function(){
+    this.render();
+    this.Socket = new Socket(this.pointer);
+  },
+  loadApp:function(keys){
+    console.log(keys)
+    this.KEYS=keys;
+    const self=this;
+    this.header = new Header(this.pointer,{container:"#header"});
     this.Upload = new Modal(this.pointer,{container:"body",name:'upload'});
-    this.Login  = new Login(this.pointer,{container:"#login"})
-    this.Header = new Header(this.pointer,{container:"#header"})
+    
+    
+  },
+  loadMapD:function(){
     this.Footer = new Footer(this.pointer,{container:".footer"})
+    this.mapd = new MapD(this.pointer);
     this.ExportC = new ExportC(this.pointer,{});
-    // this.LeftSide = new LeftSide(this.pointer,{})
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     // this.mapd = new MapD(this.pointer);
     this.mapContainer = new MapContainer(this.pointer,{},function(){
-      self.mapd = new MapD(self.pointer);
       $('#bannerChevron').trigger("click");
-    })
-  },
-  
-  websocket:function(){
-    const self=this;
-    const socket = this.socket = io.connect();
-    
-    socket.on('chat message', function(msg){
-        console.log('message: ' + msg);
-      });
-        
-    // socket.on('refreshfilelist', function(msg){
-    //     self.Upload.getFileList();
-    //   });
-    // socket.on('getfiles', function(results){
-    //     self.Upload.getFileList();
-    // });
-    // socket.on('gettables', function(results){
-    //     self.Upload.getTableList();
-    //   });
-    // socket.on('getdatasets', function(results){
-        
-    //     self.Upload.getDatasetList(results);
-    //   });           
-      
-    socket.on('connect', function () {
-        console.log("connect")
-      });
-  
-    // browser to client
-    // socket.emit('chat message', $('#m').val());
-  
-  },
-  constructFunc:function(){
-    const self=this;
-    
-    this.changeLanguage = function(lang) {
-      if(self.debug)console.log('Change Language');
-      self.language=lang;
-      self.changeLabels();
-    };
-    
-    this.changeLanguageToggle = function() {
-      if(self.debug)console.log('Change Language Toggle');
-      self.language= (self.language==='en') ? 'fr':'en';
-      self.changeLabels2();
-    };
-    
-    this.getKey = function(key){
-      var keywords = self.keywords;
-      var language = self.language;
-      return keywords.find(function(keyword){return keyword.id===key;})[language];
-    };
-    
-    this.changeLabels2 = function() {
-      var language        = self.language;
-      var keywords        = self.keywords;
-      var getKey          = self.getKey;
-      // var chartsContainer = self.chartsContainer;
-      // var rightIcons      = self.rightIcons;
-      // var leftIcons       = self.leftIcons;
-
-      
-      self.keyTags.forEach(function(keyTag){
-        if(keyTag.type==='text'){
-          var key = keywords[keyTag.id]
-          console.log(language)
-          console.log(key[language])
-          $(keyTag.tag).text(key[language]);
-        } 
-      });
-      
-      // rightIcons.forEach(function(filter){
-      //   $('#{0}'.format(filter["id"])).attr('title',getKey(filter.title))
-      //                                 .tooltip('fixTitle');
-      //   $('#header_{0}'.format(filter["id"])).text(getKey(filter.title));                           
-      // })
-          
-      // var elements =  $('.tab_chart')   
-      // elements.each(function(){
-      //   var id = $(this).attr('_id');
-      //   var chart = chartsContainer.findChart(id)
-      //   $(this).text(getKey(chart.title));
-      // });
-        
-      // leftIcons.forEach(function(filter){
-      //   $('#{0}'.format(filter["id"])).attr('title',getKey(filter.title))
-      //                                 .tooltip('fixTitle');
-      // });
-    }
-    
-    this.changeLabels = function() {
-        if(self.debug)console.log("change Labels")
-        var language = self.language;
-        var keywords = self.keywords;
-      	self.keyTags.forEach(function(keyTag){
-      	  
-          var key = keywords[keyTag.id]
-          console.log(language)
-          $(keyTag.tag).text(key[language]);
-        });
-      };
-  },
-  upload:function(){
-    if(this.debug)console.log("Upload")
-  },
-  checkLogin:function(){
-    const self = this;
-    $('#formuserinfo').validator()
-    
-    $('#saveuserinfo').click(function(e) {
-      event.preventDefault();
-      var user = JSON.parse(localStorage.getItem('userInfo'));
-      if(user===null){console.log("No user info???-weird")}
-      var metadata = user.user_metadata;
-      metadata.first = $('#profile_first').val();
-      metadata.last = $('#profile_last').val();
-      metadata.company = $('#profile_company').val();
-      if(self.debug)console.log(user)
+      this.loaded=true;
     });
     
+  },
+  changeLanguage:function(lang) {
+    if(this.debug)console.log('Change Language');
+    this.language=lang;
+    this.changeLabels();
+  },
+  changeLanguageToggle:function() {
+    if(this.debug)console.log('Change Language Toggle');
+    this.language= (this.language==='en') ? 'fr':'en';
+    this.changeLabels();
+  },
+  getKey:function(key){
+    return this.keywords.find(function(keyword){return keyword.id===key;})[this.language];
+  },
+  changeLabels:function() {
+    this.keyTags.forEach(function(keyTag){
+      const key = this.keywords[keyTag.id];
+      $(keyTag.tag).text(key[this.language]);
+    },this);
+  },  
+  render:function(){
+    $(this.container).append(this.renderhtml);
+  },
+  get renderhtml(){
+    return `
+    <div id="header"></div>
+    <div id="mapcontainer"><div id="map"></div></div>
+    <div class="bodyContainer">
+      <!--<div class="sidebar left"></div>-->
+      <div class="footer"></div>
+    </div>
+    `;
   },
 }
 

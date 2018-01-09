@@ -6,9 +6,8 @@ function MapD(parent){
   this.pointer = function(){return self;};
   this.cache={mapmeit:{},'hex16':{},'hex4':{},'hex1':{}},
   this.bounds=[-100,50,-40,60];
-  this.first = true;
-  this.tablename = 'table1'
-  this.createCrossFilter(this.tablename);
+  // this.first = true;
+  this.createCrossFilter();
   this.workerSetup();
   // this.queueSetup();
   
@@ -16,6 +15,7 @@ function MapD(parent){
 }
 MapD.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get IP(){return this.parent.options.IP},
   get emission(){return this.parent.emission;},
   get year(){return this.parent.year;},
   get divider(){return this.parent.divider;},
@@ -25,6 +25,8 @@ MapD.prototype = {
   get geomaps(){return this.parent.geomaps},
   get mapContainer(){return this.parent.mapContainer},
   get filters(){return this.crossFilter.getFilter()},
+  get table(){return this.parent.table;},
+  get KEYS(){return this.parent.KEYS;},
   // construct:function(){
   //   const self=this;
   //   this.con=new MapdCon()
@@ -38,24 +40,27 @@ MapD.prototype = {
   //     crossfilter.crossfilter(con, "table5").then(function(crossFilter){return self.createCharts(crossFilter);})
   //   });
   // },
-  createCrossFilter:function(name){
+  createCrossFilter:function(){
     const self=this;
+    const table=this.table;
+    const keys = this.KEYS.mapd;
     new MapdCon()
     .protocol("http")
-    .host("52.242.33.125")
-    .port("9092")
-    .dbName("mapd")
-    .user("mapd")
-    .password("HyperInteractive")
+    .host(this.IP)
+    .port(keys.port)
+    .dbName(keys.dbName)
+    .user(keys.user)
+    .password(keys.password)
     .connect(function(error, con) {
        self.con=con;
-       crossfilter.crossfilter(con, name).then(function(crossFilter){return self.crossFilterSetup(crossFilter);})
+       crossfilter.crossfilter(con, table).then(function(crossFilter){return self.crossFilterSetup(crossFilter);})
     });
   },
   crossFilterSetup:function(crossFilter){
     // console.log(crossFilter)
     this.crossFilter = crossFilter;
-    if(this.first)this.createCharts();
+    // if(this.first)this.createCharts();
+    this.createCharts();
   },
   reduceFunctionOld:function(){
      return[
@@ -109,7 +114,7 @@ MapD.prototype = {
       self.createNumberDisplay();
       self.render();
       self.resizeFunc();
-      self.first = false;
+      // self.first = false;
     });
 
   },

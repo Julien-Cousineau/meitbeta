@@ -1,5 +1,5 @@
 
-mapboxgl.accessToken='pk.eyJ1IjoianVsaWVuY291c2luZWF1IiwiYSI6ImNpc2h1OHN2bjAwNzMyeG1za3U0anczcTgifQ.KCp_hDxNidB1n29_yBPXdg'
+
 
 function MapContainer(parent,options,callback){
   this._parent = parent;
@@ -19,9 +19,33 @@ MapContainer.prototype = {
     paint:{
       hex:{"fill-outline-color": "rgba(0,0,0,0.0)","fill-color": "rgba(0,0,0,0.5)"},
       meit: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
+      prov: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
+      label: {'text-color': 'black'},
     },
+    layout:{
+      hide:{'visibility':'none'},
+      terminal:{ "icon-image": "{icon}-15", "icon-allow-overlap": true},
+      terminal2:{ "icon-image": "{icon}-15"},
+      meitlabel:{ 'text-size':16,'text-field': 'MEIT {meitid}',
+                      "text-allow-overlap":false,"text-ignore-placement":false,"text-optional":false,
+                      "text-max-width":32,
+                      "icon-allow-overlap":true,"icon-ignore-placement":true,"icon-optional":true,
+            },
+      provlabel:{'visibility':'none', 
+                  'text-size':16,'text-field': '{province}',
+                  "text-allow-overlap":false,"text-ignore-placement":false,"text-optional":false,
+                  "text-max-width":32,
+                  "icon-allow-overlap":true,"icon-ignore-placement":true,"icon-optional":true,
+            },            
+    },
+    viewlayers:{
+      meit:{geo:'meit',label:'meitlabels'},
+      prov:{geo:'prov',label:'provlabels'},
+      hexgrid:{geo:"hexgrid"},
+    }
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get KEYS(){return this.parent.KEYS;},
   get center(){return this.options.center;},
   set center(value){this.options.center=value;},
   get zoom(){return this.options.zoom;},
@@ -36,6 +60,7 @@ MapContainer.prototype = {
   },
   construct:function(){
     const self=this;
+    mapboxgl.accessToken=this.KEYS.mapbox;
     this.readTerminals(function(){
       self.createMap();
     });
@@ -134,14 +159,24 @@ MapContainer.prototype = {
     if (e && e.error !== 'Error: Not Found')console.error(e);
   },
   addSources:function(){
-    const IP = this.parent.options.IP;
-    this.map.addSource('meit_S', {type: 'vector',tiles: [IP + "tiles/meit/{z}/{x}/{y}.pbf"]});
-    this.map.addSource('hex', {type: 'vector',tiles: [IP + "tiles/hex/{z}/{x}/{y}.pbf"]});
-    this.map.addSource('terminalS', {type: 'vector',tiles: [IP + "tiles/terminals/{z}/{x}/{y}.pbf"]});
+    const URL = this.parent.options.URL;
+    this.map.addSource('prov', {type: 'vector',tiles: [URL + "tiles/prov/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('cprov', {type: 'vector',tiles: [URL + "tiles/cprov/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('meit_S', {type: 'vector',tiles: [URL + "tiles/meit/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('meit_C', {type: 'vector',tiles: [URL + "tiles/cmeit/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('hex', {type: 'vector',tiles: [URL + "tiles/hex/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('terminalS', {type: 'vector',tiles: [URL + "tiles/terminals/{z}/{x}/{y}.pbf"]});
   },
   addLayers:function(){
     this.map.addLayer({"id": "meit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
+    this.map.addLayer({"id": "meitlabels","type": "symbol","source": 'meit_C',"source-layer": "cmeitregions",layout: this.options.layout.meitlabel,"paint": this.options.paint.label});
+    this.map.addLayer({"id": "prov","type": "fill","source": 'prov',"source-layer": "provinces",layout:this.options.layout.hide,"paint": this.options.paint.prov});
+    this.map.addLayer({"id": "provlabels","type": "symbol","source": 'cprov',"source-layer": "cprovinces",layout: this.options.layout.provlabel,"paint": this.options.paint.label});
     this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex","paint": this.options.paint.hex});
+    this.map.addLayer({"id": "terminals","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal, "filter": ["==", "zoom", "0"]});
+    this.map.addLayer({"id": "terminals5","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 10, "filter": ["==", "zoom", "1"]});
+    this.map.addLayer({"id": "terminals2","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 11, "filter": ["==", "zoom", "2"]});
+    this.map.addLayer({"id": "terminals1","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 12, "filter": ["==", "zoom", "3"]});
   },
 
   // stops:[],
@@ -172,7 +207,16 @@ MapContainer.prototype = {
     }
 
   },
-
+  changeLayer:function(_id){
+    const layers=this.options.viewlayers;
+    for(let id in layers){
+      const layer=layers[id];
+       this.map.setLayoutProperty(layer.geo, 'visibility', 'none');
+       if(layer.label)this.map.setLayoutProperty(layer.label, 'visibility', 'none');
+    }
+    this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
+    if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
+  },
   mouseDown:function(e){
     // e.originalEvent.preventDefault();
     

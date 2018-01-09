@@ -22,7 +22,9 @@ MBTileServer.prototype={
     tiles:{
       hex: { mbtiles: 'hex.mbtiles' },
       meit: { mbtiles: 'meitregions.mbtiles' },
-      // cmeit: { mbtiles: 'cmeitregions.mbtiles' },
+      prov: { mbtiles: 'provinces.mbtiles' },
+      cmeit: { mbtiles: 'cmeitregions.mbtiles' },
+      cprov: { mbtiles: 'cprovinces.mbtiles' },
       terminals: { mbtiles: 'terminals.mbtiles' }
     }
   },

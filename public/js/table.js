@@ -15,7 +15,7 @@ BaseTable.prototype = {
   //   columns:{file:{title:"File",type:'string'},size:{title:"Size",type:'string'},created:{title:"Created",type:'string'}},
   //   data:function(){return [];}
   // },
-  
+  get socket(){return this.parent.socket;},
   get container(){return this.parent.options.container},
   get id(){return this.parent.options.id},
   get columns(){return this.parent.options.columns},
@@ -26,7 +26,7 @@ BaseTable.prototype = {
   set data(value){this.parent.data=value;},
   apiFunc:function(){
     const self=this;
-    this.parent.parent.socket.on(self.parent.options.apiFuncName, function(obj){
+    this.socket.on(self.parent.options.apiFuncName, function(obj){
       const list = obj.data;
       const meta = obj.meta;
       console.log(list)

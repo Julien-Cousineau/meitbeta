@@ -38,5 +38,8 @@ wget https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.16/xlsx.min.js
 wget http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js
 wget http://sheetjs.com/demos/FileSaver.js
 
+wget https://github.com/AndreLGava/font-awesome-extension/archive/v.0.0.3.zip
+
+
 
 npm install --save express compression cors body-parser cookie-parser node-uuid express-session formidable pretty-bytes

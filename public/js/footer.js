@@ -49,7 +49,7 @@ Footer.prototype ={
     
   },  
   construct:function(){
-    if(this.parent.debug)console.log("Constructing Header")
+    if(this.parent.debug)console.log("Constructing Footer")
     this.render();
     this.constructFunc();
   },
@@ -58,7 +58,9 @@ Footer.prototype ={
     this.dropdownMenuFunc('emission');
     this.dropdownMenuFunc('unit');
     this.dropdownMenuFunc('year');
-    this.dropdownChart();
+    this.dropdownObj('table');
+    this.dropdownObj('chart');
+    this.dropdownObj('gis');
     // $('[data-toggle="tooltip"]').tooltip();
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
@@ -72,15 +74,20 @@ Footer.prototype ={
                </div>`.format(ul,title);               
     return html;
   },
-  dropdownChart:function(){
-    $('.dropdown-menu.menuforchart li').on( 'click', function( event ) {
+  dropdownObj:function(type){
+    const self=this;
+    const name='menufor' + type;
+    $('.dropdown-menu.{0} li'.format(name)).on( 'click', function( event ) {
 
       const $target = $( event.currentTarget ),
             panelid = $target.attr( 'panelid' ),
             $inp = $target.find( 'input' );
-         
+      if(type==="gis" || type==="table")$('.dropdown-menu.{0} li input'.format(name)).prop("checked",false);
+      if(type==="gis")self.parent.mapContainer.changeLayer(panelid);
+      if(type==="table")self.parent.table=panelid;
+      
+      $inp.prop("checked", !$inp.prop("checked"));
       const $panel=$('.x_panel_container[panelid={0}]'.format(panelid));
-      $inp.prop("checked", !$inp.prop("checked"))
       // setTimeout( function() { $inp.prop("checked", !$inp.prop("checked")) }, 0);
       // $panel.toggleClass("show hide");
       $inp.prop("checked")?$panel.show():$panel.hide();
@@ -101,19 +108,22 @@ Footer.prototype ={
       
     });
   },
-  htmlchartli:function(){
-    const charts=this.parent.charts;
+  htmlli:function(obj){
     const language = this.parent.language;
     const keywords = this.parent.keywords;
-    return charts.map(chart=>{
+    
+    return obj.map(item=>{
+      const id = (item.id)?item.id:item.name;
+      const keyword = (item.keyword)?keywords[item.keyword][language]:item.name;
+      const checked = (item.checked)?'checked':"";
       return `<li class="list-group-item" panelid="{0}">
                 {1}
                 <div class="material-switch pull-right">
-                    <input id="switch_{0}" type="checkbox" checked/>
+                    <input id="switch_{0}" type="checkbox" {2}/>
                     <label for="switch_{0}" class="switch-color"></label>
                 </div>
               </li>`
-            .format(chart.id,keywords[chart.keyword][language]);
+            .format(id,keyword,checked);
     }).join("");
   },
   html:function(){
@@ -126,7 +136,10 @@ Footer.prototype ={
     const emissionT = this.parent.emissions.find(item=>item.name===emission).dname;
     const unitT = units.find(item=>item.divider===divider).dname;
     const yearT = years.find(item=>item.name===year).dname;
-    const chartlis = this.htmlchartli();
+    const tablelis = this.htmlli(this.parent.tables);
+    const gislis = this.htmlli(this.parent.gis);
+    const chartlis = this.htmlli(this.parent.charts);
+    
     
     
     return `<div class="handle"></div>
@@ -145,10 +158,26 @@ Footer.prototype ={
                 <div class="col-sm-4">
                   <ul class="nav navbar-right panel_toolbox">
                     <li>
+                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database fa-2x" aria-hidden="true"></i></a>
+                      <div class="dropdown-menu dropdown-menu-right menufortable" aria-labelledby="dropdownMenuTable" x-placement="bottom-start" >
+                        <ul class="list-group">
+                         {3}
+                        </ul>
+                      </div>
+                    </li>                     
+                    <li>
+                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuGIS" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fae-layers fa-2x" aria-hidden="true"></i></a>
+                      <div class="dropdown-menu dropdown-menu-right menuforgis" aria-labelledby="dropdownMenuGIS" x-placement="bottom-start" >
+                        <ul class="list-group">
+                         {4}
+                        </ul>
+                      </div>
+                    </li>                  
+                    <li>
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
                         <ul class="list-group">
-                          {3}
+                          {5}
                         </ul>
                       </div>
                     </li>
@@ -170,6 +199,8 @@ Footer.prototype ={
             `.format(this.dropdownMenu('emissions',emissions,emissionT),
                      this.dropdownMenu('units',units,unitT),
                      this.dropdownMenu('years',years,yearT),
+                     tablelis,
+                     gislis,
                      chartlis
                      )
   },

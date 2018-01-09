@@ -3,6 +3,7 @@
 *.csv2
 *.hex
 *.geojson
+*.zip
 
 data
 node_modules

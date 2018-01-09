@@ -10,6 +10,7 @@ const MAPFIELDS = [
     'lat',
     'meit',
     'mapmeit',
+    'prov',
     'hex_16',
     'hex_4',
     'hex_1'];

@@ -11,7 +11,7 @@ function DatesetFileTable(parent){
 // FileTable.prototype = new BaseTable();
 DatesetFileTable.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
-  
+  get socket(){return this.parent.Socket.socket;},
   get dataset(){return this.meta.dataset},
   construct:function(){
     const self = this;
@@ -48,10 +48,10 @@ DatesetFileTable.prototype = {
       var obj = row.data();
       obj.htmlid = obj.name.replace(/\./g,'');
       obj.dataset = self.dataset;
-      self.parent.socket.emit('addfiledataset',obj);
+      self.socket.emit('addfiledataset',obj);
       $(this).parent().empty().append(getprogressbar(obj.htmlid));
     });
-    self.parent.socket.on('addfiledataset', function(meta){
+    self.socket.on('addfiledataset', function(meta){
       if(meta.action==="done"){
         const html = `<span><i class="fa fa-check-circle fa-2x successicon" aria-hidden="true"></i></span>`;
         $('.progress.bar'.format(meta.htmlid)).parent().empty().append(html);

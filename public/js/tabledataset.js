@@ -12,6 +12,7 @@ function DatesetTable(parent){
 // FileTable.prototype = new BaseTable();
 DatesetTable.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get socket(){return this.parent.Socket.socket;},
   construct:function(){
     const self = this;
     this.options=
@@ -38,7 +39,7 @@ DatesetTable.prototype = {
       data:function(){return self.data;}
     };
     this.base.apiFunc();
-    this.parent.socket.emit("getdatasets");
+    this.socket.emit("getdatasets");
   },
   htmlDataset:function(full){
     return '<button type="button" class="btn-circle btn-primary"><span><i class="fa fa-plus" aria-hidden="true"></i></span></button>';
@@ -51,7 +52,7 @@ DatesetTable.prototype = {
       var obj = row.data();
       var rowid = row[0][0];
       $('.panelleft').css("margin-left","-49%");
-      self.parent.socket.emit("getview",obj);
+      self.socket.emit("getview",obj);
       
       
       // $(this).children("i").toggleClass("fa-plus fa-minus")
@@ -103,7 +104,7 @@ DatesetTable.prototype = {
     // if(id==='filetable')truefunction=;
     // if(id==='datasettable')truefunction=function(){self.parent.socket.emit('deletedataset',row.data())};
     const conF={
-      true:function(){self.parent.socket.emit('deletedataset',row.data())},
+      true:function(){self.socket.emit('deletedataset',row.data())},
       false:function(){return;}
     };
     
@@ -133,7 +134,7 @@ DatesetTable.prototype = {
           `;
     $("#{0}_wrapper .uploadcontainer".format(id)).empty().append(html);
     $("#{0}_wrapper .uploadcontainer button".format(id)).on("click",function(){self.htmlAddButtonAction(id);});
-    this.parent.socket.on("newdataseterror", function(msg){
+    this.socket.on("newdataseterror", function(msg){
       $("#{0}_wrapper .uploadcontainer input".format(id)).addClass("is-invalid")
     });
     
@@ -142,6 +143,6 @@ DatesetTable.prototype = {
   htmlAddButtonAction:function(id){
     const self=this;
     let value=$("#{0}_wrapper .uploadcontainer input".format(id)).val();
-    this.parent.socket.emit("newdataset",value);
+    this.socket.emit("newdataset",value);
   },  
 };

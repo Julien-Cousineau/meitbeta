@@ -14,6 +14,7 @@
     <link rel='stylesheet' href='css/ext/mapbox-gl-geocoder.css'/>
     <link rel="stylesheet" href="css/ext/bootstrap.min.css" /> 
     <link rel='stylesheet' href='css/font-awesome.min.css' />
+    <link rel='stylesheet' href='css/font-awesome-extension.min.css' />
     <link rel='stylesheet' href='css/ext/dropzone.min.css' />
     <link rel='stylesheet' href='css/ext/dataTables.bootstrap4.min.css' />
     <link rel='stylesheet' href='css/ext/dc.css' />
@@ -23,7 +24,8 @@
     <!--<link rel='stylesheet' href='css/bootstrap-datepicker3.min.css' />-->
     <link href='https://fonts.googleapis.com/css?family=Raleway:400,500,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
-    <script src="js/ext/socket.io.slim.js"></script>
+    <!--<script src="js/ext/socket.io.slim.js"></script>-->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="js/ext/jquery-3.2.1.min.js"></script>
     <script src="js/ext/popper.min.js"></script>
     <script src="js/ext/validator.min.js"></script>
@@ -82,6 +84,7 @@
     
     <script src="js/options.js"></script>
     <script src="js/util.js"></script>
+    <script src="js/socket.js"></script>
     <script src="js/api.js"></script>
     <script src="js/table.js"></script>
     <script src="js/tablefile.js"></script>
@@ -115,22 +118,28 @@
     <script src="js/app.js"></script>
 </head>
 <body>
-  <div class="loginContainer">
-    <div id=login style="display:none;">
-    </div>
-  </div>  
-  <div id=home style="display:none;">
-    <div id="header"></div>
-    <div id="mapcontainer"><div id="map"></div></div>
-    <div class="bodyContainer">
+  <div id="login"></div>
+  <div id="home"></div>
+  
+  
+  <!--<div class="loginContainer">-->
+  <!--  <div id=login style="display:none;">-->
+  <!--  </div>-->
+  <!--</div>  -->
+  <!--<div id=home style="display:none;">-->
+  <!--  <div id="header"></div>-->
+  <!--  <div id="mapcontainer"><div id="map"></div></div>-->
+  <!--  <div class="bodyContainer">-->
       <!--<div class="sidebar left"></div>-->
-      <div class="footer">
-        
-      </div>
-      
-      
-    </div>
-  </div>
+  <!--    <div class="footer"></div>-->
+  <!--  </div>-->
+  <!--</div>-->
 
 </body>
 </html>
+
+<!--<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>-->
+<!--.chart-loading-overlay-->
+<!--.waiting, .waiting * {-->
+<!--    cursor: wait !important;-->
+<!--}-->

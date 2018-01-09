@@ -23,7 +23,7 @@ Header.prototype ={
   },
   postrender:function(){
     $(".LGbtn2").click(this.changeLanguage);
-    $(".btn-logout").click(this.parent.Login.logout);
+    $(".btn-logout").click(this.parent.login.logout);
     // this.parent.Login.show_logged_in();
     this.getUserInfo();
     
@@ -40,10 +40,10 @@ Header.prototype ={
   },
   getUserInfo:function(){
     const self=this;
-    if(localStorage.getItem('userInfo')){
-      var user = JSON.parse(localStorage.getItem('userInfo'));
-      $("#usernameHome").text(user.user_metadata.first);
-      if(user.app_metadata.roles[0]=="admin"){
+    const userInfo = this.parent.login.userInfo;
+    if(userInfo){
+      $("#usernameHome").text(userInfo.user_metadata.first);
+      if(userInfo.app_metadata.roles[0]=="admin"){
           $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal"><span><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i></span>Upload</button>`);
           $(".upload").click(function(){self.parent.upload()});
       }

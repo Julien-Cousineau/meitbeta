@@ -50,7 +50,10 @@ Convert.prototype = {
       // 'eastWIG_09122017.csv',
        ],
     csvoutput:['processed.csv'],
-    meitinput:'meitregions.geojson',
+    geoinput:[
+        {id:'MEIT',file:'meitregions.geojson'},
+        {id:'PROV',file:'provinces.geojson'},
+      ],
     hexinput:[
        {id:16,file:'hex_16.hex'},
        {id:4,file:'hex_4.hex'},
@@ -69,7 +72,7 @@ Convert.prototype = {
   get csvoutput(){return this.options.csvoutput},
   get hexinput(){return this.options.hexinput},
   get shipinput(){return this.options.shipinput},
-  get meitinput(){return this.options.meitinput},
+  get geoinput(){return this.options.geoinput},
   print:function(){
     this.printfunc(false,this.meta);
   },
@@ -77,7 +80,7 @@ Convert.prototype = {
     const self=this;
     this.constuctMapArrays();
     
-    self.loopRegion(function(){
+    self.loopGeo(function(){
       self.loopHex(function(){
         self.loopShip(function(){
           self.loopCSV(function(){
@@ -99,15 +102,22 @@ Convert.prototype = {
     this.hex_4=new Uint32Array(size);
     this.hex_1=new Uint32Array(size);
   },
-  loopRegion:function(maincallback){
+  loopGeo:function(maincallback){
     const self=this;
-    const meitregion = this.MEITREGION = new MEITREGION(this.pointer);
-    const inputPath = path.resolve(this.folder.hex,this.meitinput);
-    meitregion.read(inputPath,function(e,message){
+    
+    const funcGeo = function(input,callback){
+      const _id = self[input.id] = new MEITREGION(self.pointer);
+      const inputPath = path.resolve(self.folder.hex,input.file);
+      _id.read(inputPath,function(e,message){
+        if(e){self.meta.errors.push(message);self.print();return;}
+        callback();
+      });
+    }
+    async.eachSeries(this.geoinput, funcGeo, function(e,message){
       if(e){self.meta.errors.push(message);self.print();return;}
-      meitregion.getIndex();
       maincallback();
     });
+      
   },
   loopShip:function(maincallback){
     const self=this;
@@ -210,7 +220,8 @@ Convert.prototype = {
           let meit = parseInt(obj.region);
           meit = (meit >= 0 && meit <= 22)? meit:0;
           
-          const mapmeit = this.MEITREGION.getIndex(lng,lat);
+          const mapmeit = this.MEIT.getIndex(lng,lat);
+          const prov = this.PROV.getIndex(lng,lat);
           const hex_16  = this.hex[16].getIndex(lng,lat);
           const hex_4   = this.hex[4].getIndex(lng,lat);
           // const hex_1   = this.hex[1].getIndex(lng,lat);
@@ -220,6 +231,7 @@ Convert.prototype = {
           this.lat[this.ipoint]    = lat;
           this.meit[this.ipoint]   = meit;
           this.mapmeit[this.ipoint]= mapmeit;
+          this.prov[this.ipoint]= prov;
           this.hex_16[this.ipoint] = hex_16;
           this.hex_4[this.ipoint]  = hex_4;
           // this.hex_1[this.ipoint]  = hex_1;
@@ -240,6 +252,7 @@ Convert.prototype = {
         ping.lat     = this.lat[this.points[point_id]];
         ping.meit    = this.meit[this.points[point_id]];
         ping.mapmeit = this.mapmeit[this.points[point_id]];
+        ping.prov    = this.prov[this.points[point_id]];
         ping.hex_16  = this.hex_16[this.points[point_id]];
         ping.hex_4   = this.hex_4[this.points[point_id]];
         // ping.hex_1   = this.hex_1[this.points[point_id]];

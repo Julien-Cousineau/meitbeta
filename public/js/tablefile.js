@@ -12,6 +12,7 @@ function FileTable(parent){
 // FileTable.prototype = new BaseTable();
 FileTable.prototype = {
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get socket(){return this.parent.Socket.socket;},
   construct:function(){
     const self = this;
     this.options=
@@ -39,7 +40,7 @@ FileTable.prototype = {
       data:function(){return self.data;}
     };
     this.base.apiFunc();
-    this.parent.socket.emit("getfiles");
+    this.socket.emit("getfiles");
   },
 
   htmlConvert:function(full){
@@ -54,10 +55,10 @@ FileTable.prototype = {
       var row = self.base.datatable.row( tr );
       var obj = row.data();
       obj.htmlid = obj.name.replace(".","");
-      self.parent.socket.emit('convertcsv',obj);
+      self.socket.emit('convertcsv',obj);
       $(this).parent().empty().append(getprogressbar(obj.htmlid));
     });
-    self.parent.socket.on('convertcsv', function(meta){
+    self.socket.on('convertcsv', function(meta){
       if(meta.action==="done"){
         const html = `<span><i class="fa fa-check-circle fa-2x successicon" aria-hidden="true"></i></span>`;
         $('.progress.bar'.format(meta.htmlid)).parent().empty().append(html);
@@ -94,9 +95,9 @@ FileTable.prototype = {
   htmlRowDeleteDetailAction:function(id,row,rowid,tr,con){
     const self=this;
     // if(id==='filetable')truefunction=;
-    // if(id==='datasettable')truefunction=function(){self.parent.socket.emit('deletedataset',row.data())};
+    // if(id==='datasettable')truefunction=function(){self.socket.emit('deletedataset',row.data())};
     const conF={
-      true:function(){self.parent.socket.emit('deletefile',row.data())},
+      true:function(){self.socket.emit('deletefile',row.data())},
       false:function(){return;}
     };
     
@@ -119,7 +120,7 @@ FileTable.prototype = {
     const self=this;
     this.parent.api.uploadFiles('#upload-input','#{0}_wrapper .uploadcontainer'.format(id),function(){
       self.htmlUploadButton(id);
-      self.parent.socket.emit("getfiles");
+      self.socket.emit("getfiles");
     });
   },  
 };

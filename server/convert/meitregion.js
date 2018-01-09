@@ -42,6 +42,7 @@ MeitRegion.prototype={
       if(self.web)self.parent.meta.progress=parseFloat(i)/parseFloat(n-1) *100;
       if(self.web)self.parent.print();
     }
+    this.getIndex();
     callback();
   },
   getID:function(lng,lat){
