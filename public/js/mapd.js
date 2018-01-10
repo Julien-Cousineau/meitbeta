@@ -340,7 +340,7 @@ MapD.prototype = {
       
       // console.log(chart.dc.group)
       const emissionFunc=function(emission,_callback){
-        self.parent.emission = emission.name;
+        self.parent.emission = emission.id;
         let strquery = chart.dc.group.writeTopQuery(100);
         // console.log(filters);
         if(filters)strquery=strquery.split('WHERE')[0]+"WHERE " + filters + "GROUP BY" +strquery.split('GROUP BY')[1]

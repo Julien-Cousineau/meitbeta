@@ -477,6 +477,8 @@ Table.prototype ={
       if (err) throw err;
       var dbase = db.db(mongodatabase);
       dbase.collection(name).find({}).toArray(function(err, result) {
+        //swtich name to id
+        result.forEach(item=>item.id=item.name);
         callback(err,result);
       });
    });

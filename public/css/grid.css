@@ -15,7 +15,7 @@
     display: block;
     padding: 10px 20px 0;
     z-index: 2;
-    overflow: scroll;
+    overflow-y: scroll;
     pointer-events: auto;
 }
 .x_title h2, table.tile_info td p {

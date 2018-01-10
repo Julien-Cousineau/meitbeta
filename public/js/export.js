@@ -21,14 +21,153 @@ function ExportC(parent,options){
 }
 
 ExportC.prototype = {
-  options:{
+  options:{container:"body",
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get container(){return this.options.container;},
   get emission(){return this.parent.emission;},
   get unit(){return this.parent.unit},
   get filters(){return this.parent.mapd.filters},
+  
   construct:function(){
     const wb = this.wb = new Workbook();
+    this.render();
+  },
+  render:function(){
+    $(this.container).append(this.renderhtml);
+    // $('body').append(this.defaultdropzone());
+    // this.setDropzone();
+    this.constructFunc();
+  },
+  constructFunc:function(){
+    const self=this;
+    $('#exportModal').on('show.bs.modal', function (e) {
+      $('#exportdatabase').val(self.parent.table);
+      $('#exportyear').val(self.parent.year);
+    });
+    
+    $('.card-body li').on( 'click', function( e ) {
+      const $target = $( e.currentTarget ),
+            switchid = $target.attr( 'switchid' ),
+            $inp = $target.find( 'input' );
+      $inp.prop("checked", !$inp.prop("checked"));
+    });
+  },
+  get renderhtml(){
+    const self=this;
+    const units=this.parent.options.units;
+    const years=this.parent.options.years;
+    // const tablelis = this.htmlli(this.parent.tables);
+    // const gislis = this.htmlli(this.parent.gis);
+    // const chartlis = this.htmlli(this.parent.charts);
+    // const emission = this.parent.emission;
+    // const divider = this.parent.divider;
+    // const year = this.parent.year;
+    // const emissionT = this.parent.emissions.find(item=>item.id===emission).keyword;
+    // const unitT = units.find(item=>item.divider===divider).keyword;
+    // const yearT = years.find(item=>item.id===year).keyword;    
+    // const table = this.parent.table;
+    const bodyemissions = `<ul class="list-group">{0}</ul>`.format(this.parent.emissions.map(item=>{item.htmltype='htmlswitch';return item;})
+                      .map(item=>self[item.htmltype](item)).join(""));
+    
+    const bodygeneral =[
+      {keyword:"User",id:"user",value:"username",htmltype:'htmlfixlabel'},
+      {keyword:"Date",id:"date",value:"2018-01-01",htmltype:'htmlfixlabel'},
+      {keyword:"Database",id:"database",value:"Table1",htmltype:'htmlfixlabel'},
+      {keyword:"Forecast Year",id:"year",value:"2015",htmltype:'htmlfixlabel'},
+      ].map(item=>self[item.htmltype](item)).join(""); 
+    
+    const bodysheets = `<ul class="list-group">{0}</ul>`.format(this.parent.charts.map(item=>{item.htmltype='htmlswitch';return item;})
+                      .map(item=>self[item.htmltype](item)).join(""));
+    
+    // const bodysheets = [
+    //   {label:"User",name:"user",value:"username",type:'fixLabel'},
+      
+    //   ];
+    
+    const cards=[
+      {header:"General",body:bodygeneral},
+      {header:"Emissions",body:bodyemissions},
+      {header:"Sheets",body:bodysheets},
+    ].map(card=>self.card(card)).join("");
+    const progressbar=this.htmlprogressbar({id:'exportprogressbar'});
+    return`
+      <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exportModalLabel">Export</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  {0}
+              	</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div class="container">
+              <div class="row">
+                <div class="col-sm-9">
+                  {1}
+                </div>
+                <div class="col-sm-3">
+                  <button type="button" class="btn btn-primary float-right">Export</button>
+                  <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      `.format(cards,progressbar);
+  },
+  card:function(obj){
+    return `
+      <div class="col-sm-12 col-md-6">            
+        <div class="card">
+          <h5 class="card-header">{0}</h5>
+          <div class="card-body">
+            {1}
+          </div>
+        </div>
+      </div>
+    `.format(obj.header,obj.body);
+  },
+  htmlfixlabel:function(obj){
+    return `
+      <div class="form-group row">
+        <label for="export{1}" class="col-sm-4 col-form-label">{0}</label>
+        <div class="col-sm-8">
+          <input type="text" readonly="" class="form-control-plaintext" id="export{1}" value="{2}">
+        </div>
+      </div>
+    `.format(obj.keyword,obj.id,obj.value);
+  },
+  htmlswitch:function(obj){
+    return `
+    <li class="list-group-item" switchid="export_{1}">
+      {0}
+      <div class="material-switch pull-right">
+          <input id="switch_{1}" type="checkbox" {2}/>
+          <label for="switch_{1}" class="switch-color"></label>
+      </div>
+    </li>
+    `.format(obj.keyword,obj.id,obj.checked?'checked':'');
+  },
+  htmlprogressbar:function(obj){
+    return `
+      <div class="progress bar">
+        <div class="progress-bar progress-bar-success {0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+          0% Complete
+        </div>
+        <div class="h6" style="position: absolute;right: 0;left: 0;text-align: center;"> 0% Complete</div>
+      </div>
+      `.format(obj.id);
   },
   export:function(){
     const self=this;
@@ -71,7 +210,7 @@ ExportC.prototype = {
     const divider = this.parent.divider;
     const emissions = this.parent.emissions;
     const language = this.parent.language;
-    let header = [''].concat(emissions.map(function(emission){return emission.name;}));
+    let header = [''].concat(emissions.map(function(emission){return emission.id;}));
     
     this.parent.mapd.export(function(err,data){
       // console.log(data)
@@ -87,7 +226,7 @@ ExportC.prototype = {
         for(let irow=0,nrow=keys.length;irow<nrow;irow++){
           let row=[];
           for(let ie=0,ne=emissions.length;ie<ne;ie++){
-            let value = cdata[ie][irow][emissions[ie].name]/divider;
+            let value = cdata[ie][irow][emissions[ie].id]/divider;
             row.push(value);
           }
           table.push([keys[irow]].concat(row))
@@ -109,85 +248,4 @@ ExportC.prototype = {
   },
   
 
-}
-function g_exportxls(mf){
-  
-  var filters = mf.filters;
-  var data= mf.data;
-  var dname = mf.dname;
-  var divider = mf.divider;
-  
-  var wb = new Workbook()
-  var sheetname = "filters" 
-  var test = []
-  
-  test.push(["Units",dname]);
-  test.push(["Filters"])
-  
-  if($.isEmptyObject(filters)) {
-    test.push(["None"]);
-  } else {
-     console.log(filters)
-    // var ttest = {
-    //                 "ship_class":["merchant bulk","tanker"]
-    //               }
-      Object.keys(filters).forEach(function(key) {
-        var row = [key].concat(filters[key]);
-        test.push(row);
-      });
-    
-  }
-  
-
-  wb.SheetNames.push(sheetname);
-  wb.Sheets[sheetname] = XLSX.utils.aoa_to_sheet(test);
-  
-  
-  data.forEach(function(chart){
-    if(chart.header !=='total'){
-      var sheetname = chart.header;
-      var _filters = filters[sheetname];
-      if(_filters){
-        if(!Array.isArray(_filters)){_filters = [_filters];}
-      }
-      var groups = chart.values;
-      var header = [''].concat(g_emissionOutputs.map(function(row){return row.dname;}));
-      var keys = g_emissionOutputs.map(function(row){return row.name;});
-      var table=[header];
-      for(var i=0;i<groups.length;i++){
-       
-          
-          
- 
-          var group=groups[i];
-          var row=[];
-          row.push(group.key);
-          var value =group.value;
-
-            
-          for(var j=0;j<keys.length;j++){
-            var key=keys[j];
-            if(_filters){
-              if($.inArray(group.key,_filters)!==-1){
-                row.push(formatOutputEmission(value[key]/divider));
-              } else{
-                row.push(formatOutputEmission(0));
-              }
-            } else {
-              row.push(formatOutputEmission(value[key]/divider));
-            }
-          }
-          table.push(row);
-      }
-      groups.forEach(function (group){
-      });
-      wb.SheetNames.push(sheetname);
-      wb.Sheets[sheetname] = XLSX.utils.aoa_to_sheet(table);
-      
-    }
-  });
-  
-  var wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
- 
-  saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), "test.xlsx");
-}
+};

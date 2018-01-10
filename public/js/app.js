@@ -64,8 +64,8 @@ App.prototype ={
   get divider(){return this.options.divider;},
   set divider(value){this.options.divider=value},
   get unit(){return this.options.unit;},
-  get unitdname(){return this.units.find(item=>item.name===this.unit).dname;},
-  set unit(value){this.options.unit=value;this.divider = this.units.find(item=>item.name===value).divider; },
+  get unitdname(){return this.units.find(item=>item.id===this.unit).keyword;},
+  set unit(value){this.options.unit=value;this.divider = this.units.find(item=>item.id===value).divider; },
   get year(){return this.options.year;},
   set year(value){this.options.year=value;this.mapd.changeGroup();},
   
@@ -114,7 +114,7 @@ App.prototype ={
   loadMapD:function(){
     this.Footer = new Footer(this.pointer,{container:".footer"})
     this.mapd = new MapD(this.pointer);
-    this.ExportC = new ExportC(this.pointer,{});
+    this.ExportC = new ExportC(this.pointer,{container:"body"});
     this.changeLanguage(this.language) //TODO: initialize labels
     this.grid = new Grid(this.pointer);
     // this.mapd = new MapD(this.pointer);

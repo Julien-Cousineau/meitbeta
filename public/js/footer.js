@@ -44,8 +44,8 @@ Footer.prototype ={
       }
     });
     
-    let exportElement = $('.export');
-    exportElement.on("click",function(){return self.parent.ExportC.export();});
+    // let exportElement = $('.export');
+    // exportElement.on("click",function(){return self.parent.ExportC.export();});
     
   },  
   construct:function(){
@@ -66,7 +66,7 @@ Footer.prototype ={
     // this.postrender();
   },
   dropdownMenu:function(name,list,title){
-    let lis=list.map(item=>`<li><a href="#" _id="{0}">{1}</a></li>`.format(item.name,item.dname)).join("");
+    let lis=list.map(item=>`<li><a href="#" _id="{0}">{1}</a></li>`.format(item.id,item.keyword)).join("");
     let ul = `<ul class="dropdown-menu" id="ul_{0}">{1}</ul>`.format(name,lis);
     let html =`<div class="btn-group dropup">
                 <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{1}</div>
@@ -113,8 +113,8 @@ Footer.prototype ={
     const keywords = this.parent.keywords;
     
     return obj.map(item=>{
-      const id = (item.id)?item.id:item.name;
-      const keyword = (item.keyword)?keywords[item.keyword][language]:item.name;
+      const id = (item.id)?item.id:item.id;
+      const keyword = (item.keyword)?keywords[item.keyword][language]:item.id;
       const checked = (item.checked)?'checked':"";
       return `<li class="list-group-item" panelid="{0}">
                 {1}
@@ -138,9 +138,9 @@ Footer.prototype ={
     const emission = this.parent.emission;
     const divider = this.parent.divider;
     const year = this.parent.year;
-    const emissionT = this.parent.emissions.find(item=>item.name===emission).dname;
-    const unitT = units.find(item=>item.divider===divider).dname;
-    const yearT = years.find(item=>item.name===year).dname;
+    const emissionT = this.parent.emissions.find(item=>item.id===emission).keyword;
+    const unitT = units.find(item=>item.divider===divider).keyword;
+    const yearT = years.find(item=>item.id===year).keyword;
     const tablelis = this.htmlli(this.parent.tables);
     const gislis = this.htmlli(this.parent.gis);
     const chartlis = this.htmlli(this.parent.charts);
@@ -149,6 +149,7 @@ Footer.prototype ={
     
     return `<div class="handle"></div>
             <div class="footer-title">
+            <div class="container-fluid">
               <div class="row">
                 <div class="col-sm-8">
                   <span class="number-display">Total</span>
@@ -187,7 +188,7 @@ Footer.prototype ={
                       </div>
                     </li>
                     <li>
-                      <a class="foorterbtn export">
+                      <a class="foorterbtn export" data-toggle="modal" data-target="#exportModal">
                         <i class="fa fa-table fa-2x" aria-hidden="true"></i>
                         <i class="fa fa-circle mpicon circle" aria-hidden="true"></i>
                         <i class="fa fa-download mpicon download" aria-hidden="true"></i>
@@ -197,6 +198,7 @@ Footer.prototype ={
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           <div class="gridContainerParent">
             <div class="gridContainer"></div>

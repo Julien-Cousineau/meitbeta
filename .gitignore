@@ -4,6 +4,7 @@
 *.hex
 *.geojson
 *.zip
+*.env
 
 data
 node_modules
