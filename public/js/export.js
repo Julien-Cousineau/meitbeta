@@ -22,15 +22,17 @@ function ExportC(parent,options){
 
 ExportC.prototype = {
   options:{container:"body",
+  progressbarid:"exportprogressbar",
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get container(){return this.options.container;},
+  get progressbarid(){return this.options.progressbarid;},
   get emission(){return this.parent.emission;},
   get unit(){return this.parent.unit},
   get filters(){return this.parent.mapd.filters},
   
   construct:function(){
-    const wb = this.wb = new Workbook();
+    
     this.render();
   },
   render:function(){
@@ -42,8 +44,20 @@ ExportC.prototype = {
   constructFunc:function(){
     const self=this;
     $('#exportModal').on('show.bs.modal', function (e) {
+      const userinfo =self.parent.userInfo;
+      const user=userinfo.user_metadata.first + "." +userinfo.user_metadata.last;
+      const date = new Date();
+      const filename ="meit_{0}{1}{2}{3}{4}{5}".format(
+        date.getFullYear(),date.getMonth()+1,date.getDay(),
+        date.getHours(),date.getMinutes(),date.getSeconds());
+      
+      console.log(filename)
+      $('#exportuser').val(user);
+      $('#exportdate').val(date.toISOString());
       $('#exportdatabase').val(self.parent.table);
       $('#exportyear').val(self.parent.year);
+      $('#exportunit').val(self.parent.unit);
+      $('#exportfilename').val(filename);
     });
     
     $('.card-body li').on( 'click', function( e ) {
@@ -51,6 +65,9 @@ ExportC.prototype = {
             switchid = $target.attr( 'switchid' ),
             $inp = $target.find( 'input' );
       $inp.prop("checked", !$inp.prop("checked"));
+    });
+    $('#modelexportbtn').on('click',function(e){
+      self.export();
     });
   },
   get renderhtml(){
@@ -70,12 +87,17 @@ ExportC.prototype = {
     const bodyemissions = `<ul class="list-group">{0}</ul>`.format(this.parent.emissions.map(item=>{item.htmltype='htmlswitch';return item;})
                       .map(item=>self[item.htmltype](item)).join(""));
     
-    const bodygeneral =[
+    
+    this.summary =[
       {keyword:"User",id:"user",value:"username",htmltype:'htmlfixlabel'},
       {keyword:"Date",id:"date",value:"2018-01-01",htmltype:'htmlfixlabel'},
       {keyword:"Database",id:"database",value:"Table1",htmltype:'htmlfixlabel'},
+      {keyword:"Unit",id:"unit",value:"xxx",htmltype:'htmlfixlabel'},
       {keyword:"Forecast Year",id:"year",value:"2015",htmltype:'htmlfixlabel'},
-      ].map(item=>self[item.htmltype](item)).join(""); 
+      {keyword:"Comments",id:"comments",value:"null",htmltype:'htmlinputtext'},
+      {keyword:"Filename",id:"filename",value:"meit",htmltype:'htmlinputtext'},
+      ];
+    const bodygeneral=this.summary.map(item=>self[item.htmltype](item)).join(""); 
     
     const bodysheets = `<ul class="list-group">{0}</ul>`.format(this.parent.charts.map(item=>{item.htmltype='htmlswitch';return item;})
                       .map(item=>self[item.htmltype](item)).join(""));
@@ -86,11 +108,11 @@ ExportC.prototype = {
     //   ];
     
     const cards=[
-      {header:"General",body:bodygeneral},
-      {header:"Emissions",body:bodyemissions},
-      {header:"Sheets",body:bodysheets},
+      {col:"col-sm-12 col-md-5",key:'',header:"General",body:bodygeneral},
+      {col:"col-sm-12 col-md-4",key:'charts',header:"Sheets",body:bodysheets},
+      {col:"col-sm-12 col-md-3",key:'emissions',header:"Emissions",body:bodyemissions},
     ].map(card=>self.card(card)).join("");
-    const progressbar=this.htmlprogressbar({id:'exportprogressbar'});
+    const progressbar=this.htmlprogressbar({id:this.progressbarid});
     return`
       <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -115,7 +137,7 @@ ExportC.prototype = {
                   {1}
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" class="btn btn-primary float-right">Export</button>
+                  <button id='modelexportbtn'type="button" class="btn btn-primary float-right">Export</button>
                   <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
                 </div>
               </div>
@@ -128,32 +150,42 @@ ExportC.prototype = {
   },
   card:function(obj){
     return `
-      <div class="col-sm-12 col-md-6">            
-        <div class="card">
-          <h5 class="card-header">{0}</h5>
+      <div class="{0}">            
+        <div class="card" key="{1}">
+          <h5 class="card-header">{2}</h5>
           <div class="card-body">
-            {1}
+            {3}
           </div>
         </div>
       </div>
-    `.format(obj.header,obj.body);
+    `.format(obj.col,obj.key,obj.header,obj.body);
   },
   htmlfixlabel:function(obj){
     return `
-      <div class="form-group row">
+      <div class="row">
         <label for="export{1}" class="col-sm-4 col-form-label">{0}</label>
         <div class="col-sm-8">
-          <input type="text" readonly="" class="form-control-plaintext" id="export{1}" value="{2}">
+          <input type="text" readonly="" class="form-control-plaintext form-control-sm" id="export{1}" value="{2}">
         </div>
       </div>
     `.format(obj.keyword,obj.id,obj.value);
   },
+  htmlinputtext:function(obj){
+    return `
+      <div class="row">
+        <label for="export{1}" class="col-sm-4 col-form-label">{0}</label>
+        <div class="col-sm-8">
+          <input class="form-control form-control-sm" type="text" id="export{1}" placeholder="{2}">
+        </div>
+      </div>
+    `.format(obj.keyword,obj.id,obj.value);
+  },  
   htmlswitch:function(obj){
     return `
     <li class="list-group-item" switchid="export_{1}">
       {0}
       <div class="material-switch pull-right">
-          <input id="switch_{1}" type="checkbox" {2}/>
+          <input id="switch_{1}" type="checkbox" key="{1}" {2}/>
           <label for="switch_{1}" class="switch-color"></label>
       </div>
     </li>
@@ -163,18 +195,27 @@ ExportC.prototype = {
     return `
       <div class="progress bar">
         <div class="progress-bar progress-bar-success {0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-          0% Complete
+          
         </div>
-        <div class="h6" style="position: absolute;right: 0;left: 0;text-align: center;"> 0% Complete</div>
+        <div class="h6 {0}text" style="position: absolute;right: 0;left: 0;text-align: center;"> 0% Complete</div>
       </div>
       `.format(obj.id);
   },
   export:function(){
     const self=this;
+    const wb = this.wb = new Workbook();
+    
+    
+    const selectedemissions={}; 
+    const selectedcharts ={};
+    $(".card[key='emissions'] input").each(function(){return selectedemissions[$(this).attr('key')]={checked:$(this).prop("checked")}});
+    $(".card[key='charts'] input").each(function(){return selectedcharts[$(this).attr('key')]={checked:$(this).prop("checked")}});
+    
     this.getSummarySheet();
-    this.getEmissionSheets(function(){
+    this.getEmissionSheets({selectedcharts:selectedcharts,selectedemissions:selectedemissions},function(){
       let wbout = XLSX.write(self.wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
-      saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), "test.xlsx");
+      const filename = $('#export{0}'.format('filename')).val() + ".xlsx";
+      saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), filename);
     });
     
   },
@@ -182,8 +223,13 @@ ExportC.prototype = {
     
    
     let table = [];
+    
+    this.summary.forEach(item=>{
+      table.push([item.keyword,$('#export{0}'.format(item.id)).val()]);
+    });
   
-    table.push(["Units",this.unit]);
+    // table.push(["Units",this.unit]);
+    table.push([""]);
     table.push(["Filters"]);
     
     const charts = this.parent.charts;
@@ -199,22 +245,29 @@ ExportC.prototype = {
       // console.log(table);
     });
     console.log(table)
-    const sheetname = "filters";
+    const sheetname = "general";
     this.wb.SheetNames.push(sheetname);
     this.wb.Sheets[sheetname] = XLSX.utils.aoa_to_sheet(table);
   },
-  getEmissionSheets:function(callback){
+  updateProgressBar:function(_value){
+    const value = parseInt(_value)
+    $('.{0}'.format(this.progressbarid)).css('width', value+'%').attr('aria-valuenow', value);
+    $('.{0}text'.format(this.progressbarid)).text(value +"% Complete");
+  },
+  getEmissionSheets:function(obj,callback){
     const self=this;
-    const charts = this.parent.charts;
+    
     const wb = this.wb;
     const divider = this.parent.divider;
-    const emissions = this.parent.emissions;
+    const charts = this.parent.charts.reduce((final,chart)=>{if(obj.selectedcharts[chart.id].checked)final.push(chart);return final;},[]);
+    const emissions = this.parent.emissions.reduce((final,emission)=>{if(obj.selectedemissions[emission.id].checked)final.push(emission);return final},[]);
     const language = this.parent.language;
     let header = [''].concat(emissions.map(function(emission){return emission.id;}));
     
-    this.parent.mapd.export(function(err,data){
-      // console.log(data)
-      
+    this.parent.mapd.export({charts:charts,emissions:emissions},function(err,obj){
+      if(obj.meta==='process')return self.updateProgressBar(obj.data); 
+      const data=obj.data;
+      console.log(data);
       charts.forEach((chart,i)=>{
         const cdata=data[i];
         // console.log(cdata)

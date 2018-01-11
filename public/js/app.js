@@ -79,7 +79,7 @@ App.prototype ={
   get gis(){return this.options.gis;},
   get charts(){return this.options.charts;},
   set charts(value){this.options.charts=value;},
-  
+  get userInfo(){return this.login.userInfo;},
   
   get debug(){return this.options.debug;},
   refresh:function(){

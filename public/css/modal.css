@@ -12,7 +12,24 @@
 .forminline {
   display: flex;
 }
+@media (min-width: 992px){
+  .modal-lg {
+      max-width: calc(100% - 50px);
+  }
+}
+@media (min-width: 576px){
+  .modal-dialog {
+      max-width: calc(100% - 20px);
+      margin: 30px auto;
+  }
+}
+.material-switch {
+  margin-top: 2px;  
 
+}
+.card li,label,input {
+  font-size: 14px;
+}
 
 .inlinepanels .panelleft {
   width:49%;

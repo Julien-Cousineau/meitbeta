@@ -269,72 +269,16 @@ MapD.prototype = {
   },
 
 
-  export:function(maincallback){
+  export:function(obj,maincallback){
     const self=this;
     const filters = this.crossFilter.getFilterString();
-    
-    // const filtersstr = (filters)?"{0} AND ".format(filters):"";
-    const charts = this.parent.charts;
-    // const table = this.parent.table;
-    const emissions = this.parent.emissions;
+    // const charts = this.parent.charts.reduce((final,chart)=>{if(obj.selectedcharts[chart.id].checked)final.push(chart);return final;},[]);
+    // const emissions = this.parent.emissions.reduce((final,emission)=>{if(obj.selectedemissions[emission.id].checked)final.push(emission);return final},[]);
+    const charts = obj.charts;
+    const emissions = obj.emissions;
+    const nqueries = parseFloat(charts.length *emissions.length);
+    let iquery=0;
     const emissionOri = JSON.parse(JSON.stringify(this.parent.emission));
-    // charts.map(chart=>{
-    //   self.parent.emission=
-    //   chart.dc.changeGroup()
-    //   console.log(chart.dc.group)
-      
-    //   console.log(chart.dc.group.writeTopQuery())
-    // });
-      // emissions.map(emission=>{
-      // const querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {3}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC"
-      //                       .format(dim,emission,table,filtersstr);        
-      //   self.con.query(querystring, {}, function(err, data) {
-      //     if(err)console.log(err);
-      //     callback(data);
-      //   });
-      // })
-
-       
-    // })
-    // let results=[];
-    // charts.forEach(chart=>{
-    //   console.log(chart)
-    //   const emissionFunc=function(emission,_callback){
-    //     self.parent.emission = emission.name;
-    //     chart.dc.group.topAsync(100).then(function(data){
-    //       _callback(data);
-    //     });
-    //   };
-    //   async.map(emissions,emissionFunc,function(data){
-    //     results.push(data)
-    //   });
-      
-    // });
-    // async.series({
-    //   one: function(parallelCb) {
-    //       request('http://www.example1.com', function (err, res, body) {
-    //           parallelCb(null, {err: err, res: res, body: body});
-    //       });
-    //   },
-    //   two: function(parallelCb) {
-    //       request('http://www.example2.com', function (err, res, body) {
-    //           parallelCb(null, {err: err, res: res, body: body});
-    //       });
-    //   },
-    //   three: function(parallelCb) {
-    //       request('http://www.example3.com', function (err, res, body) {
-    //           parallelCb(null, {err: err, res: res, body: body});
-    //       });
-    //   }
-    // }, function(err, results) {
-    //     // results will have the results of all 3
-    //     console.log(results.one);
-    //     console.log(results.two);
-    //     console.log(results.three);
-    // });
-
-
-
     const dimFunc = function(chart,callback){
       
       
@@ -346,13 +290,14 @@ MapD.prototype = {
         if(filters)strquery=strquery.split('WHERE')[0]+"WHERE " + filters + "GROUP BY" +strquery.split('GROUP BY')[1]
         // console.log(strquery);
         self.con.query(strquery, {}, function(err, data) {
+          maincallback(err,{meta:'process',data:++iquery/parseFloat(nqueries)*100})
           _callback(null,data);
         });
       };
       async.mapSeries(emissions,emissionFunc,callback);
     };
     async.mapSeries(charts,dimFunc,function(err,data){
-      maincallback(err,data)
+      maincallback(err,{meta:'done',data:data})
       self.parent.emission = emissionOri;
     })
     
