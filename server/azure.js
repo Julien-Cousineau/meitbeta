@@ -55,7 +55,11 @@ function main(){
       // {name:'terminalsmbtiles',file:'terminals.mbtiles'},
       // {name:'hexmbtiles',file:'hex.mbtiles'},
       // {name:'cterminalsmbtiles',file:'terminals.mbtiles'},
-      {name:'terminalsgeojson',file:'terminals.geojson'},
+      {name:'meitregionsgeojson',file:'meitregions.geojson'},
+      {name:'provincesgeojson',file:'provinces.geojson'},
+      {name:"hex_1",file:"hex_1.hex"},
+      {name:"hex_4",file:"hex_4.hex"},
+      {name:"hex_16",file:"hex_16.hex"},
       ];
   
   download(list,function(e){
