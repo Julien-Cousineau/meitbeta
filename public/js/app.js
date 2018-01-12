@@ -112,6 +112,7 @@ App.prototype ={
     
     
   },
+  
   loadMapD:function(){
     const self=this;
     this.Footer = new Footer(this.pointer,{container:".footer"})
