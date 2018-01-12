@@ -82,7 +82,7 @@ WebServer.prototype = {
       res.sendFile(path.resolve(__dirname, '../public/index.html'));
     });
     this.dataserver = new DataServer(this.pointer);
-    // this.mbtileserver = new MBTileServer(this.pointer);
+    this.mbtileserver = new MBTileServer(this.pointer);
     this.socketserver = new Socket(this.pointer,{});
 
     self.startServer();  

@@ -58,7 +58,7 @@ DataServer.prototype = {
       form.multiples = true;
     
       // store all uploads in the /uploads directory
-      form.uploadDir = path.join(__dirname, '../data/upload');
+      form.uploadDir = UPLOADFOLDER;
     
       // every time a file has been uploaded successfully,
       // rename it to it's orignal name

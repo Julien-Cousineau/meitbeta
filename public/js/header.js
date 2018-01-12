@@ -73,6 +73,7 @@ Header.prototype ={
 
   <div id="banner">
     <div class ='bannerContainer'>
+      <div class="bannerImage"></div>
       <div class ='leaflogo'></div>
       <div class="nrclogo"></div>                     
       <div class="row bannerrow"> 
