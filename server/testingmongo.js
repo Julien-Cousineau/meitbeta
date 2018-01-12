@@ -1,6 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 const IP = process.env.IP;
-var url = "mongodb://127.0.0.0:27017/meitdata";
+var url = "mongodb://localhost:27017/meitdata";
 
 // const collection = "convert";
 const collection = "ofiles";
