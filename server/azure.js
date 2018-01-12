@@ -46,12 +46,14 @@ function main(){
     //         // {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"},
     //       ]
     let list=[
+        {name:"pacific_growth_factors_11212017",file:"pacific_growth_factors_11212017.csv"},
+        {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
      
-      {name:'cprovincesmbtiles',file:'cprovinces.mbtiles'},
-      {name:'meitregionsmbtiles',file:'meitregions.mbtiles'},
-      {name:'provincesmbtiles',file:'provinces.mbtiles'},
-      {name:'terminalsmbtiles',file:'terminals.mbtiles'},
-      {name:'hexmbtiles',file:'hex.mbtiles'},
+      // {name:'cprovincesmbtiles',file:'cprovinces.mbtiles'},
+      // {name:'meitregionsmbtiles',file:'meitregions.mbtiles'},
+      // {name:'provincesmbtiles',file:'provinces.mbtiles'},
+      // {name:'terminalsmbtiles',file:'terminals.mbtiles'},
+      // {name:'hexmbtiles',file:'hex.mbtiles'},
       ];
   
   download(list,function(e){

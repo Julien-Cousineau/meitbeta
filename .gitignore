@@ -5,6 +5,7 @@
 *.geojson
 *.zip
 *.env
+*.mbtiles
 
 data
 node_modules
