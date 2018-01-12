@@ -39,9 +39,9 @@ MBTileServer.prototype={
       
       let tileJSON = {};
       let source = new mbtiles(mbtilesFile, function(err) {
-        if(err){console.log("Error 00")}
+        if(err){console.log("Error 00:"+err)}
         source.getInfo(function(err, info) {
-          if(err){console.log("Error 0")}
+          if(err){console.log("Error 0: "+err)}
           tileJSON['name'] = id;
           tileJSON['format'] = 'pbf';
     

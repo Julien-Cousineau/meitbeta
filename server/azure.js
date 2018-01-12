@@ -50,11 +50,12 @@ function main(){
       // {name:"east_arctic_greatlakes_growth_factors_11212017",file:"east_arctic_greatlakes_growth_factors_11212017.csv"},
       // {name:'cprovincesmbtiles',file:'cprovinces.mbtiles'},
       // {name:'meitregionsmbtiles',file:'meitregions.mbtiles'},
-      {name:'cmeitregionsmbtiles',file:'cmeitregions.mbtiles'},
+      // {name:'cmeitregionsmbtiles',file:'cmeitregions.mbtiles'},
       // {name:'provincesmbtiles',file:'provinces.mbtiles'},
       // {name:'terminalsmbtiles',file:'terminals.mbtiles'},
       // {name:'hexmbtiles',file:'hex.mbtiles'},
       // {name:'cterminalsmbtiles',file:'terminals.mbtiles'},
+      {name:'terminalsgeojson',file:'terminals.geojson'},
       ];
   
   download(list,function(e){
