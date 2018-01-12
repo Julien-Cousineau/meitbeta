@@ -49,6 +49,7 @@ MapContainer.prototype = {
   get keywords(){return this.parent.keywords;},
   get emission(){return this.parent.emission;},
   get language(){return this.parent.language;},
+  get unit(){return this.parent.unit;},
   get mapd(){return this.parent.mapd;},
   get hoverquery(){return this.options.hoverquery;},
   set hoverquery(value){this.options.hoverquery=value;},
@@ -268,11 +269,12 @@ MapContainer.prototype = {
     // console.log(feature)
     const gid=feature.properties.gid;
     const value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
+     console.log(this.unit)
     switch (this.mapDLayer) {
-      case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.unitdname);
-      case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.unitdname);
+      case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.keywords[this.unit][this.language]);
+      case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.keywords[this.unit][this.language]);
        
-      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.unitdname);
+      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.keywords[this.unit]);
     }
     
   },

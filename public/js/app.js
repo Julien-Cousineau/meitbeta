@@ -97,7 +97,7 @@ App.prototype ={
     
     this.login = new Login(this.pointer,{container:"#login"});
     this.login.parseHash();
-    this.changeLabels();
+    
   },
   show:function(){
     this.render();
@@ -113,6 +113,7 @@ App.prototype ={
     
   },
   loadMapD:function(){
+    const self=this;
     this.Footer = new Footer(this.pointer,{container:".footer"})
     this.mapd = new MapD(this.pointer);
     this.ExportC = new ExportC(this.pointer,{container:"body"});
@@ -121,7 +122,8 @@ App.prototype ={
     // this.mapd = new MapD(this.pointer);
     this.mapContainer = new MapContainer(this.pointer,{},function(){
       $('#bannerChevron').trigger("click");
-      this.loaded=true;
+      self.loaded=true;
+      self.changeLabels();
     });
     
   },

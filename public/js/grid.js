@@ -37,9 +37,9 @@ Grid.prototype = {
     return `<div class="forchart {0}"></div>`.format("_" + id);
   },
   renderPanelTitle:function(panel){
-    const header = this.parent.keywords[panel.keyword].en
+    const keyword = panel.keyword;
     const charts = this.parent.charts;
-    const keywords = this.parent.keywords;
+    // const keywords = this.parent.keywords;
     let panelcontent="";
     // console.log(panel.dimensionids)
     // if(panel.dimensionids.length>1){
@@ -65,7 +65,7 @@ Grid.prototype = {
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 x_panel_container show" panelid="{0}">
           <div class="x_panel tile fixed_height_320">
             <div class="x_title">
-              <h2>{1}</h2>
+              <h2 keyword="{1}" keywordType="text">{1}</h2>
               <ul class="nav navbar-right panel_toolbox">
                 <li class="resetbtnli" style="visibility: hidden"><a class="resetbtn"><i class="fa fa-filter"></i><i class="fa fa-times xicon"></i></a></li>
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -91,7 +91,7 @@ Grid.prototype = {
             </div>
           </div>  
         </div>
-            `.format(panel.id,header,panelcontent);
+            `.format(panel.id,keyword,panelcontent);
     
   },
   renderRow:function(panels){

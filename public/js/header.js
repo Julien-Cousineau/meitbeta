@@ -43,7 +43,7 @@ Header.prototype ={
     if(userInfo){
       $("#usernameHome").text(userInfo.user_metadata.first);
       if(userInfo.app_metadata.roles[0]=="admin" || userInfo.app_metadata.roles[0]=="user"){
-          $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal" keyword="upload"  keywordType="text"><span><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i></span>Upload</button>`);
+          $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal"><span><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i></span><span keyword="upload"  keywordType="text">Upload</span></button>`);
       }
     }
   },
@@ -64,7 +64,7 @@ Header.prototype ={
         </button>
         <div id="headerdroplist" class="dropdown-menu dropdown-menu-right">
           <div class="dropdown-divider"></div>
-          <button class="dropdown-item btn-logout" type="button" keyword="logout" keywordType="text"><i class="fa fa-sign-out fa-fw"></i>Log out</button>
+          <button class="dropdown-item btn-logout" type="button"><i class="fa fa-sign-out fa-fw"></i><span keyword="logout" keywordType="text">Log out</span></button>
         </div>
       </div>
       
@@ -76,7 +76,7 @@ Header.prototype ={
       <div class ='leaflogo'></div>
       <div class="nrclogo"></div>                     
       <div class="row bannerrow"> 
-        <div class="col-sm-6 bannerCC"><div class ='bannerText'>Marine Renewable Energy Atlas</div></div>       
+        <div class="col-sm-6 bannerCC"><div class ='bannerText' keyword="title" keywordType="text">Marine Renewable Energy Atlas</div></div>       
       </div>
     </div>
     <div id="bannerChevron">

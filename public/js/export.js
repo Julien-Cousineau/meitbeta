@@ -89,13 +89,13 @@ ExportC.prototype = {
     
     
     this.summary =[
-      {keyword:"User",id:"user",value:"username",htmltype:'htmlfixlabel'},
-      {keyword:"Date",id:"date",value:"2018-01-01",htmltype:'htmlfixlabel'},
-      {keyword:"Database",id:"database",value:"Table1",htmltype:'htmlfixlabel'},
-      {keyword:"Unit",id:"unit",value:"xxx",htmltype:'htmlfixlabel'},
-      {keyword:"Forecast Year",id:"year",value:"2015",htmltype:'htmlfixlabel'},
-      {keyword:"Comments",id:"comments",value:"null",htmltype:'htmlinputtext'},
-      {keyword:"Filename",id:"filename",value:"meit",htmltype:'htmlinputtext'},
+      {keyword:"user",id:"user",value:"username",htmltype:'htmlfixlabel'},
+      {keyword:"date",id:"date",value:"2018-01-01",htmltype:'htmlfixlabel'},
+      {keyword:"database",id:"database",value:"Table1",htmltype:'htmlfixlabel'},
+      {keyword:"unit",id:"unit",value:"xxx",htmltype:'htmlfixlabel'},
+      {keyword:"forecastyear",id:"year",value:"2015",htmltype:'htmlfixlabel'},
+      {keyword:"comments",id:"comments",value:"null",htmltype:'htmlinputtext'},
+      {keyword:"filename",id:"filename",value:"meit",htmltype:'htmlinputtext'},
       ];
     const bodygeneral=this.summary.map(item=>self[item.htmltype](item)).join(""); 
     
@@ -108,9 +108,9 @@ ExportC.prototype = {
     //   ];
     
     const cards=[
-      {col:"col-sm-12 col-md-5",key:'',header:"General",body:bodygeneral},
-      {col:"col-sm-12 col-md-4",key:'charts',header:"Sheets",body:bodysheets},
-      {col:"col-sm-12 col-md-3",key:'emissions',header:"Emissions",body:bodyemissions},
+      {col:"col-sm-12 col-md-5",key:'',header:"general",body:bodygeneral},
+      {col:"col-sm-12 col-md-4",key:'charts',header:"sheets",body:bodysheets},
+      {col:"col-sm-12 col-md-3",key:'emissions',header:"emissions",body:bodyemissions},
     ].map(card=>self.card(card)).join("");
     const progressbar=this.htmlprogressbar({id:this.progressbarid});
     return`
@@ -118,7 +118,7 @@ ExportC.prototype = {
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exportModalLabel">Export</h5>
+              <h5 class="modal-title" id="exportModalLabel" keyword="export" keywordType="text">Export</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -152,7 +152,7 @@ ExportC.prototype = {
     return `
       <div class="{0}">            
         <div class="card" key="{1}">
-          <h5 class="card-header">{2}</h5>
+          <h5 class="card-header" keyword="{2}" keywordType="text">{2}</h5>
           <div class="card-body">
             {3}
           </div>
@@ -163,7 +163,7 @@ ExportC.prototype = {
   htmlfixlabel:function(obj){
     return `
       <div class="row">
-        <label for="export{1}" class="col-sm-4 col-form-label">{0}</label>
+        <label for="export{1}" class="col-sm-4 col-form-label" keyword="{0}" keywordType="text">{0}</label>
         <div class="col-sm-8">
           <input type="text" readonly="" class="form-control-plaintext form-control-sm" id="export{1}" value="{2}">
         </div>
@@ -173,9 +173,9 @@ ExportC.prototype = {
   htmlinputtext:function(obj){
     return `
       <div class="row">
-        <label for="export{1}" class="col-sm-4 col-form-label">{0}</label>
+        <label for="export{1}" class="col-sm-4 col-form-label" keyword="{0}" keywordType="text">{0}</label>
         <div class="col-sm-8">
-          <input class="form-control form-control-sm" type="text" id="export{1}" placeholder="{2}">
+          <input class="form-control form-control-sm" type="text" id="export{1} placeholder="{2}">
         </div>
       </div>
     `.format(obj.keyword,obj.id,obj.value);
@@ -183,7 +183,7 @@ ExportC.prototype = {
   htmlswitch:function(obj){
     return `
     <li class="list-group-item" switchid="export_{1}">
-      {0}
+      <span keyword="{0}" keywordType="text">{0}</span>
       <div class="material-switch pull-right">
           <input id="switch_{1}" type="checkbox" key="{1}" {2}/>
           <label for="switch_{1}" class="switch-color"></label>
@@ -197,7 +197,7 @@ ExportC.prototype = {
         <div class="progress-bar progress-bar-success {0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
           
         </div>
-        <div class="h6 {0}text" style="position: absolute;right: 0;left: 0;text-align: center;"> 0% Complete</div>
+        <div class="h6 {0}text" style="position: absolute;right: 0;left: 0;text-align: center;"> 0% </div>
       </div>
       `.format(obj.id);
   },
@@ -252,7 +252,7 @@ ExportC.prototype = {
   updateProgressBar:function(_value){
     const value = parseInt(_value)
     $('.{0}'.format(this.progressbarid)).css('width', value+'%').attr('aria-valuenow', value);
-    $('.{0}text'.format(this.progressbarid)).text(value +"% Complete");
+    $('.{0}text'.format(this.progressbarid)).text(value +"%");
   },
   getEmissionSheets:function(obj,callback){
     const self=this;
