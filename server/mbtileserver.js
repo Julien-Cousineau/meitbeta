@@ -7,7 +7,7 @@ const path = require('path')
 const mbtiles = require('mbtiles');
 const express = require('express');
 
-const HEXFOLDER =  path.join(__dirname, '../data/hex');
+const HEXFOLDER =  path.join(__dirname, '../../shareddrive/data/hex');
 
 
 

@@ -1,8 +1,8 @@
 const path = require('path');
 
-const CONVERTFOLDER =  path.join(__dirname, '../data/convert');
-const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
-const SCHEMAFOLDER =  path.join(__dirname, '../data/schema');
+const CONVERTFOLDER =  path.join(__dirname, '../../shareddrive/data/convert');
+const UPLOADFOLDER =  path.join(__dirname, '../../shareddrive/data/upload');
+const SCHEMAFOLDER =  path.join(__dirname, '../../shareddrive/data/schema');
 const IP = process.env.IP;
 const fs = require('fs');
 const Connector = require("./node-connector");

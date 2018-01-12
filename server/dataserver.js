@@ -1,7 +1,7 @@
 const path = require('path');
-const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
-const CONVERTFOLDER =  path.join(__dirname, '../data/convert');
-const SCHEMAFOLDER =  path.join(__dirname, '../data/schema');
+const UPLOADFOLDER =  path.join(__dirname, '../../shareddrive/data/upload');
+const CONVERTFOLDER =  path.join(__dirname, '../../shareddrive/data/convert');
+const SCHEMAFOLDER =  path.join(__dirname, '../../shareddrive/data/schema');
 const CONVERT = require('./convert');
 const IP = process.env.IP;
 const mongodatabase = "meitdata";

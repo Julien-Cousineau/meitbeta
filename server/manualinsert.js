@@ -1,8 +1,8 @@
 const path = require('path');
 const DataServer = require('./dataserver');
 const CONVERT = require('./convert');
-const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
-const CONVERTFOLDER = path.join(__dirname, '../data/convert');
+const UPLOADFOLDER =  path.join(__dirname, '../../shareddrive/data/upload');
+const CONVERTFOLDER = path.join(__dirname, '../../shareddrive/data/convert');
 
 const CONSTANTS= require('./convert/constants');
 const EMISSIONS= CONSTANTS.EMISSIONS;

@@ -23,8 +23,8 @@ const Socket = require('./socket');
 // const async = require("async");
 
 
-const UPLOADFOLDER =  path.join(__dirname, '../data/upload');
-const CONVERTFOLDER =  path.join(__dirname, '../data/convert');
+const UPLOADFOLDER =  path.join(__dirname, '../../shareddrive/data/upload');
+const CONVERTFOLDER =  path.join(__dirname, '../../shareddrive/data/convert');
 
 const dotenv = require('dotenv');
 
