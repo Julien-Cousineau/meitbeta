@@ -49,6 +49,7 @@ App.prototype ={
   get mapLayer(){return this.options.mapLayer;},
   set mapLayer(value){this.options.mapLayer=value;this.setmapDLayer();},
   get mapDLayer(){return this.options.mapDLayer;},
+  // set mapDLayer(value){this.options.mapDLayer=value;},
   setmapDLayer:function(){
     const mapLayer=this.mapLayer;
     const zoom = this.mapContainer.zoom;
@@ -138,10 +139,22 @@ App.prototype ={
     return this.keywords.find(function(keyword){return keyword.id===key;})[this.language];
   },
   changeLabels:function() {
-    this.keyTags.forEach(function(keyTag){
-      const key = this.keywords[keyTag.id];
-      $(keyTag.tag).text(key[this.language]);
-    },this);
+    const self=this;
+    // this.keyTags.forEach(function(keyTag){
+    //   const key = this.keywords[keyTag.id];
+    //   $(keyTag.tag).text(key[this.language]);
+    // },this);
+    console.log()
+    $("*[keyword]").each(function(){
+      const keyword=$(this).attr("keyword");
+      const keywordType=$(this).attr("keywordType");
+      if(keywordType==='emission' ||keywordType==='unit')return $(this).text(self.keywords[self[keywordType]][self.language]);
+      if(keywordType==='year')return $(this).text(self[keywordType]);
+      if(!(self.keywords[keyword]))return console.log("WARNING:keyword({0}) does not exist".format(keyword));
+      if(keywordType==="text")return $(this).text(self.keywords[keyword][self.language]);
+      if(keywordType==="placeholder")return $(this).attr("placeholder",self.keywords[keyword][self.language]);
+    })
+    
   },  
   render:function(){
     $(this.container).append(this.renderhtml);

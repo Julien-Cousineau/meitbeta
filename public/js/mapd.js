@@ -227,7 +227,7 @@ MapD.prototype = {
     let bounds=null;
     $('#map').addClass("chart-loading-overlay");
     $('#map').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
-    // console.log(self.mapDLayer)
+    console.log(self.mapDLayer)
     if(self.mapDLayer==='hex16' || self.mapDLayer==='hex4' || self.mapDLayer==='hex1'){bounds=self.mapContainer.bounds;} 
     this.queue.unshift({priorityindex:++this.priorityindex,bounds:bounds});
   },

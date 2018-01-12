@@ -46,6 +46,9 @@ MapContainer.prototype = {
     }
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get keywords(){return this.parent.keywords;},
+  get emission(){return this.parent.emission;},
+  get language(){return this.parent.language;},
   get mapd(){return this.parent.mapd;},
   get hoverquery(){return this.options.hoverquery;},
   set hoverquery(value){this.options.hoverquery=value;},
@@ -59,17 +62,20 @@ MapContainer.prototype = {
   get center(){return this.options.center;},
   set center(value){this.options.center=value;},
   get zoom(){return this.options.zoom;},
-  set zoom(value){this.options.zoom=value;},
-  // set zoom(value){
-  //   if(value !==this.options.zoom){
-  //     this.options.zoom=value;
-  //     for(let key in this.parent.geomaps){
-  //       let layer = this.parent.geomaps[key];
-  //       if(value >=layer.minimum && value<=layer.maximum)this.parent.mapLayer=key;
-  //     }
-  //   }
-  // },
-  
+  // set zoom(value){this.options.zoom=value;},
+  set zoom(value){
+    if(value !==this.options.zoom){
+      this.options.zoom=value;
+      this.parent.setmapDLayer();
+      // const mapLayer=this.mapLayer;
+      // const zoom = value;
+      // if(mapLayer==='mapmeit'||mapLayer==='prov'){this.parent.mapDLayer=mapLayer;return;}
+      // for(let key in this.geomaps){
+      //     let layer = this.geomaps[key];
+      //     if(zoom >=layer.minimum && zoom<=layer.maximum)this.parent.mapDLayer=key;
+      // }
+    }
+  },
   construct:function(){
     const self=this;
     mapboxgl.accessToken=this.KEYS.mapbox;
@@ -113,6 +119,8 @@ MapContainer.prototype = {
     });
   },
   loaded:function(){
+    $(".mapboxgl-ctrl-geocoder input").attr("keyword","search");
+    $(".mapboxgl-ctrl-geocoder input").attr("keywordType","placeholder");
     this.addSources();
     this.addLayers();
     this.addSelectButton();
@@ -128,10 +136,10 @@ MapContainer.prototype = {
           <div>
           <div class="row">
             <div class="col-sm-8">
-              <div class="extentheader">Extent</div>
+              <div class="extentheader" keyword="extent" keywordType="text">Extent</div>
             </div>
             <div class="col-sm-4">
-                <a class="clearpanel" style="float: right;">clear</a>
+                <a class="clearpanel" style="float: right;" keyword="clear" keywordType="text">clear</a>
             </div>
           </div>
             <div class="row">
@@ -212,6 +220,7 @@ MapContainer.prototype = {
     const mapLayer = this.mapLayer;
     // console.log(mapLayer);
     if(stops && this.map.getLayer(mapLayer)){
+      console.log(stops.length)
       console.time("inside");
       self.map.setPaintProperty(mapLayer, 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
       this.showLayer();
@@ -233,6 +242,7 @@ MapContainer.prototype = {
   showLayer:function(){
     const layers=this.options.viewlayers;
     const _id =this.mapLayer;
+    console.log(layers[_id].geo)
     this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
     if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
   },
@@ -259,10 +269,10 @@ MapContainer.prototype = {
     const gid=feature.properties.gid;
     const value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
     switch (this.mapDLayer) {
-      case "mapmeit": return `Meit Region {0} <br> Emission {1} - {2}`.format(feature.properties.meitid,value,this.unitdname);
-      case "prov": return `{0} <br> Emission {1} - {2}`.format(feature.properties.province,value,this.unitdname);
+      case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.unitdname);
+      case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.unitdname);
        
-      default: return `GID({0}) <br> Emission {1} - {2}`.format(feature.properties.gid,value,this.unitdname);
+      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.unitdname);
     }
     
   },

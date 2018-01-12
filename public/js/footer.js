@@ -66,10 +66,10 @@ Footer.prototype ={
     // this.postrender();
   },
   dropdownMenu:function(name,list,title){
-    let lis=list.map(item=>`<li><a href="#" _id="{0}">{1}</a></li>`.format(item.id,item.keyword)).join("");
+    let lis=list.map(item=>`<li><a href="#" _id="{0}" keyword="{0}" keywordType="text">{1}</a></li>`.format(item.id,item.keyword)).join("");
     let ul = `<ul class="dropdown-menu" id="ul_{0}">{1}</ul>`.format(name,lis);
     let html =`<div class="btn-group dropup">
-                <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{1}</div>
+                <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" keyword="" keywordType="{1}">{1}</div>
                   {0}
                </div>`.format(ul,title);               
     return html;
@@ -114,16 +114,17 @@ Footer.prototype ={
     
     return obj.map(item=>{
       const id = (item.id)?item.id:item.id;
-      const keyword = (item.keyword)?keywords[item.keyword][language]:item.id;
+      const keyword = (item.keyword)?item.keyword:item.id;
+      const value = (item.keyword)?keywords[item.keyword][language]:item.id;
       const checked = (item.checked)?'checked':"";
-      return `<li class="list-group-item" panelid="{0}">
-                {1}
+      return `<li class="list-group-item" panelid="{0}" keyword="{1}" keywordType="text">
+                {2}
                 <div class="material-switch pull-right">
-                    <input id="switch_{0}" type="checkbox" {2}/>
+                    <input id="switch_{0}" type="checkbox" {3}/>
                     <label for="switch_{0}" class="switch-color"></label>
                 </div>
               </li>`
-            .format(id,keyword,checked);
+            .format(id,keyword,value,checked);
     }).join("");
   },
   updateTableList:function(){
@@ -152,7 +153,7 @@ Footer.prototype ={
             <div class="container-fluid">
               <div class="row">
                 <div class="col-sm-8">
-                  <span class="number-display">Total</span>
+                  <span class="number-display"></span>
                   {0}
                   <span class="number-display">&nbsp: </span>
                   <div class="number-display" id="totalnumber"></div>
@@ -203,9 +204,9 @@ Footer.prototype ={
           <div class="gridContainerParent">
             <div class="gridContainer"></div>
           </div>
-            `.format(this.dropdownMenu('emissions',emissions,emissionT),
-                     this.dropdownMenu('units',units,unitT),
-                     this.dropdownMenu('years',years,yearT),
+            `.format(this.dropdownMenu('emissions',emissions,"emission"),
+                     this.dropdownMenu('units',units,"unit"),
+                     this.dropdownMenu('years',years,"year"),
                      tablelis,
                      gislis,
                      chartlis
