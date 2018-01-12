@@ -42,7 +42,7 @@ function Convert(options,callback){
 }
 Convert.prototype = {
   options:{
-    folder:{csv:'data/upload',hex:'data/hex',ship:'data/ship',convert:'data/convert'},
+    folder:{csv:'../shareddrive/data/upload',hex:'../shareddrive/data/hex',ship:'../shareddrive/data/ship',convert:'../shareddrive/data/convert'},
     csvinput:[
       //   'dummy.csv',
       // 'arcticWIG_09212017.csv',
