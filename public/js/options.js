@@ -7,8 +7,10 @@ const options ={
     AUTH0_DOMAIN:'nrc-ocre.auth0.com',  
     AUTH0_CALLBACK_URL:window.location.href,
     },
-  IP : 'ec-meit-dev.ca',
-  URL : 'http://ec-meit-dev.ca:8080/',
+  // IP : 'ec-meit-dev.ca',
+  // URL : 'http://ec-meit-dev.ca:8080/',
+  IP : '52.228.71.184',
+  URL : 'http://52.228.71.184:8080/',  
   keywords:{
     username:{'en':"Username",'fr':"Nom d'utilisateur"},
     password:{'en':"Password",'fr':"Mot de passe"},
