@@ -93,6 +93,7 @@ App.prototype ={
   },
   construct:function(){
     const self=this;
+    this.options.extractRootDomain
     if(this.debug)console.log("Constructing App")
     
     this.login = new Login(this.pointer,{container:"#login"});
