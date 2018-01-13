@@ -57,7 +57,7 @@ Convert.prototype = {
     hexinput:[
        {id:16,file:'hex_16.hex'},
        {id:4,file:'hex_4.hex'},
-      // {id:1,file:'hex_1.hex'}
+      {id:1,file:'hex_1.hex'}
        ],
     shipinput:[
      {id:0,file:'pacific_growth_factors_11212017.csv'},
@@ -215,7 +215,7 @@ Convert.prototype = {
         // const ip      = parseFloat(obj.ip);
         const point_id= obj.grid_index;
         const mode    = obj.activity_type;
-        const ip = (obj.ip.toLowerCase()==='true')?1:0;
+        const ip = (obj.ip && obj.ip.toLowerCase()==='true')?1:0;
         const datetime= Date.parse(obj.date_time);
         
         if(!(ships[ship_id]))this.errorlog.push("Cannot find ship_id : " + ship_id);
@@ -231,7 +231,7 @@ Convert.prototype = {
           const prov = this.PROV.getIndex(lng,lat);
           const hex_16  = this.hex[16].getIndex(lng,lat);
           const hex_4   = this.hex[4].getIndex(lng,lat);
-          // const hex_1   = this.hex[1].getIndex(lng,lat);
+          const hex_1   = this.hex[1].getIndex(lng,lat);
           
           this.points[point_id]    = this.ipoint;
           this.lng[this.ipoint]    = lng;
@@ -241,7 +241,7 @@ Convert.prototype = {
           this.prov[this.ipoint]= prov;
           this.hex_16[this.ipoint] = hex_16;
           this.hex_4[this.ipoint]  = hex_4;
-          // this.hex_1[this.ipoint]  = hex_1;
+          this.hex_1[this.ipoint]  = hex_1;
           
           this.ipoint++;
         }
@@ -262,7 +262,7 @@ Convert.prototype = {
         ping.prov    = this.prov[this.points[point_id]];
         ping.hex_16  = this.hex_16[this.points[point_id]];
         ping.hex_4   = this.hex_4[this.points[point_id]];
-        // ping.hex_1   = this.hex_1[this.points[point_id]];
+        ping.hex_1   = this.hex_1[this.points[point_id]];
         
         
         for(let i=0,n=YEARS.length;i<n;i++){

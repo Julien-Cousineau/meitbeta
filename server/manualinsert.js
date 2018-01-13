@@ -14,7 +14,13 @@ const MapDServer = require("./mapdserver");
 // const filename='dummy.csv';
 // const filename='arcticWIG_09212017.csv';
 // const filename='pacific_emissions_11162017.csv';
-const filename='east_arctic_emissions_10252017.csv';
+
+// const filename='arctic_emissions_01102018.csv';
+// const filename='arcticWIG_09212017.csv';
+// const filename='eastWIG_09122017.csv';
+// const filename='pacificWIG_09212017.csv';
+// const filename='pacific_emissions_01042018.csv';
+const filename='pacific_emissions_11162017.csv';
 
 function ManualInsert(){
     const self=this;
@@ -28,10 +34,11 @@ function ManualInsert(){
     //     })
     //   });  
     // });
-    // dataserver.files.add(filepath,function(){console.log("Done")});
-    dataserver.converts.add({name:"arctic_emissions_01102018.csv",dataset:{name:'table6'},htmlid:""},function(err,meta){
-      console.log(meta)
-    });
+    dataserver.files.add(filepath,function(){console.log("Done")});
+    
+    // dataserver.converts.add({name:"arctic_emissions_01102018.csv",dataset:{name:'table6'},htmlid:""},function(err,meta){
+      // console.log(meta)
+    // });
     // dataserver.files.delete(function(){});
     // dataserver.converts.delete(function(){});
     // dataserver.datasets.delete(function(){});
