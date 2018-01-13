@@ -65,13 +65,13 @@ Footer.prototype ={
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
   },
-  dropdownMenu:function(name,list,title){
+  dropdownMenu:function(name,list,title,tooltip){
     let lis=list.map(item=>`<li><a href="#" _id="{0}" keyword="{0}" keywordType="text">{1}</a></li>`.format(item.id,item.keyword)).join("");
     let ul = `<ul class="dropdown-menu" id="ul_{0}">{1}</ul>`.format(name,lis);
-    let html =`<div class="btn-group dropup">
+    let html =`<div class="btn-group dropup" data-toggle="tooltip" data-placement="top" title="{2}" keyword="{2}" keywordType="title">
                 <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" keyword="" keywordType="{1}">{1}</div>
                   {0}
-               </div>`.format(ul,title);               
+               </div>`.format(ul,title,tooltip);               
     return html;
   },
   dropdownObj:function(type){
@@ -164,7 +164,7 @@ Footer.prototype ={
                 </div>
                 <div class="col-sm-4">
                   <ul class="nav navbar-right panel_toolbox">
-                    <li>
+                    <li data-toggle="tooltip" data-placement="top" title="database" keyword="database" keywordType="title">
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu dropdown-menu-right menufortable" aria-labelledby="dropdownMenuTable" x-placement="bottom-start" >
                         <ul class="list-group">
@@ -172,7 +172,7 @@ Footer.prototype ={
                         </ul>
                       </div>
                     </li>                     
-                    <li>
+                    <li title="gis" keyword="gis" keywordType="title">
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuGIS" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fae-layers fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu dropdown-menu-right menuforgis" aria-labelledby="dropdownMenuGIS" x-placement="bottom-start" >
                         <ul class="list-group">
@@ -180,7 +180,7 @@ Footer.prototype ={
                         </ul>
                       </div>
                     </li>                  
-                    <li>
+                    <li title="charts" keyword="charts" keywordType="title">
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
                         <ul class="list-group">
@@ -188,7 +188,7 @@ Footer.prototype ={
                         </ul>
                       </div>
                     </li>
-                    <li>
+                    <li title="export" keyword="export" keywordType="title">
                       <a class="foorterbtn export" data-toggle="modal" data-target="#exportModal">
                         <i class="fa fa-table fa-2x" aria-hidden="true"></i>
                         <i class="fa fa-circle mpicon circle" aria-hidden="true"></i>
@@ -204,9 +204,9 @@ Footer.prototype ={
           <div class="gridContainerParent">
             <div class="gridContainer"></div>
           </div>
-            `.format(this.dropdownMenu('emissions',emissions,"emission"),
-                     this.dropdownMenu('units',units,"unit"),
-                     this.dropdownMenu('years',years,"year"),
+            `.format(this.dropdownMenu('emissions',emissions,"emission","emissions"),
+                     this.dropdownMenu('units',units,"unit","unit"),
+                     this.dropdownMenu('years',years,"year","forecastyear"),
                      tablelis,
                      gislis,
                      chartlis

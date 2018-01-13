@@ -22,7 +22,7 @@ exports.FIELDS=[
     // 'ship_id',
     'class',
     'type',
-    // 'ip',
+    'ip',
     'mode',
     'engine',
     'datetime',

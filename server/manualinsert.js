@@ -29,7 +29,7 @@ function ManualInsert(){
     //   });  
     // });
     // dataserver.files.add(filepath,function(){console.log("Done")});
-    dataserver.converts.add({name:"dummy.csv",dataset:{name:'table4'},htmlid:""},function(err,meta){
+    dataserver.converts.add({name:"arctic_emissions_01102018.csv",dataset:{name:'table6'},htmlid:""},function(err,meta){
       console.log(meta)
     });
     // dataserver.files.delete(function(){});

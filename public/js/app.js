@@ -20,7 +20,7 @@ App.prototype ={
     emission: 'nox',
     mapLayer:'mapmeit',
     mapDLayer:'mapmeit',
-    table:'table4',
+    table:'table5',
     tables:[],
     divider: 1000000,
     keyTags:'',
@@ -125,6 +125,7 @@ App.prototype ={
     this.mapContainer = new MapContainer(this.pointer,{},function(){
       $('#bannerChevron').trigger("click");
       self.loaded=true;
+      $('[data-toggle="tooltip"]').tooltip();
       self.changeLabels();
     });
     
@@ -157,6 +158,7 @@ App.prototype ={
       if(!(self.keywords[keyword]))return console.log("WARNING:keyword({0}) does not exist".format(keyword));
       if(keywordType==="text")return $(this).text(self.keywords[keyword][self.language]);
       if(keywordType==="placeholder")return $(this).attr("placeholder",self.keywords[keyword][self.language]);
+      if(keywordType==="title"){return $(this).attr("data-original-title",self.keywords[keyword][self.language]).tooltip();}
     })
     
   },  

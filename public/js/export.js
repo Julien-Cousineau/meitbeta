@@ -48,12 +48,15 @@ ExportC.prototype = {
       const user=userinfo.user_metadata.first + "." +userinfo.user_metadata.last;
       const date = new Date();
       const filename ="meit_{0}{1}{2}{3}{4}{5}".format(
-        date.getFullYear(),date.getMonth()+1,date.getDay(),
-        date.getHours(),date.getMinutes(),date.getSeconds());
-      
-      console.log(filename)
+        date.getFullYear(),(date.getMonth()+1).pad(2),date.getDate().pad(2),
+        date.getHours().pad(2),date.getMinutes().pad(2),date.getSeconds().pad(2));
+      const datestr = "{0}-{1}-{2} {3}:{4}:{5}".format(
+        date.getFullYear(),(date.getMonth()+1).pad(2),date.getDate().pad(2),
+        date.getHours().pad(2),date.getMinutes().pad(2),date.getSeconds().pad(2));
+        
+      // console.log(filename)
       $('#exportuser').val(user);
-      $('#exportdate').val(date.toISOString());
+      $('#exportdate').val(datestr);
       $('#exportdatabase').val(self.parent.table);
       $('#exportyear').val(self.parent.year);
       $('#exportunit').val(self.parent.unit);
@@ -175,7 +178,7 @@ ExportC.prototype = {
       <div class="row">
         <label for="export{1}" class="col-sm-4 col-form-label" keyword="{0}" keywordType="text">{0}</label>
         <div class="col-sm-8">
-          <input class="form-control form-control-sm" type="text" id="export{1} placeholder="{2}">
+          <input class="form-control form-control-sm" type="text" id="export{1}" placeholder="{2}">
         </div>
       </div>
     `.format(obj.keyword,obj.id,obj.value);

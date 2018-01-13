@@ -171,10 +171,10 @@ MapContainer.prototype = {
       </div>
     </div>
     <div class="selectbtn boxselect">
-      <button class="btn btn-light"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
+      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="extent" keyword="extent" keywordType="title"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
     </div>
     <div class="selectbtn hoverquery">
-      <button class="btn btn-light"><i class="fa fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
+      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="query" keyword="query" keywordType="title"><i class="fa fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
     </div>
     `;
     

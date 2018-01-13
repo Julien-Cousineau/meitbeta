@@ -105,6 +105,7 @@ function upload(list,maincallback){
 
 function download(list,maincallback){
   const read = function(item,callback){
+    console.log("Downloading " + item.name);
     const name = item.name, file = path.resolve(DOWNLOADFOLDER,item.file);
     blobSvc.getBlobToStream('ecmeit', name, fs.createWriteStream(file), function(error, result, response){
       if(error)throw Error(response);

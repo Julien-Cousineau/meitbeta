@@ -181,10 +181,14 @@ Convert.prototype = {
           self.meta.progress=row.meta.cursor / stats.size * 100;
           self.print();
           console.log(count);tcount=0;
+          // console.log(row.data[0])
         }
         count++;tcount++;
         
         self.parseCSV(row.data[0],function(obj){
+          // if(tcount>=50000){
+          //   console.log(obj)
+          // }
 	      outstream.write(obj);
 	      });
 	    },
@@ -211,6 +215,7 @@ Convert.prototype = {
         // const ip      = parseFloat(obj.ip);
         const point_id= obj.grid_index;
         const mode    = obj.activity_type;
+        const ip = (obj.ip.toLowerCase()==='true')?1:0;
         const datetime= Date.parse(obj.date_time);
         
         if(!(ships[ship_id]))this.errorlog.push("Cannot find ship_id : " + ship_id);
@@ -218,7 +223,8 @@ Convert.prototype = {
         if(!(this.points[point_id])){
           const lng = parseFloat(obj.long) || 0;
           const lat = parseFloat(obj.lat)  || 0;
-          let meit = parseInt(obj.region);
+          
+          let meit = parseInt(obj.meit_region);
           meit = (meit >= 0 && meit <= 22)? meit:0;
           
           const mapmeit = this.MEIT.getIndex(lng,lat);
@@ -243,7 +249,7 @@ Convert.prototype = {
         // ping.ship_id = ships[ship_id].id;
         ping.class   = ships[ship_id].Class;
         ping.type    = ships[ship_id].type;
-        // ping.ip      = ip;
+        ping.ip      = ip;
         // ping.point_id= point_id;
         // ping.mode    = MODES[mode];
         ping.mode    = mode;
