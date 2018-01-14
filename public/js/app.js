@@ -155,7 +155,10 @@ App.prototype ={
       const keywordType=$(this).attr("keywordType");
       if(keywordType==='emission' ||keywordType==='unit')return $(this).text(self.keywords[self[keywordType]][self.language]);
       if(keywordType==='year')return $(this).text(self[keywordType]);
-      if(!(self.keywords[keyword]))return console.log("WARNING:keyword({0}) does not exist".format(keyword));
+      if(!(self.keywords[keyword])){
+        return;
+        // return console.log("WARNING:keyword({0}) does not exist".format(keyword));
+      }
       if(keywordType==="text")return $(this).text(self.keywords[keyword][self.language]);
       if(keywordType==="placeholder")return $(this).attr("placeholder",self.keywords[keyword][self.language]);
       if(keywordType==="title"){return $(this).attr("data-original-title",self.keywords[keyword][self.language]).tooltip();}
