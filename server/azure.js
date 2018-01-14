@@ -61,15 +61,15 @@ function main(){
       // {name:"hex_4",file:"hex_4.hex"},
       // {name:"hex_16",file:"hex_16.hex"},
       
-      {name:"pacificWIG_09212017",file:"pacificWIG_09212017.zip"}, //21Sept
-      {name:"eastWIG_09212017",file:"eastWIG_09212017.zip"}, //21Sept and Nov29
-      {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"}, //21Sept and Nov29
+      // {name:"pacificWIG_09212017",file:"pacificWIG_09212017.zip"}, //21Sept
+      // {name:"eastWIG_09212017",file:"eastWIG_09212017.zip"}, //21Sept and Nov29
+      // {name:"arcticWIG_09212017",file:"arcticWIG_09212017.zip"}, //21Sept and Nov29
       
-      {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"}, //Nov29
+      // {name:"pacific_emissions_11162017",file:"pacific_emissions_11162017.zip"}, //Nov29
       // {name:"east_arctic_emissions_10252017",file:"east_arctic_emissions_10252017.zip"},
       
-      {name:"arctic_emissions_01102018",file:"arctic_emissions_01102018.zip"},
-      {name:"pacific_emissions_01042018",file:"pacific_emissions_01042018.zip"},
+      // {name:"arctic_emissions_01102018",file:"arctic_emissions_01102018.zip"},
+      // {name:"pacific_emissions_01042018",file:"pacific_emissions_01042018.zip"},
       {name:"hex_16",file:"hex_16.mbtiles"},
       {name:"hex_4",file:"hex_4.mbtiles"},
       {name:"hex_1",file:"hex_1.mbtiles"},

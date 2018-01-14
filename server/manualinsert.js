@@ -17,7 +17,7 @@ const MapDServer = require("./mapdserver");
 
 // const filename='arctic_emissions_01102018.csv';
 // const filename='arcticWIG_09212017.csv';
-// const filename='eastWIG_09122017.csv';
+// const filename='eastWIG_09212017.csv';
 // const filename='pacificWIG_09212017.csv';
 // const filename='pacific_emissions_01042018.csv';
 const filename='pacific_emissions_11162017.csv';

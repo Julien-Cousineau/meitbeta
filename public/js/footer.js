@@ -117,8 +117,8 @@ Footer.prototype ={
       const keyword = (item.keyword)?item.keyword:item.id;
       const value = (item.keyword)?keywords[item.keyword][language]:item.id;
       const checked = (item.checked)?'checked':"";
-      return `<li class="list-group-item" panelid="{0}" keyword="{1}" keywordType="text">
-                {2}
+      return `<li class="list-group-item" panelid="{0}">
+                <span keyword="{1}" keywordType="text">{2}</span>
                 <div class="material-switch pull-right">
                     <input id="switch_{0}" type="checkbox" {3}/>
                     <label for="switch_{0}" class="switch-color"></label>

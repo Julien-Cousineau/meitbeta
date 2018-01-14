@@ -42,7 +42,9 @@ MapContainer.prototype = {
     viewlayers:{
       mapmeit:{geo:'mapmeit',label:'meitlabels'},
       prov:{geo:'prov',label:'provlabels'},
-      hexgrid:{geo:"hexgrid"},
+      hex16:{geo:"hex16"},
+      hex4:{geo:"hex4"},
+      hex1:{geo:"hex1"},
     }
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
@@ -77,6 +79,12 @@ MapContainer.prototype = {
       // }
     }
   },
+  // get hexLayer(){
+  //   for(let key in this.geomaps){
+  //     let layer = this.geomaps[key];
+  //     if(this.zoom >=layer.minimum && this.zoom<=layer.maximum)return key;
+  //   }
+  // },
   construct:function(){
     const self=this;
     mapboxgl.accessToken=this.KEYS.mapbox;
@@ -179,10 +187,10 @@ MapContainer.prototype = {
     `;
     
     $(".mapboxgl-ctrl-top-left").append(html);
-    $('.selectbtn.boxselect button').on("click",function(){self.selectBox.activate();})
+    $('.selectbtn.boxselect button').on("click",function(){$(this).blur();self.selectBox.activate();})
     
     $('.selectbtn.hoverquery button').on("click",function(e){
-      
+      $(this).blur();
       self.hoverquery=!self.hoverquery;
      
       (self.hoverquery)?$('.selectbtn.hoverquery button').addClass("active"):
@@ -199,7 +207,10 @@ MapContainer.prototype = {
     this.map.addSource('cprov', {type: 'vector',tiles: [URL + "tiles/cprov/{z}/{x}/{y}.pbf"]});
     this.map.addSource('meit_S', {type: 'vector',tiles: [URL + "tiles/meit/{z}/{x}/{y}.pbf"]});
     this.map.addSource('meit_C', {type: 'vector',tiles: [URL + "tiles/cmeit/{z}/{x}/{y}.pbf"]});
-    this.map.addSource('hex', {type: 'vector',tiles: [URL + "tiles/hex/{z}/{x}/{y}.pbf"]});
+    // this.map.addSource('hex', {type: 'vector',tiles: [URL + "tiles/hex/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('hex16', {type: 'vector',tiles: [URL + "tiles/hex16/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('hex4', {type: 'vector',tiles: [URL + "tiles/hex4/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('hex1', {type: 'vector',tiles: [URL + "tiles/hex1/{z}/{x}/{y}.pbf"]});
     this.map.addSource('terminalS', {type: 'vector',tiles: [URL + "tiles/terminals/{z}/{x}/{y}.pbf"]});
   },
   addLayers:function(){
@@ -207,7 +218,10 @@ MapContainer.prototype = {
     this.map.addLayer({"id": "meitlabels","type": "symbol","source": 'meit_C',"source-layer": "cmeitregions",layout: this.options.layout.meitlabel,"paint": this.options.paint.label});
     this.map.addLayer({"id": "prov","type": "fill","source": 'prov',"source-layer": "provinces",layout:this.options.layout.hide,"paint": this.options.paint.prov});
     this.map.addLayer({"id": "provlabels","type": "symbol","source": 'cprov',"source-layer": "cprovinces",layout: this.options.layout.provlabel,"paint": this.options.paint.label});
-    this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    // this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex16","type": "fill","source": 'hex16',"source-layer": "hex_16",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex4","type": "fill","source": 'hex4',"source-layer": "hex_4",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex1","type": "fill","source": 'hex1',"source-layer": "hex_1",layout:this.options.layout.hide,paint: this.options.paint.hex});
     this.map.addLayer({"id": "terminals","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal, "filter": ["==", "zoom", "0"]});
     this.map.addLayer({"id": "terminals5","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 10, "filter": ["==", "zoom", "1"]});
     this.map.addLayer({"id": "terminals2","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 11, "filter": ["==", "zoom", "2"]});
@@ -217,33 +231,39 @@ MapContainer.prototype = {
   // stops:[],
   // resetStops:function(){this.stops=[];},
   updateHexPaint:function(stops){
+    this.hideLayer();
     const self=this;
-    const mapLayer = this.mapLayer;
+    const mapDLayer = this.mapDLayer;
     // console.log(mapLayer);
-    if(stops && this.map.getLayer(mapLayer)){
+    if(stops && stops.length && this.map.getLayer(mapDLayer)){
       console.log(stops.length)
       console.time("inside");
-      self.map.setPaintProperty(mapLayer, 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+      self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
       this.showLayer();
       console.timeEnd("inside");
     }
 
   },
   changeLayer:function(_id){
-    this.mapLayer = _id;
+    // this.mapLayer = (_id==="hexgrid")?:_id;//panelid
+    this.mapLayer=_id;
+    // this.hideLayer();
+    this.mapd.getMap();
+  },
+  hideLayer:function(){
+    
     const layers=this.options.viewlayers;
     for(let id in layers){
       const layer=layers[id];
        this.map.setLayoutProperty(layer.geo, 'visibility', 'none');
        if(layer.label)this.map.setLayoutProperty(layer.label, 'visibility', 'none');
     }
-    this.mapd.getMap();
   },
 
   showLayer:function(){
     const layers=this.options.viewlayers;
-    const _id =this.mapLayer;
-    console.log(layers[_id].geo)
+    const _id =this.mapDLayer;
+    console.log(_id,layers[_id])
     this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
     if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
   },
@@ -274,13 +294,13 @@ MapContainer.prototype = {
       case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.keywords[this.unit][this.language]);
       case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.keywords[this.unit][this.language]);
        
-      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.keywords[this.unit]);
+      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.keywords[this.unit][this.language]);
     }
     
   },
   hoverFeature:function(e){
-    if(!(this.map.getLayer(this.mapLayer)))return;
-    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapLayer]});
+    if(!(this.map.getLayer(this.mapDLayer)))return;
+    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     if (!features.length)return this.popup.remove();
     this.popup.setLngLat(e.lngLat).setHTML(this.htmlPopup(features[0])).addTo(this.map);
@@ -295,6 +315,7 @@ MapContainer.prototype = {
     this.zoom=Math.floor(this.map.getZoom());
     this.bounds =[lon1,lat1,lon2,lat2];
     this.center = this.map.getCenter();
+    this.hideLayer();
     
     
     // this.parent.mapd.filterMap();

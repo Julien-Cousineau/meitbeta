@@ -152,9 +152,9 @@ const options ={
     lat:{dim:'lat',minimum:-1,maximum:-1},
     mapmeit:{dim:'mapmeit',minimum:-1,maximum:-1},
     prov:{dim:'prov',minimum:-1,maximum:-1},
-    hex16:{dim:'hex_16',minimum:0,maximum:7},
-    hex4:{dim:'hex_4',minimum:8,maximum:12},
-    hex1:{dim:'hex_1',minimum:12,maximum:14},
+    hex16:{dim:'hex_16',minimum:0,maximum:6},
+    hex4:{dim:'hex_4',minimum:7,maximum:10},
+    hex1:{dim:'hex_1',minimum:11,maximum:14},
   },
   emissions: [
   {id:'nox',keyword:'nox',checked:true}, 
