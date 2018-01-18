@@ -146,8 +146,10 @@ const options ={
   {id:"paneltype",checked:true,active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
   {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
   {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
-  {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
+  {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{
+    label:function(d){ return (d.key)?'Includes non Canadian O/D':'Canadian O/D-Only';}
+  }},
   ],
   geomaps:{
     lng:{dim:'lng',minimum:-1,maximum:-1},
