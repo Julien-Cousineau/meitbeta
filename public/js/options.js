@@ -8,8 +8,8 @@ const options ={
     AUTH0_CALLBACK_URL:window.location.href,
     },
   IP :getHostName(window.location.href),
-  URL : 'http://' + getHostName(window.location.href) + '/',
-  // URL : 'http://' + getHostName(window.location.href) + ':8080/',
+  // URL : 'http://' + getHostName(window.location.href) + '/',
+  URL : 'http://' + getHostName(window.location.href) + ':8080/',
   // IP : '52.228.71.184',
   // URL : 'http://52.228.71.184:8080/',  
   keywords:{
@@ -85,7 +85,8 @@ const options ={
     pm10:{en:'pm10',fr:'pm10'}, 
     pm:{en:'pm',fr:'pm'}, 
     bc:{en:'bc',fr:'bc'},
-    fuel:{en:'fuel',fr:'fuel'},    
+    fuel:{en:'fuel',fr:'fuel'},
+    co2e:{en:'co2e',fr:'co2e'},
     
     g:{en:'grams',fr:'grammes'},
     kg:{en:'kilograms',fr:'kilogrammes'},
@@ -171,6 +172,7 @@ const options ={
   {id:'pm',keyword: 'pm',checked:true}, 
   {id:'bc',keyword: 'bc',checked:true},
   {id:'fuel_cons',keyword: 'fuel',checked:true},
+  {id:'co2e',keyword: 'co2e',checked:true},
   ],
   units:[
     {id:'g',keyword:'grams',divider:1}, 

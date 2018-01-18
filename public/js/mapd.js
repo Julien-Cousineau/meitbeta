@@ -86,14 +86,21 @@ MapD.prototype = {
       ];
   },
   reduceFunction:function(){
-    const stre=(this.emission==='nox')?'nox':'other';
-    const factor = stre + this.year;
-    const fuelFactor = (this.emission=='fuel_cons')?1000000:1;
-    const exp = (this.year==='2015')?
-                  "{0}*{1}".format(this.emission,fuelFactor):
-                  "{0}*{1}*{2}*0.015625".format(this.emission,fuelFactor,factor);
-                  
-    return [{expression: exp,agg_mode:"sum",name: this.emission}];
+    let exp='';
+    if(this.emission=='co2e'){
+      const factor = 'other' + this.year;
+      exp = (this.year==='2015')?
+                    "25*ch4 + 298*n2o + co2":
+                    "(25*ch4 + 298*n2o + co2)*{0}*0.015625".format(factor);
+    } else {
+      const stre=(this.emission==='nox')?'nox':'other';
+      const factor = stre + this.year;
+      const fuelFactor = (this.emission=='fuel_cons')?1000000:1;
+      exp = (this.year==='2015')?
+                    "{0}*{1}".format(this.emission,fuelFactor):
+                    "{0}*{1}*{2}*0.015625".format(this.emission,fuelFactor,factor);
+    }
+     return [{expression: exp,agg_mode:"sum",name: this.emission}];
   },
   createClassChart:function(){
   },
