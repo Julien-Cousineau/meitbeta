@@ -92,6 +92,13 @@ Chart.prototype = {
     $('div[panelid="{0}"] .x_title .nav .resetbtn'.format(this.id)).one("click",function(){self.removeFilters();});
   },
   filteredFunc:function(chart,filter){
+    console.log(chart.group())
+    console.log(chart.group().writeTopQuery(10))
+    // console.log(this.crossFilter.getFilterString())
+    // console.log(this.crossFilter.getFilter())
+    // console.log(this.crossFilter.getGlobalFilter())
+    // console.log(this.crossFilter.getGlobalFilterString())
+    // console.log(this.crossFilter)
     const self=this;
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}

@@ -230,6 +230,9 @@ MapD.prototype = {
     console.log(self.mapDLayer)
     if(self.mapDLayer==='hex16' || self.mapDLayer==='hex4' || self.mapDLayer==='hex1'){bounds=self.mapContainer.bounds;} 
     this.queue.unshift({priorityindex:++this.priorityindex,bounds:bounds});
+    // this.queueFunc(bounds,function(err,data){
+      
+    // });
   },
   createQueue:function(){
     const self=this;
@@ -249,6 +252,7 @@ MapD.prototype = {
     const self=this;
     
     let querystring = self.geomaps[self.mapDLayer].dc.group.writeTopQuery(50);
+    querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
     if(bounds){
       const dim = this.geomaps[self.mapDLayer].dim;
       const table = this.parent.table;
@@ -259,7 +263,7 @@ MapD.prototype = {
       const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(bounds[0],bounds[1],bounds[2],bounds[3]);
       querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"
                             .format(dim,this.emission,table,limit,con,filtersstr);
-      // console.log(querystring)
+      querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
     }
     this.con.query(querystring, {}, function(err, data) {
       if(err)console.log(err);

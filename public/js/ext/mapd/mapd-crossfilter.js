@@ -287,6 +287,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function queryAsync(query, options, callback) {
+	      query = query.replace('ip = false','NOT ip').replace('ip = true','ip');
 	      var eliminateNullRows = false;
 	      var renderSpec = null;
 	      var postProcessors = null;
@@ -11233,7 +11234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            hh : '%d시간',
 	            d : '하루',
 	            dd : '%d일',
-	            M : '한 달',
+	            M : '한 ���',
 	            MM : '%d달',
 	            y : '일 년',
 	            yy : '%d년'
