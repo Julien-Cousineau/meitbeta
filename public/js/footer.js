@@ -29,7 +29,7 @@ Footer.prototype ={
         // e.preventDefault();
         let moveY = (e.pageY) ? e.pageY : e.originalEvent.touches[0].pageY;
         let height = $(document).height()-moveY-self.deltaY;
-        let maxH = $(document).height()*.5;
+        let maxH = $(document).height()-250;
         height = (height<49)?49:height;
         height = (height> maxH)?maxH:height;
         dragElement.parent().css('height', height + "px");
