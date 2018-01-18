@@ -8,8 +8,8 @@ const options ={
     AUTH0_CALLBACK_URL:window.location.href,
     },
   IP :getHostName(window.location.href),
-  URL : 'http://' + getHostName(window.location.href) + '/',
-  // URL : 'http://' + getHostName(window.location.href) + ':8080/',
+  // URL : 'http://' + getHostName(window.location.href) + '/',
+  URL : 'http://' + getHostName(window.location.href) + ':8080/',
   // IP : '52.228.71.184',
   // URL : 'http://52.228.71.184:8080/',  
   keywords:{
@@ -148,7 +148,7 @@ const options ={
   {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
   {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
   {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{
-    label:function(d){ return (d.key)?'Includes non Canadian O/D':'Canadian O/D-Only';}
+    label:function(d){return (d.key0)?'Includes non Canadian O/D':'Canadian O/D-Only';}
   }},
   ],
   geomaps:{
