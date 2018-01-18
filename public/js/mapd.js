@@ -66,6 +66,7 @@ MapD.prototype = {
     // console.log(crossFilter)
     this.crossFilter = crossFilter;
     // if(this.first)this.createCharts();
+    dc.chartRegistry.clear();
     this.createCharts();
   },
   reduceFunctionOld:function(){

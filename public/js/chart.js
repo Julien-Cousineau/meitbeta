@@ -158,7 +158,7 @@ Chart.prototype = {
     const self = this;
     const width = $('div[panelid="{0}"] .x_content'.format(this.id)).width();
     const height = $('div[panelid="{0}"] .x_content'.format(this.id)).height();
-    
+    console.log("here")
     this.dc = dc[this.dctype](this.container)
                 .height(height)
                 .width(width)

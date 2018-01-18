@@ -22100,6 +22100,7 @@ function spinnerMixin(_chart) {
 
   _chart.on("dataError.spinner", function () {
     console.log(_chart.__dcFlag__, ": error");
+    return tearDownSpinner();
   });
 
   return _chart;
@@ -48168,7 +48169,8 @@ function rowChart(parent, chartGroup) {
         var thisLabel = _d2.default.select(this);
 
         var width = Math.abs(rootValue() - _x(_chart.valueAccessor()(d)));
-        var measureWidth = thisLabel.node().getBBox().width || 0;
+        var measureWidth = (thisLabel.node().getBBox)?thisLabel.node().getBBox().width:0;
+        
         var dimWidth = _chart.svg().select("text.value-dim._" + i).node().getBBox().width;
         var minIdealWidth = measureWidth + dimWidth + 16;
 
