@@ -88,7 +88,7 @@ MapD.prototype = {
   reduceFunction:function(){
     const stre=(this.emission==='nox')?'nox':'other';
     const factor = stre + this.year;
-    const fuelFactor = (this.emission=='fuel')?1000000:1;
+    const fuelFactor = (this.emission=='fuel_cons')?1000000:1;
     const exp = (this.year==='2015')?
                   "{0}*{1}".format(this.emission,fuelFactor):
                   "{0}*{1}*{2}*0.015625".format(this.emission,fuelFactor,factor);
