@@ -88,9 +88,11 @@ MapD.prototype = {
   reduceFunction:function(){
     const stre=(this.emission==='nox')?'nox':'other';
     const factor = stre + this.year;
+    const fuelFactor = (this.emission=='fuel')?1000000:1;
     const exp = (this.year==='2015')?
-                  this.emission:
-                  "{0}*{1}*0.015625".format(this.emission,factor);
+                  "{0}*{1}".format(this.emission,fuelFactor):
+                  "{0}*{1}*{2}*0.015625".format(this.emission,fuelFactor,factor);
+                  
     return [{expression: exp,agg_mode:"sum",name: this.emission}];
   },
   createClassChart:function(){

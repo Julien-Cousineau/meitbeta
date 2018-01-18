@@ -181,7 +181,7 @@ Convert.prototype = {
           self.meta.progress=row.meta.cursor / stats.size * 100;
           self.print();
           console.log(count);tcount=0;
-          // console.log(row.data[0])
+          console.log(row.data[0])
         }
         count++;tcount++;
         
