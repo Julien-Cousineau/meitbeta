@@ -125,7 +125,9 @@ App.prototype ={
     this.mapContainer = new MapContainer(this.pointer,{},function(){
       $('#bannerChevron').trigger("click");
       self.loaded=true;
-      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="tooltip"]').tooltip({ trigger: "hover",flip:false });
+      $('.dropdown-toggle').dropdown({ flip:false })
+     
       self.changeLabels();
     });
     

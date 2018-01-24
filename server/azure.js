@@ -70,9 +70,10 @@ function main(){
       
       // {name:"arctic_emissions_01102018",file:"arctic_emissions_01102018.zip"},
       // {name:"pacific_emissions_01042018",file:"pacific_emissions_01042018.zip"},
-      {name:"hex_16",file:"hex_16.mbtiles"},
-      {name:"hex_4",file:"hex_4.mbtiles"},
-      {name:"hex_1",file:"hex_1.mbtiles"},
+      // {name:"hex_16",file:"hex_16.mbtiles"},
+      // {name:"hex_4",file:"hex_4.mbtiles"},
+      // {name:"hex_1",file:"hex_1.mbtiles"},
+      {name:"east_emissions_20180117",file:"east_emissions_20180117.zip"},
       ];
   
   download(list,function(e){

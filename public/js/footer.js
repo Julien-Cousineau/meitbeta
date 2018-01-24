@@ -61,15 +61,23 @@ Footer.prototype ={
     this.dropdownObj('table');
     this.dropdownObj('chart');
     this.dropdownObj('gis');
+    // this.removetooltip();
     // $('[data-toggle="tooltip"]').tooltip();
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
   },
+  removetooltip:function(){
+    // $('.dropdownbtn').on("click",function(e){$('[data-toggle="tooltip"]').tooltip('hide');});
+   
+    
+  },
   dropdownMenu:function(name,list,title,tooltip){
     let lis=list.map(item=>`<li><a href="#" _id="{0}" keyword="{0}" keywordType="text">{1}</a></li>`.format(item.id,item.keyword)).join("");
     let ul = `<ul class="dropdown-menu" id="ul_{0}">{1}</ul>`.format(name,lis);
-    let html =`<div class="btn-group dropup" data-toggle="tooltip" data-placement="top" title="{2}" keyword="{2}" keywordType="title">
-                <div class="number-display number" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" keyword="" keywordType="{1}">{1}</div>
+    let html =`<div class="btn-group">
+                <div data-toggle="dropdown" data-toggle="tooltip" data-placement="top" title="{2}" keyword="{2}" keywordType="title">
+                  <div class="number-display number" aria-haspopup="true" aria-expanded="false" keyword="" keywordType="{1}" >{1}</div>
+                </div>
                   {0}
                </div>`.format(ul,title,tooltip);               
     return html;
@@ -165,8 +173,8 @@ Footer.prototype ={
                 <div class="col-sm-4">
                   <ul class="nav navbar-right panel_toolbox">
                     <li data-toggle="tooltip" data-placement="top" title="database" keyword="database" keywordType="title">
-                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database fa-2x" aria-hidden="true"></i></a>
-                      <div class="dropdown-menu dropdown-menu-right menufortable" aria-labelledby="dropdownMenuTable" x-placement="bottom-start" >
+                      <a class="dropdown-toggle  foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database fa-2x" aria-hidden="true"></i></a>
+                      <div class="dropdown-menu  dropdown-menu-right menufortable" aria-labelledby="dropdownMenuTable" x-placement="bottom-start" >
                         <ul class="list-group">
                          {3}
                         </ul>
@@ -174,7 +182,7 @@ Footer.prototype ={
                     </li>                     
                     <li title="gis" keyword="gis" keywordType="title">
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuGIS" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fae-layers fa-2x" aria-hidden="true"></i></a>
-                      <div class="dropdown-menu dropdown-menu-right menuforgis" aria-labelledby="dropdownMenuGIS" x-placement="bottom-start" >
+                      <div class="dropdown-menu  dropdown-menu-right menuforgis" aria-labelledby="dropdownMenuGIS" x-placement="bottom-start" >
                         <ul class="list-group">
                          {4}
                         </ul>
@@ -182,7 +190,7 @@ Footer.prototype ={
                     </li>                  
                     <li title="charts" keyword="charts" keywordType="title">
                       <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
-                      <div class="dropdown-menu dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
+                      <div class="dropdown-menu  dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
                         <ul class="list-group">
                           {5}
                         </ul>
