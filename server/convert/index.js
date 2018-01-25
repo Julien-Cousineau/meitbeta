@@ -22,6 +22,7 @@ function Convert(options,callback){
   this.options = util.extend(Object.create(this.options), options);
   this.hex={};
   this.points={};
+  this.missingid={};
 
   this.meta={
     action:null,
@@ -177,11 +178,12 @@ Convert.prototype = {
       header: true,
       // fastMode:true,
 	    step: function(row) {
+        // console.log(row.data[0])
         if(tcount>=50000){
           self.meta.progress=row.meta.cursor / stats.size * 100;
           self.print();
           console.log(count);tcount=0;
-          console.log(row.data[0])
+          
         }
         count++;tcount++;
         
@@ -193,7 +195,12 @@ Convert.prototype = {
 	      });
 	    },
 	    error:function(e){console.log("error",e);self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(true,e);},
-      complete: function() {console.log("done");self.meta.action=null;self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(false);}
+      complete: function() {
+        for(let id in this.missingid){
+          console.log(id)
+        }
+        console.log("done");
+        self.meta.action=null;self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(false);}
     });
   },
   parseCSV:function(obj,callback){
@@ -218,7 +225,12 @@ Convert.prototype = {
         const ip = (obj.ip && obj.ip.toLowerCase()==='true')?1:0;
         const datetime= Date.parse(obj.date_time);
         
-        if(!(ships[ship_id]))this.errorlog.push("Cannot find ship_id : " + ship_id);
+        if(!(ships[ship_id])){
+          if(!(this.missingid[ship_id])){
+            this.missingid[ship_id]=true;
+            console.log("Cannot find ship_id : " + ship_id);
+          }
+        }
         
         if(!(this.points[point_id])){
           const lng = parseFloat(obj.long) || 0;
@@ -247,8 +259,15 @@ Convert.prototype = {
         }
         
         // ping.ship_id = ships[ship_id].id;
-        ping.class   = ships[ship_id].Class;
-        ping.type    = ships[ship_id].type;
+        //Original
+        // ping.class   = ships[ship_id].Class;
+        // ping.type    = ships[ship_id].type;
+        
+        //TEMPORARY
+        ping.class = (ships[ship_id])?ships[ship_id].Class:obj.ship_class;
+        ping.type = (ships[ship_id])?ships[ship_id].type:obj.ship_type;
+        
+        
         ping.ip      = ip;
         // ping.point_id= point_id;
         // ping.mode    = MODES[mode];
@@ -267,8 +286,15 @@ Convert.prototype = {
         
         for(let i=0,n=YEARS.length;i<n;i++){
           const year=YEARS[i];
-          ping['nox'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].nox / 4.0 *256.0;
-          ping['other'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].sox / 4.0 *256.0;
+          if(ships[ship_id]){
+            ping['nox'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].nox / 4.0 *256.0;
+            ping['other'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].sox / 4.0 *256.0;
+          } else{
+            ping['nox'+year]=1.0 / 4.0 *256.0;
+            ping['other'+year]=1.0 / 4.0 *256.0;
+          }
+              
+          
         }
 
         const data=FIELDS.map(f=>ping[f]);

@@ -35,11 +35,11 @@ function ManualInsert(){
     //   });  
     // });
     
-    dataserver.files.add(filepath,function(){console.log("Done")});
+    // dataserver.files.add(filepath,function(){console.log("Done")});
     
-    // dataserver.converts.add({name:filename,dataset:{name:'table5'},htmlid:""},function(err,meta){
-    //   // console.log(meta)
-    // });
+    dataserver.converts.add({name:filename,dataset:{name:'table5'},htmlid:""},function(err,meta){
+      // console.log(meta)
+    });
     // dataserver.files.delete(function(){});
     // dataserver.converts.delete(function(){});
     // dataserver.datasets.delete(function(){});
