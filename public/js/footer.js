@@ -173,7 +173,7 @@ Footer.prototype ={
                 <div class="col-sm-4">
                   <ul class="nav navbar-right panel_toolbox">
                     <li data-toggle="tooltip" data-placement="top" title="database" keyword="database" keywordType="title">
-                      <a class="dropdown-toggle  foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database fa-2x" aria-hidden="true"></i></a>
+                      <a class="dropdown-toggle  foorterbtn" id="dropdownMenuTable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-database fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu  dropdown-menu-right menufortable" aria-labelledby="dropdownMenuTable" x-placement="bottom-start" >
                         <ul class="list-group">
                          {3}
@@ -181,7 +181,7 @@ Footer.prototype ={
                       </div>
                     </li>                     
                     <li title="gis" keyword="gis" keywordType="title">
-                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuGIS" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fae-layers fa-2x" aria-hidden="true"></i></a>
+                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuGIS" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fae-layers fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu  dropdown-menu-right menuforgis" aria-labelledby="dropdownMenuGIS" x-placement="bottom-start" >
                         <ul class="list-group">
                          {4}
@@ -189,7 +189,7 @@ Footer.prototype ={
                       </div>
                     </li>                  
                     <li title="charts" keyword="charts" keywordType="title">
-                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i></a>
+                      <a class="dropdown-toggle foorterbtn" id="dropdownMenuChart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-chart-bar fa-2x" aria-hidden="true"></i></a>
                       <div class="dropdown-menu  dropdown-menu-right menuforchart" aria-labelledby="dropdownMenuChart" x-placement="bottom-start" >
                         <ul class="list-group">
                           {5}

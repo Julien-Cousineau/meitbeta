@@ -15,8 +15,9 @@ const MapDServer = require("./mapdserver");
 // const filename='arcticWIG_09212017.csv';
 // const filename='pacific_emissions_11162017.csv';
 
-const filename='east_emissions_2018-01-17.csv';
-// const filename='arcticWIG_09212017.csv';
+// const filename='east_emissions_2018-01-17.csv';
+// const filename = 'pacificWIG_07192017.csv'
+// const filename='arctic_emissions_01102018.csv';
 // const filename='eastWIG_09212017.csv';
 // const filename='pacificWIG_09212017.csv';
 // const filename='pacific_emissions_01042018.csv';
@@ -25,8 +26,25 @@ const filename='east_emissions_2018-01-17.csv';
 function ManualInsert(){
     const self=this;
     this.pointer = function(){return self;};
-    const dataserver = new DataServer(this.pointer,{web:false});
-    const filepath = path.resolve(UPLOADFOLDER,filename);
+    const dataserver = this.dataserver=new DataServer(this.pointer,{web:false});
+    
+    // this.addFilesManually();
+    
+    // this.TestAll();
+    // this.deleteAll(()=>null)
+    // this.deleteConvert();
+    // this.getListAll()
+    
+    // this.addTestFile(()=>null);
+    // this.addTestDataset('test2',()=>null);
+    // this.addTestConvertFile(()=>null);
+    // this.addConvertFile(()=>null);
+    
+    // this.TestingPush();
+    // this.TestingGetView();
+    // this.TestingDeleteFile();
+    this.TestingchangeDefault(()=>self.getDListAll());
+    
     // dataserver.files.delete(function(){
     //   dataserver.files.create(function(){
     //     dataserver.files.add(filepath,function(){
@@ -37,18 +55,11 @@ function ManualInsert(){
     
     // dataserver.files.add(filepath,function(){console.log("Done")});
     
-    dataserver.converts.add({name:filename,dataset:{name:'table5'},htmlid:""},function(err,meta){
-      // console.log(meta)
-    });
-    // dataserver.files.delete(function(){});
-    // dataserver.converts.delete(function(){});
-    // dataserver.datasets.delete(function(){});
-    
-    // dataserver.files.getList(function(err,result){console.log(result)})
-    
-    // dataserver.converts.getList(function(err,result){console.log(result)})
-    
-    // dataserver.datasets.getList(function(err,list){console.log(list);})
+    // dataserver.converts.add({name:filename,dataset:{name:'table6'},htmlid:""},function(err,meta){
+    //   // console.log(meta)
+    // });
+
+
     
     // dataserver.datasets.getView({name:'test7'},function(err,list){console.log(list);})
     
@@ -69,7 +80,82 @@ function ManualInsert(){
     // })
     
     
-
+  return
+}
+ManualInsert.prototype = {
+  sqltemplate: "template2.sql",
+  testdataset:'test1',
+  testfile:'dummy.csv',
+  deleteConvert:function(){
+    this.dataserver.converts.delete(function(){});
+  },
+  deleteAll:function(callback){
+    this.dataserver.files.delete(()=>this.dataserver.converts.delete(()=>this.dataserver.datasets.delete(callback)));
+  },
+  getDListAll:function(){this.dataserver.datasets.getList(function(err,list){console.log(list);})},
+  getListAll:function(){
+    this.dataserver.files.getList(function(err,result){console.log(result)})
+    this.dataserver.converts.getList(function(err,result){console.log(result)})
+    this.getDListAll();
+  },
+  addFilesManually:function(){
+    const files=[
+      'arctic_emissions_01102018.csv',
+      // 'east_emissions_2018-01-17.csv',
+      // 'pacific_emissions_01042018.csv',
+      // 'pacificWIG_07192017.csv',
+      // 'eastWIG_09212017.csv',
+      // 'pacificWIG_09212017.csv',
+      // 'pacific_emissions_11162017.csv',
+      ];
+    files.forEach(file=>{
+      const filepath = path.resolve(UPLOADFOLDER,file);
+      this.dataserver.files.add(filepath,function(){console.log(file, "Done!")});      
+    });
+  },
+  addTestFile:function(callback){
+    const filepath = path.resolve(UPLOADFOLDER,this.testfile);
+    this.dataserver.files.add(filepath,function(err,results){if(err){console.log(results);return;};console.log("addTestFile Done!");callback()});
+  },
+  addTestConvertFile:function(callback){
+    this.dataserver.converts.add({name:this.testfile,dataset:{name:this.testdataset},htmlid:"",testing:true},function(err,meta){
+      console.log(meta);
+      callback();
+    });
+  },
+  addTestDataset:function(_name,callback){
+    const name = _name || this.testdataset;
+    this.dataserver.datasets.add(name,function(err,results){if(err){console.log(results);return;};console.log("addTestDataset Done!");callback();})
+  },
+  TestAll:function(){
+    this.deleteAll(()=>{
+      this.addTestFile(()=>this.addTestDataset(()=>this.addTestConvertFile(()=>null)));
+    })
+    
+  },
+  TestingPush:function(){
+    this.dataserver.datasets.addData(this.testdataset,'dummy.template2.csv2',()=>console.log("TestingPush Done!"))
+  },
+  TestingGetView:function(){
+    this.dataserver.datasets.getView(this.testdataset,(err,files)=>console.log(files))
+  },
+  TestingDeleteFile:function(){
+    const self=this;
+    const filepath = path.resolve(UPLOADFOLDER,this.testfile);
+    this.dataserver.files.remove({name:this.testfile,parentname:this.testfile},function(){
+      self.getListAll();
+    });
+  },
+  TestingchangeDefault:function(callback){
+    this.dataserver.datasets.changeDefault('test1',callback)
+  }
+    
+  // addConvertFile:function(){
+  //   this.dataserver.converts.add({name:this.testfile,dataset:{name:this.testdataset},htmlid:"",testing:true},function(err,meta){
+  //     console.log(meta);callback();
+  //   });
+  // }
+  
 }
 
 function processFile(obj,callback){
@@ -148,6 +234,7 @@ function readSHIP(){
   
 }
 new ManualInsert();
+
 // new processFile({name:"arcticWIG_09212017.csv"},function(){})
 
 // new readSHIP()

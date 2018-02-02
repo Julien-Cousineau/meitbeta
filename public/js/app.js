@@ -39,7 +39,7 @@ App.prototype ={
   set loaded(value){this.options.loaded=value;},
   get container(){return this.options.container;},
   get table(){return this.options.table;},
-  set table(value){this.options.table=value;this.mapd.createCrossFilter();},
+  set table(value){this.options.table=value;if(this.loaded)this.mapd.createCrossFilter();},
   get tables(){return this.options.tables;},
   set tables(value){this.options.tables=value;},
   get language(){return this.options.language;},
@@ -104,9 +104,7 @@ App.prototype ={
     this.render();
     this.Socket = new Socket(this.pointer);
   },
-  loadApp:function(keys){
-    console.log(keys)
-    this.KEYS=keys;
+  loadApp:function(){
     const self=this;
     this.header = new Header(this.pointer,{container:"#header"});
     this.Upload = new Modal(this.pointer,{container:"body",name:'upload'});

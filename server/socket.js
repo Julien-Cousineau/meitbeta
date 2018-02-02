@@ -60,9 +60,14 @@ Socket.prototype = {
             getfiles();
           });
         });
-        
+        socket.on("changedefaultdataset",function(obj){
+          self.dataserver.datasets.changeDefault(obj.name,()=>getdatasets())
+        });
         socket.on('getdatasets', function(){
           getdatasets();
+        });
+        socket.on('initialdatasets', function(callback){
+          self.dataserver.datasets.getList(callback);
         });
         
         socket.on('newdataset', function(name){
@@ -78,7 +83,7 @@ Socket.prototype = {
           });
         });
         const getview = function(dataset){
-          self.dataserver.datasets.getView(dataset,function(err,array){
+          self.dataserver.datasets.getView(dataset.name,function(err,array){
             const obj={meta:{dataset:dataset},data:array};
             socket.emit('getview', obj);
           });
@@ -88,6 +93,7 @@ Socket.prototype = {
         });
         socket.on('addfiledataset', function(obj){
             self.dataserver.converts.add(obj,function(err,meta){
+              console.log(meta)
               meta.htmlid = obj.htmlid;
               socket.emit('addfiledataset', meta);
               if(meta.action==="upload done"){

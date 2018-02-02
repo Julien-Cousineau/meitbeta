@@ -73,7 +73,14 @@ function main(){
       // {name:"hex_16",file:"hex_16.mbtiles"},
       // {name:"hex_4",file:"hex_4.mbtiles"},
       // {name:"hex_1",file:"hex_1.mbtiles"},
-      {name:"east_emissions_20180117",file:"east_emissions_20180117.zip"},
+      // {name:"east_emissions_20180117",file:"east_emissions_20180117.zip"},
+      // {name:"pacific_WebtideIndexedGridded",file:"pacific_WebtideIndexedGridded.zip"},
+      //{name:"newhex16",file:"newhex16.hex"},
+      //{name:"newhex4",file:"newhex4.hex"},
+      {name:"newhex1",file:"newhex1.hex"},
+      // {name:"newhex16mbtiles",file:"newhex16.mbtiles"},
+      // {name:"newhex4mbtiles",file:"newhex4.mbtiles"},
+      {name:"newhex1mbtiles",file:"newhex1.mbtiles"},
       ];
   
   download(list,function(e){

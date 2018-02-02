@@ -137,6 +137,13 @@ a {
   border-radius: 35px;
   border-width: 0;
 }
+.list-group-item {
+    display: inherit;
+}
+.btn-none {
+    background:none;
+    border:none;
+}
 
 #map {
      position:absolute; 

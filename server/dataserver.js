@@ -477,8 +477,7 @@ Table.prototype ={
       if (err) throw err;
       var dbase = db.db(mongodatabase);
       dbase.collection(name).find({}).toArray(function(err, result) {
-        //swtich name to id
-        result.forEach(item=>item.id=item.name);
+        if(result.length>0)result.forEach(item=>item.id=item.name);
         callback(err,result);
       });
    });
@@ -494,6 +493,7 @@ Table.prototype ={
         db.close();
         callback(err,obj);
       });
+      
     });   
     
   },
@@ -510,6 +510,40 @@ Table.prototype ={
       });
     });
   },
+  update:function(myquery,_set,callback){
+    const name=this.name;
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(name).updateMany(myquery, _set,function(err, result) {
+        if (err) throw err;
+        db.close();
+        callback(err,result);
+      });
+    });
+  },
+  _push:function(att,obj,callback){
+    const pushobj={};pushobj[att]=obj[att];
+    const name=this.name;
+    const myquery = { name: obj.dataset };
+    MongoClient.connect(mongourl, function(err, db) {
+      if (err) throw err;
+      var dbase = db.db(mongodatabase);
+      dbase.collection(name).updateOne(myquery,{ $push: pushobj },function(err, result) {
+        if (err) throw err;
+        db.close();
+        callback(err,result);
+      });
+    });
+      //         dbase.collection(collectionconvert).updateOne({ name: parent.name }, { $push: { datasetids: dataset._id } }, function(err, res) {
+  //           if (err) throw err;
+  //           dbase.collection(collectionconvert).updateOne({ name: child.name }, { $set: { parentid: parent._id } }, function(err, res) {
+  //             if (err) throw err;
+  //             db.close();  
+  //             callback(false);
+  //           });
+  //         });
+  }
 };
 
 // delete:function(callback){
@@ -538,6 +572,7 @@ FileTable.prototype={
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get converts(){return this.parent.converts;},
   add:function(filepath,callback){
+    const self=this;
     console.log("FileTable add")
     const name        = path.basename(filepath);
     const stats       = fs.statSync(filepath);
@@ -549,13 +584,17 @@ FileTable.prototype={
       size:size,
       datecreated:datecreated,
     };
-    this._add(obj,function(err,result){
-      return callback(err,result);
-    });
+    self.rowExist(obj,function(err,con){
+      console.log(con)
+      if(err)console.log("Error in rowExist")
+      if(con){callback(true,"File Already Exist!");return;}
+      self._add(obj,callback);
+    })
   },
   remove:function(obj,callback){
     if (fs.existsSync(obj.filepath))fs.unlinkSync(obj.filepath);
     this._remove(obj,function(err,result){callback(err,result);});
+    console.log(obj)
     this.converts.remove('parentname',obj,function(err,result){callback(err,result)})
     
   }
@@ -568,45 +607,74 @@ function ConvertTable(parent,callback){
 }
 ConvertTable.prototype={
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get sqltemplate(){return this.parent.sqltemplate.split(".sql")[0];},
   get mapdserver(){return this.parent.mapdserver},
+  get datasetstable(){return this.parent.datasets},
   add:function(obj,callback){
     const self=this;
     const input = path.resolve(UPLOADFOLDER,obj.name);
-    const datasetname = obj.dataset.name;
-    const newfile = path.parse(input).name + "." + datasetname +".csv2";
-    // console.log(newfile)
+    const dataset = obj.dataset.name
+    // const datasetname = obj.dataset.name;
+    // const newfile = path.parse(input).name + "." + datasetname +".csv2";
+    const newfile = path.parse(input).name + "." +  this.sqltemplate +".csv2";
+
     const output = path.resolve(CONVERTFOLDER,newfile);
+    const testing= obj.testing || false;
     const options={
       csvinput:[input],
       csvoutput:[output],
+      testing:testing,
       printfunc:function(err,opt){callback(err,opt)},
     };
-    new CONVERT(options,function(meta){
-      console.log("adding to mongo")
-      self.mongoadd(output,obj.name,obj.dataset.name,function(err,result){
-        meta.action="optimization";
-        callback(false,meta);
-        self.mapdserver.copyData(obj.dataset.name,output,function(err,results){
-          if(err)console.log(results)
-          meta = {action:"upload done",data:results}
-          callback(err,meta);
+    console.log(newfile)
+    this.rowExist({name:newfile},function(err,con){
+      console.log(con)
+      if(err)console.log(con);
+      if(con){
+        self.datasetadd(dataset,newfile);
+        self.mapdadd(dataset,output,callback);
+      }
+      else{
+        new CONVERT(options,function(meta){
+          console.log("adding to mongo");
+          self.mongoadd(output,obj.name,function(err,result){
+            if(err)console.log(result);
+            self.datasetadd(dataset,newfile);
+            self.mapdadd(dataset,output,callback);
+          });
         });
-      });
+      }
     });
   },
-  mongoadd:function(filepath,parentname,datasetname,callback){
+  datasetadd:function(dataset,filename){
+    this.datasetstable.addData(dataset,filename,()=>null);
+  },
+  mapdadd:function(dataset,output,callback){
+    const self=this;
+    let meta ={};
+    meta.action="optimization";
+    callback(false,meta);
+    self.mapdserver.copyData(dataset,output,function(err,results){
+      if(err)console.log(results);
+      meta = {action:"upload done",data:results};
+      callback(err,meta);
+    });
+  },
+  mongoadd:function(filepath,parentname,callback){
     
     const name        = path.basename(filepath);
     const stats       = fs.statSync(filepath);
     const size        = prettyBytes(stats.size);
     const datecreated = stats.atime;
+    const schema      = this.sqltemplate // TODO: Change this to user preference
     const obj         =
     { name:name,
       filepath:filepath,
       size:size,
       datecreated:datecreated,
       parentname:parentname,
-      datasetname:datasetname,
+      // datasetname:datasetname,
+      schema:schema
     };
     this._add(obj,function(err,result){
       callback(err,result);
@@ -614,8 +682,8 @@ ConvertTable.prototype={
   },
   remove:function(key,obj,callback){
     const self=this;
-    this.find(key,obj,function(err,results){
-      // console.log(results)
+    console.log("remove convert")
+    this.find(key,{parentname:obj.name},function(err,results){
       if(err)throw Error(results);
       const func = function(item,_callback){
         console.log(item.filepath)
@@ -652,35 +720,53 @@ DatasetTable.prototype= {
       if(exist)return callback(true,"Dataset exist!");
       self.mapdserver.createTable(name,schemafilepath,function(err,results){
         if(err)return callback(err,results); 
-        const obj =
-          { name:name,
-            datecreated:new Date().toISOString(),
-          };
-        self._add(obj,function(err,result){callback(err,result);});
+        self.getList(function(err,array){
+          const isdefault=(array.length>0)?false:true;
+          const obj =
+            { name:name,
+              data:[],
+              default:isdefault,
+              datecreated:new Date().toISOString(),
+            };
+          self._add(obj,function(err,result){callback(err,result);});          
+        });
       });
     });
+  },
+  addData:function(dataset,filename,callback){
+    console.log(dataset,filename)
+    this._push('data',{dataset:dataset,data:filename},callback);
   },
   remove:function(obj,callback){
     const self=this;
     self.mapdserver.dropTable(obj.name,function(err,results){
-      console.log(obj.name,err,results)
+      console.log(obj.name,err,results);
       if(err)return callback(err,results);
       self._remove({name:obj.name},function(err,result){
-        console.log(obj.name)
-        self.convertstable.remove('datasetname',{datasetname:obj.name},function(err,result){callback(err,result)})
+        // console.log(obj.name)
+        // self.convertstable.remove('datasetname',{datasetname:obj.name},function(err,result){callback(err,result)})
         callback(err,result);}
       );  
     });  
   },
-  getView:function(dataset,callback){
+  changeDefault:function(datasetname,callback){
     const self=this;
-    const datasetname=dataset.name;
+    console.log(datasetname)
+    self.update({},{ $set: {'default' : false } },()=>{
+      self.update({name:datasetname},{ $set: {'default' : true } },callback);
+    });
+    
+  },
+  getView:function(datasetname,callback){
+    const self=this;
     self.filestable.getList(function(err,files){
       if (err) throw err;
-      self.convertstable.getList(function(err,converts){
+      self.getList(function(err,datasets){
         if (err) throw err;
-        files.forEach(file=>{
-          file.inside=converts.some(item=>item.parentname===file.name && item.datasetname===datasetname)
+        const datasetobj = datasets.find(dataset=>dataset.name===datasetname)
+        files.map(file=>{
+          const file2 = file.name.split('.csv')[0] + "." +  self.sqltemplate.split('.sql')[0] +".csv2"
+          file.inside=datasetobj.data.includes(file2)
         })
         callback(false,files);
       })

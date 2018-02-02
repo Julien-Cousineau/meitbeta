@@ -18,13 +18,16 @@ MapContainer.prototype = {
     hoverquery:false,
     center:[-100.00,60.0],
     paint:{
-      hex:{"fill-outline-color": "rgba(0,0,0,0.0)","fill-color": "rgba(0,0,0,0.5)"},
+      hex:{"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.0)"},
       meit: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
       prov: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
       label: {'text-color': 'black'},
+      // trips: {'circle-color': 'red','circle-radius':3},
+      
     },
     layout:{
       hide:{'visibility':'none'},
+      pts:{ "icon-image": "circle-11", "icon-allow-overlap": true},
       terminal:{ "icon-image": "{icon}-15", "icon-allow-overlap": true},
       terminal2:{ "icon-image": "{icon}-15"},
       meitlabel:{ 'text-size':16,'text-field': 'MEIT {meitid}',
@@ -103,6 +106,7 @@ MapContainer.prototype = {
       touchZoomRotate:false,
     });
     const self=this;
+    map.addControl(new mapboxgl.ScaleControl({position: 'top-left'}));
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new MapboxGeocoder({accessToken: mapboxgl.accessToken,country:'CA',zoom:12,limit:10,terminals:this.terminals}),'top-left');
     map.on("error",function(e){return self.error(e);});
@@ -123,8 +127,8 @@ MapContainer.prototype = {
   readTerminals: function(callback){
     const self=this;
     d3.json("/js/terminals.geojson", function(data) {
-      self.terminals = data;
-      callback();
+       self.terminals = data;
+        callback();
     });
   },
   loaded:function(){
@@ -179,10 +183,10 @@ MapContainer.prototype = {
       </div>
     </div>
     <div class="selectbtn boxselect">
-      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="extent" keyword="extent" keywordType="title"><i class="fa fa-square-o fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
+      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="extent" keyword="extent" keywordType="title"><i class="far fa-square fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
     </div>
     <div class="selectbtn hoverquery">
-      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="query" keyword="query" keywordType="title"><i class="fa fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
+      <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="query" keyword="query" keywordType="title"><i class="fas fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
     </div>
     `;
     
@@ -212,6 +216,9 @@ MapContainer.prototype = {
     this.map.addSource('hex4', {type: 'vector',tiles: [URL + "tiles/hex4/{z}/{x}/{y}.pbf"]});
     this.map.addSource('hex1', {type: 'vector',tiles: [URL + "tiles/hex1/{z}/{x}/{y}.pbf"]});
     this.map.addSource('terminalS', {type: 'vector',tiles: [URL + "tiles/terminals/{z}/{x}/{y}.pbf"]});
+    this.map.addSource('arcticpts', {type: 'vector',tiles: [URL + "tiles/arcticpts/{z}/{x}/{y}.pbf"]});
+    // this.map.addSource('pacificpts', {type: 'vector',tiles: [URL + "tiles/pacificpts/{z}/{x}/{y}.pbf"]});
+    // this.map.addSource('newgrid', {type: 'geojson',data:this.newgrid});
   },
   addLayers:function(){
     this.map.addLayer({"id": "mapmeit","type": "fill","source": 'meit_S',"source-layer": "meitregions","paint": this.options.paint.meit});
@@ -219,13 +226,16 @@ MapContainer.prototype = {
     this.map.addLayer({"id": "prov","type": "fill","source": 'prov',"source-layer": "provinces",layout:this.options.layout.hide,"paint": this.options.paint.prov});
     this.map.addLayer({"id": "provlabels","type": "symbol","source": 'cprov',"source-layer": "cprovinces",layout: this.options.layout.provlabel,"paint": this.options.paint.label});
     // this.map.addLayer({"id": "hexgrid","type": "fill","source": 'hex',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
-    this.map.addLayer({"id": "hex16","type": "fill","source": 'hex16',"source-layer": "hex_16",layout:this.options.layout.hide,paint: this.options.paint.hex});
-    this.map.addLayer({"id": "hex4","type": "fill","source": 'hex4',"source-layer": "hex_4",layout:this.options.layout.hide,paint: this.options.paint.hex});
-    this.map.addLayer({"id": "hex1","type": "fill","source": 'hex1',"source-layer": "hex_1",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex16","type": "fill","source": 'hex16',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex4","type": "fill","source": 'hex4',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
+    this.map.addLayer({"id": "hex1","type": "fill","source": 'hex1',"source-layer": "hex",layout:this.options.layout.hide,paint: this.options.paint.hex});
     this.map.addLayer({"id": "terminals","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal, "filter": ["==", "zoom", "0"]});
     this.map.addLayer({"id": "terminals5","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 10, "filter": ["==", "zoom", "1"]});
     this.map.addLayer({"id": "terminals2","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 11, "filter": ["==", "zoom", "2"]});
     this.map.addLayer({"id": "terminals1","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 12, "filter": ["==", "zoom", "3"]});
+    this.map.addLayer({"id": "arcticpts","type": "symbol","source": "arcticpts","source-layer": "pts",'layout': this.options.layout.pts});
+    // this.map.addLayer({"id": "pacificpts","type": "symbol","source": "pacificpts","source-layer": "pts",'layout': this.options.layout.pts});
+    // this.map.addLayer({"id": "newgrid","type": "fill","source": "newgrid",'paint': this.options.paint.hex});
   },
 
   // stops:[],
@@ -236,18 +246,17 @@ MapContainer.prototype = {
     const mapDLayer = this.mapDLayer;
     // console.log(mapLayer);
     if(stops && stops.length && this.map.getLayer(mapDLayer)){
-      console.log(stops.length)
-      console.time("inside");
-      self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": "gid",default: "rgba(255,255,255,0.0)","type": "categorical","stops": stops});
+      // console.log(stops.length)
+      // console.time("inside");
+      self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": "name",default: "rgba(0,0,0,0.0)","type": "categorical","stops": stops});
       this.showLayer();
-      console.timeEnd("inside");
+      // console.timeEnd("inside");
     }
-
   },
   changeLayer:function(_id){
     // this.mapLayer = (_id==="hexgrid")?:_id;//panelid
     this.mapLayer=_id;
-    // this.hideLayer();
+    this.hideLayer();
     this.mapd.getMap();
   },
   hideLayer:function(){
@@ -263,7 +272,7 @@ MapContainer.prototype = {
   showLayer:function(){
     const layers=this.options.viewlayers;
     const _id =this.mapDLayer;
-    console.log(_id,layers[_id])
+    // console.log(_id,layers[_id])
     this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
     if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
   },
@@ -289,12 +298,12 @@ MapContainer.prototype = {
     // console.log(feature)
     const gid=feature.properties.gid;
     const value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
-     console.log(this.unit)
+    // console.log(this.unit)
     switch (this.mapDLayer) {
       case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.keywords[this.unit][this.language]);
       case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.keywords[this.unit][this.language]);
        
-      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.gid,value,this.keywords[this.unit][this.language]);
+      default: return `GID({1}) <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.name,value,this.keywords[this.unit][this.language]);
     }
     
   },

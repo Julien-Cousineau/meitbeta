@@ -14,12 +14,24 @@ const fs  = require('fs');
 const Papa= require('papaparse');
 const path = require('path');
 const async = require('async');
+const GeoJSON= require('geojson');
+const geojsonstream = require('geojson-stream');
 
 
 function Convert(options,callback){
   const self   = this;
   this.pointer = function(){return self;};
+
+    
+
+  
   this.options = util.extend(Object.create(this.options), options);
+  this.options.hexinput= (options.testing)?[
+       {id:16,file:'newhex16.hex'},
+       {id:4,file:'newhex4.hex'}]:
+         [{id:16,file:'newhex16.hex'},
+         {id:4,file:'newhex4.hex'},
+         {id:1,file:'newhex1.hex'}];
   this.hex={};
   this.points={};
   this.missingid={};
@@ -55,11 +67,7 @@ Convert.prototype = {
         {id:'MEIT',file:'meitregions.geojson'},
         {id:'PROV',file:'provinces.geojson'},
       ],
-    hexinput:[
-       {id:16,file:'hex_16.hex'},
-       {id:4,file:'hex_4.hex'},
-      {id:1,file:'hex_1.hex'}
-       ],
+    testing:false,
     shipinput:[
      {id:0,file:'pacific_growth_factors_11212017.csv'},
      {id:1,file:'east_arctic_greatlakes_growth_factors_11212017.csv'}
@@ -74,6 +82,7 @@ Convert.prototype = {
   get hexinput(){return this.options.hexinput},
   get shipinput(){return this.options.shipinput},
   get geoinput(){return this.options.geoinput},
+  get testing(){return this.options.testing},
   print:function(){
     this.printfunc(false,this.meta);
   },
@@ -174,6 +183,7 @@ Convert.prototype = {
     self.meta.action='Reading ' + path.basename(input);
     let hrstart = process.hrtime();
     outstream.write(FIELDS.join(",") + "\n");
+    // outstream.write('{"type":"FeatureCollection","features":[');
     Papa.parse(instream, {
       header: true,
       // fastMode:true,
@@ -183,25 +193,34 @@ Convert.prototype = {
           self.meta.progress=row.meta.cursor / stats.size * 100;
           self.print();
           console.log(count);tcount=0;
-          
+
         }
         count++;tcount++;
         
-        self.parseCSV(row.data[0],function(obj){
-          // if(tcount>=50000){
-          //   console.log(obj)
-          // }
-	      outstream.write(obj);
-	      });
+        self.parseCSV(row.data[0],function(obj){outstream.write(obj);});
+        // self.parseCSVPoints(row.data[0],function(obj){
+        //   outstream.write(`{"type":"Feature","geometry":{"type":"Point","coordinates":[{0},{1}]},"properties":{}},`.format(obj.lng,obj.lat));
+        // });
 	    },
 	    error:function(e){console.log("error",e);self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(true,e);},
       complete: function() {
-        for(let id in this.missingid){
-          console.log(id)
-        }
+        // for(let id in self.missingid){console.log(id)}
         console.log("done");
+        // outstream.write(']});');
         self.meta.action=null;self.meta.time.readping=process.hrtime(hrstart)[0];self.meta.action=null;callback(false);}
     });
+  },
+  parseCSVPoints:function(obj,callback){
+    const point_id= obj.grid_index;
+     if(!(this.points[point_id])){
+      const lng = parseFloat(obj.long) || 0;
+      const lat = parseFloat(obj.lat)  || 0;
+      this.lng[this.ipoint]    = lng;
+      this.lat[this.ipoint]    = lat;
+      this.points[point_id]    = this.ipoint;
+      callback({lng:lng,lat:lat})
+      this.ipoint++;
+     }
   },
   parseCSV:function(obj,callback){
     this.irow++;
@@ -219,7 +238,6 @@ Convert.prototype = {
       }
       if(!(allzeros)){
         const ship_id = obj.ship_id;
-        // const ip      = parseFloat(obj.ip);
         const point_id= obj.grid_index;
         const mode    = obj.activity_type;
         const ip = (obj.ip && obj.ip.toLowerCase()==='true')?1:0;
@@ -243,7 +261,7 @@ Convert.prototype = {
           const prov = this.PROV.getIndex(lng,lat);
           const hex_16  = this.hex[16].getIndex(lng,lat);
           const hex_4   = this.hex[4].getIndex(lng,lat);
-          const hex_1   = this.hex[1].getIndex(lng,lat);
+          const hex_1   = (this.testing)?null:this.hex[1].getIndex(lng,lat);
           
           this.points[point_id]    = this.ipoint;
           this.lng[this.ipoint]    = lng;
@@ -253,7 +271,7 @@ Convert.prototype = {
           this.prov[this.ipoint]= prov;
           this.hex_16[this.ipoint] = hex_16;
           this.hex_4[this.ipoint]  = hex_4;
-          this.hex_1[this.ipoint]  = hex_1;
+          if(!(this.testing)){this.hex_1[this.ipoint]  = hex_1;}
           
           this.ipoint++;
         }
@@ -281,8 +299,7 @@ Convert.prototype = {
         ping.prov    = this.prov[this.points[point_id]];
         ping.hex_16  = this.hex_16[this.points[point_id]];
         ping.hex_4   = this.hex_4[this.points[point_id]];
-        ping.hex_1   = this.hex_1[this.points[point_id]];
-        
+        if(!(this.testing)){ping.hex_1   = this.hex_1[this.points[point_id]];}
         
         for(let i=0,n=YEARS.length;i<n;i++){
           const year=YEARS[i];
@@ -299,6 +316,7 @@ Convert.prototype = {
 
         const data=FIELDS.map(f=>ping[f]);
         this.iping++;
+        // console.log(data)
         callback(data.join(",") + "\n");
       }
     }

@@ -27,7 +27,8 @@ Socket.prototype ={
       console.log("authenticated")
       // self.getkeys=function(){socket.emit('getkeys');};
       socket.on('getkeys', function (keys) {
-          if(!(self.loaded))self.parent.loadApp(keys);
+        self.parent.KEYS=keys;
+        if(!(self.loaded))self.parent.loadApp();
       });
       socket.on('getdatasets', function (obj) {
         let list=obj.data;
@@ -39,7 +40,15 @@ Socket.prototype ={
         if(self.loadmap)self.parent.loadMapD();
         self.loadmap=false;
       });
-      if(!(self.loaded))socket.emit('getkeys');
+     
+      if(!(self.loaded)){
+        socket.emit('initialdatasets',(err,list)=>{
+          self.parent.table=list.find(item=>item.default==true).name
+          console.log(self.parent.table)
+         if(!(self.loaded))socket.emit('getkeys');
+        });
+      }
+      
     })
     .on('unauthorized', function(msg){
       // console.log("unauthorized: " + JSON.stringify(msg.data));

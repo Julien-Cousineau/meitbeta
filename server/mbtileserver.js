@@ -21,14 +21,16 @@ MBTileServer.prototype={
   options:{
     tiles:{
       // hex: { mbtiles: 'hex.mbtiles' },
-      hex16: { mbtiles: 'hex_16.mbtiles' },
-      hex4:  { mbtiles: 'hex_4.mbtiles' },
-      hex1:  { mbtiles: 'hex_1.mbtiles' },
+      hex16: { mbtiles: 'newhex16.mbtiles' },
+      hex4:  { mbtiles: 'newhex4.mbtiles' },
+      hex1:  { mbtiles: 'newhex1.mbtiles' },
       meit:  { mbtiles: 'meitregions.mbtiles' },
       prov:  { mbtiles: 'provinces.mbtiles' },
       cmeit: { mbtiles: 'cmeitregions.mbtiles' },
       cprov: { mbtiles: 'cprovinces.mbtiles' },
-      terminals: { mbtiles: 'terminals.mbtiles' }
+      terminals: { mbtiles: 'terminals.mbtiles' },
+      arcticpts: { mbtiles: 'arcticpts.mbtiles' },
+      // pacificpts: { mbtiles: 'pacificpts.mbtiles' }
     }
   },
   construct:function(){

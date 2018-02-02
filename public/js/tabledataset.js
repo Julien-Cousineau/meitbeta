@@ -24,6 +24,11 @@ DatesetTable.prototype = {
       columns:{
         name:{title:"Dateset name",data:""},
         datecreated:{title:"Date Uploaded",data:''},
+        default:{title:"Default",
+                className:'defaultAtt',
+                render:function(full){return self.htmlDefault(full);},
+                action:function(id,className){return self.htmlDefaultAction(id,className);}
+        },
         childids:{title:"Data",
                className:"dataAtt",
                render:function(full){return self.htmlDataset(full);},
@@ -43,6 +48,10 @@ DatesetTable.prototype = {
   },
   htmlDataset:function(full){
     return '<button type="button" class="btn-circle btn-primary"><span><i class="fa fa-plus" aria-hidden="true"></i></span></button>';
+  },
+  htmlDefault:function(full){
+    return (full.default)?'<span><i class="fas fa-check-circle fa-2x" aria-hidden="true"></i></span>':
+                          '<button type="button" class="btn-none"><span><i class="far fa-circle fa-2x checktable" aria-hidden="true"></i></span></button>';
   },
   htmlDatasetAction:function(id,className){
     const self = this;
@@ -66,6 +75,15 @@ DatesetTable.prototype = {
     
     });
     
+  },
+  htmlDefaultAction :function(id,className){
+    const self = this;
+    $('#{0} tbody'.format(id)).on('click', 'td.{0} button'.format(className), function () {
+      var tr = $(this).closest('tr');      
+      var row = self.base.datatable.row( tr );
+      var obj = row.data();
+      self.socket.emit("changedefaultdataset",obj);
+    });
   },
   htmlDatasetDetail:function(rowid,data){
       return  `

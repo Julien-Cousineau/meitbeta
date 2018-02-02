@@ -75,7 +75,7 @@ Hex.prototype={
         if(tcount>=10000){console.log(count);tcount=0;}
         count++;tcount++;
         const row ={};
-        row.id =data.properties.gid;
+        row.id =data.properties.name;
         const coords = data.geometry.coordinates[0];
         let lat =0;
         let lng =0;
