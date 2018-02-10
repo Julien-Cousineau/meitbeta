@@ -11,7 +11,7 @@ Socket.prototype ={
   construct:function(){
     const self=this;
     const socket = this.socket = io.connect();
-    const id_token = this.parent.login.id_token;
+    const id_token = this.parent.id_token;
       
     // socket.on('connect', function () {
     //     console.log("connect");
@@ -21,7 +21,10 @@ Socket.prototype ={
     socket.on('connect', function (msg) {
       console.log("connected");
       socket.emit('authenticate', {token: id_token}); // send the jwt
-      
+      // $.post('/token').done(function (result) {
+      //   console.log(result.token)
+      //   socket.emit('authenticate', {token: result.token}); // send the jwt
+      // });
     })
     .on('authenticated', function () {
       console.log("authenticated")
@@ -32,10 +35,12 @@ Socket.prototype ={
       });
       socket.on('getdatasets', function (obj) {
         let list=obj.data;
+        
         list.forEach(item=>{
           if(item.name ===self.parent.table)item.checked=true;
         });
-        self.parent.tables=list;
+        // self.parent.tables=list;
+       
         if(self.parent.Footer)self.parent.Footer.updateTableList();
         if(self.loadmap)self.parent.loadMapD();
         self.loadmap=false;
@@ -43,16 +48,20 @@ Socket.prototype ={
      
       if(!(self.loaded)){
         socket.emit('initialdatasets',(err,list)=>{
+
           self.parent.table=list.find(item=>item.default==true).name
-          console.log(self.parent.table)
+          list.forEach(item=>{
+            if(item.name ===self.parent.table)item.checked=true;
+          });
+          self.parent.tables=list;
          if(!(self.loaded))socket.emit('getkeys');
         });
       }
       
     })
     .on('unauthorized', function(msg){
-      // console.log("unauthorized: " + JSON.stringify(msg.data));
-      self.parent.login.logout();
+      console.log("unauthorized: " + JSON.stringify(msg.data));
+      self.parent.logout();
       // throw new Error(msg.data.type);
     })
 

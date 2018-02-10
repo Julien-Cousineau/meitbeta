@@ -6,14 +6,15 @@ const fs = require('fs');
 const path = require('path')
 const mbtiles = require('mbtiles');
 const express = require('express');
-
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 const HEXFOLDER =  path.join(__dirname, '../../shareddrive/data/hex');
 
 
 
 
-function MBTileServer(parent) {
+function MBTileServer(parent,checkJwt) {
   this._parent = parent;
+  this.checkJwt = checkJwt;
   this.construct();
 }
 MBTileServer.prototype={
@@ -97,7 +98,7 @@ MBTileServer.prototype={
           }
         });
       });
-      this.parent.app.use('/tiles/',app);
+      this.parent.app.use('/private/tiles/',this.checkJwt,app);
     }
   },
 };

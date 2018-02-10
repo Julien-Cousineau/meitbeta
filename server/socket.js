@@ -63,6 +63,9 @@ Socket.prototype = {
         socket.on("changedefaultdataset",function(obj){
           self.dataserver.datasets.changeDefault(obj.name,()=>getdatasets())
         });
+        socket.on("changepublicdataset",function(obj){
+          self.dataserver.datasets.changePublic(obj.name,()=>getdatasets())
+        });        
         socket.on('getdatasets', function(){
           getdatasets();
         });
@@ -71,7 +74,9 @@ Socket.prototype = {
         });
         
         socket.on('newdataset', function(name){
+          console.log(name)
           self.dataserver.datasets.add(name,function(err,results){
+            console.log(results)
             if(err)return socket.emit('newdataseterror', results);
             getdatasets();
           });

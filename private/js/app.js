@@ -33,6 +33,10 @@ App.prototype ={
     year:'2015',
     container:"#home",
   },
+  get id_token(){if(!(this._id_token)){this._id_token=localStorage.getItem('id_token');};return this._id_token;},
+  set id_token(value){this._id_token=value;},
+  get access_token(){if(!(this._access_token)){this._access_token=localStorage.getItem('access_token');};return this._access_token;},
+  set acess_token(value){this._acess_token=value;},  
   get KEYS(){return this.options.KEYS;},
   set KEYS(value){this.options.KEYS=value;},
   get loaded(){return this.options.loaded;},
@@ -42,6 +46,13 @@ App.prototype ={
   set table(value){this.options.table=value;if(this.loaded)this.mapd.createCrossFilter();},
   get tables(){return this.options.tables;},
   set tables(value){this.options.tables=value;},
+  get publictables(){
+    if(this.userInfo.app_metadata.roles[0]=="admin"){return this.tables}
+    else {
+      return this.tables.reduce((acc,item)=>{console.log(item.public);if(item.public)acc.push(item);return acc},[]);
+    }
+    
+  },
   get language(){return this.options.language;},
   set language(value){this.options.language=value;},
   get keywords(){return this.options.keywords;},
@@ -49,6 +60,28 @@ App.prototype ={
   get mapLayer(){return this.options.mapLayer;},
   set mapLayer(value){this.options.mapLayer=value;this.setmapDLayer();},
   get mapDLayer(){return this.options.mapDLayer;},
+  // get access_token(){if(!(this._access_token)){this._access_token=localStorage.getItem('access_token');}
+  //   return this._access_token;    
+  // },
+  // get id_token(){if(!(this._id_token)){this._id_token=localStorage.getItem('id_token');}
+  //   return this._id_token;
+  // },
+  get userInfo(){
+    if(!(this._userInfo)){
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      // const userInfo = {first:"Julien"};
+      if(!(userInfo)){this.logout();}
+      this._userInfo=userInfo;
+    }
+    return this._userInfo;
+  },
+  logout:function() {
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('expires_at');
+    localStorage.removeItem('userInfo');
+    window.location.href = "/";
+  },
   // set mapDLayer(value){this.options.mapDLayer=value;},
   setmapDLayer:function(){
     const mapLayer=this.mapLayer;
@@ -80,7 +113,6 @@ App.prototype ={
   get gis(){return this.options.gis;},
   get charts(){return this.options.charts;},
   set charts(value){this.options.charts=value;},
-  get userInfo(){return this.login.userInfo;},
   
   get debug(){return this.options.debug;},
   refresh:function(){
@@ -92,12 +124,8 @@ App.prototype ={
     }
   },
   construct:function(){
-    const self=this;
-    this.options.extractRootDomain
-    if(this.debug)console.log("Constructing App")
-    
-    this.login = new Login(this.pointer,{container:"#login"});
-    this.login.parseHash();
+    if(this.debug)console.log("Constructing App");
+    this.show();
     
   },
   show:function(){
@@ -105,11 +133,8 @@ App.prototype ={
     this.Socket = new Socket(this.pointer);
   },
   loadApp:function(){
-    const self=this;
     this.header = new Header(this.pointer,{container:"#header"});
     this.Upload = new Modal(this.pointer,{container:"body",name:'upload'});
-    
-    
   },
   
   loadMapD:function(){
@@ -125,8 +150,8 @@ App.prototype ={
       self.loaded=true;
       $('[data-toggle="tooltip"]').tooltip({ trigger: "hover",flip:false });
       $('.dropdown-toggle').dropdown({ flip:false })
-     
       self.changeLabels();
+      self.mapd.getMap();
     });
     
   },

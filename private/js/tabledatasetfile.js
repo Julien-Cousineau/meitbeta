@@ -23,7 +23,7 @@ DatesetFileTable.prototype = {
       actionbuttons:function(id){return self.htmlBackButton(id);},
       columns:{
         name:{title:"CSV Files",data:""},
-        datecreated:{title:"Date Uploaded",data:''},
+        // datecreated:{title:"Date Uploaded",data:''},
         inside:{title:"Add File to Dataset",
                className:"addfile",
                render:function(full){return self.htmlConvert(full);},

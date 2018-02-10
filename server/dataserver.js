@@ -716,9 +716,12 @@ DatasetTable.prototype= {
     const schemafilepath=path.resolve(SCHEMAFOLDER,this.sqltemplate);
     
     self.rowExist({name:name},function(err,exist){
+      console.log("here")
       if(err)return callback(err);
       if(exist)return callback(true,"Dataset exist!");
+      console.log(name)
       self.mapdserver.createTable(name,schemafilepath,function(err,results){
+        console.log(err,results)
         if(err)return callback(err,results); 
         self.getList(function(err,array){
           const isdefault=(array.length>0)?false:true;
@@ -726,6 +729,7 @@ DatasetTable.prototype= {
             { name:name,
               data:[],
               default:isdefault,
+              public:false,
               datecreated:new Date().toISOString(),
             };
           self._add(obj,function(err,result){callback(err,result);});          
@@ -757,6 +761,15 @@ DatasetTable.prototype= {
     });
     
   },
+  changePublic:function(datasetname,callback){
+    const self=this;
+    console.log(datasetname)
+    self.find('name',{name:datasetname},(err,array)=>{
+      const _public = (typeof array[0].public=='undefined')? true:array[0].public;
+      self.update({name:datasetname},{ $set: {'public' : !_public } },callback);
+    });
+    
+  },  
   getView:function(datasetname,callback){
     const self=this;
     self.filestable.getList(function(err,files){

@@ -4,16 +4,22 @@
 function Login(parent,options){
   this._parent = parent;
   this.options = extend(Object.create(this.options), options);
-  this.construct();
+ 
 }
 Login.prototype ={
   options:{
-      container:"",
+      container:"body",
+      AUTH0:{
+        AUTH0_CLIENT_ID:'QtyNHacFL1GhHcL7z5Ce3j34tPf3gJgB',
+        AUTH0_DOMAIN:'nrc-ocre.auth0.com',  
+        // AUTH0_AUDIENCE:'https://nrc-ocre.auth0.com/api/v2/',
+        AUTH0_CALLBACK_URL:window.location.href,
+      },
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
   get parentcontainer(){return this.parent.container;},
   get container(){return this.options.container;},
-  get AUTH0(){return this.parent.AUTH0;},
+  get AUTH0(){return this.options.AUTH0;},
   get userInfo(){
     if(!(this._userInfo)){
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -23,13 +29,9 @@ Login.prototype ={
     return this._userInfo;
   },
   set user(value){this._user=value;},
-  get id_token(){if(!(this._id_token)){this._id_token=localStorage.getItem('id_token');}
-    return this._id_token;
-  },
+  get id_token(){if(!(this._id_token)){this._id_token=localStorage.getItem('id_token');};return this._id_token;},
   set id_token(value){this._id_token=value;},
-  get access_token(){if(!(this._access_token)){this._access_token=localStorage.getItem('access_token');}
-    return this._access_token;    
-  },
+  get access_token(){if(!(this._access_token)){this._access_token=localStorage.getItem('access_token');};return this._access_token;},
   set acess_token(value){this._acess_token=value;},  
   
   get auth(){
@@ -38,6 +40,7 @@ Login.prototype ={
         domain: this.AUTH0.AUTH0_DOMAIN,
         clientID: this.AUTH0.AUTH0_CLIENT_ID,
         redirectUri: this.AUTH0.AUTH0_CALLBACK_URL,
+        // audience: this.AUTH0.AUTH0_AUDIENCE,
         responseType: 'token id_token'
       });
     }
@@ -47,6 +50,7 @@ Login.prototype ={
   construct:function(){
     if(this.parent.debug)console.log("Constructing Login");
     this.render();
+    this.constructFunc();
   },
   constructFunc:function(){
     const self=this;
@@ -80,27 +84,92 @@ Login.prototype ={
   closeForm:function(){$("#mainButton").attr('class', 'mainButton');},
   checkValue:function(){this.className = this.value.length > 0 ? 'active':''; },
   login:function() {
-    // console.log("Julien")
     var obj = {connection: 'Username-Password-Authentication',
                username: $('#username').val(),
                password: $('#password').val(),
               };
-    // console.log(this.auth)
+
     this.auth.redirect.loginWithCredentials(obj, function(err) {
       if (err) return alert(err.description);
     });
+
+    
   },
   show_sign_in:function() {
     $(this.parent.container).hide();
-    $(this.container).show();
+    this.construct();
+    // $(this.container).show();
     setTimeout(function(){
       $("#password").focus();
       $("#username").focus();
     },2000);
   },
   show_home:function() {
-    $(this.container).hide();
-    this.parent.show();
+    const self=this;
+    console.log('show_home')
+    $('#login').hide();
+    var script_arr = [
+        'css/modal.css', 
+        'css/ext/mapbox-gl.css',
+        'css/ext/mapbox-gl-geocoder.css',
+        'css/ext/bootstrap.min.css',
+        'css/fontawesome-all.min.css',
+        'css/font-awesome-extension.min.css',
+        'css/ext/dropzone.min.css',
+        'css/ext/dataTables.bootstrap4.min.css',
+        'css/ext/dc.css',
+        'css/ext/mapdc.css',
+        "js/ext/jquery.dataTables.min.js",
+        "js/ext/dataTables.bootstrap4.min.js",
+        "js/ext/d3.js",
+        "js/ext/async.min.js",
+        "js/ext/FileSaver.js",
+        "js/ext/xlsx.full.min.js",
+        "js/ext/mapd/crossfilter.js",
+        "js/ext/mapd/dc.js",
+        "js/ext/mapd/browser-connector.js",
+        "js/ext/mapd/mapd-crossfilter.js",
+        "js/ext/mapd/mapdc.js",
+    ];
+    // "/socket.io/socket.io.js",
+    const accessToken = localStorage.getItem('id_token');
+    console.log(localStorage.getItem('access_token'))
+    console.log(accessToken)
+    // console.log(localStorage.getItem('id_token'))
+    $.ajax({
+      url: '/token',
+      headers: {"Authorization": 'Bearer ' + accessToken},
+      success:function(data){
+        console.log(data)
+        if(data.status){
+          window.location.href='/private/index.html'
+        }
+      },
+      error:function(){
+        self.logout();
+      },
+    });
+    // $.getMultiScripts(script_arr, '/private/',{headers: {"Authorization": 'Bearer ' + accessToken}}).done(function() {
+      
+    //   console.log(logoDark)
+    //   console.log("Done")
+    //     // all scripts loaded
+    // });
+    // location.href="http://ec-meit-dev.ca/login"
+    
+    // var accessToken = localStorage.getItem('id_token');
+    // console.log(accessToken)
+    // window.location.href = "/callback?token={0}".format(accessToken);
+    // $.ajax({
+    //   url: 'http://ec-meit-dev.ca/callback?token={0}'.format(accessToken),
+    //   type: 'GET',
+    //   headers: {"Authorization": 'Bearer ' + accessToken},
+    //   success: function(data) {
+    //     // console.log(data)
+    //   }
+    // });
+    // this.parent.show();
+    
     
     // $("#usernameHome").text(this.user.user_metadata.first);
     // if(this.user.app_metadata.roles[0]=="admin"){
@@ -110,14 +179,19 @@ Login.prototype ={
   
   parseHash:function() {
     const self = this;
-    const token = localStorage.getItem('id_token');
+    const token = localStorage.getItem('access_token');
     
     if (token)return self.show_home();
+    console.log("here")
     self.auth.parseHash({ _idTokenVerification: false }, function(err, authResult) {
-      if(err || (authResult && authResult.error)){alert('error: ' + err);return self.show_sign_in();} 
+      console.log(err)
+     
       if (authResult && authResult.accessToken && authResult.idToken){
         window.location.hash = '';
         self.setSession(authResult);
+      } else {
+         if(err || (authResult && authResult.error)){alert('error: ' + err);}
+         return self.show_sign_in(); 
       }
     });
     
@@ -158,6 +232,7 @@ Login.prototype ={
   },
   get renderhtml(){
     return `
+    <div id="login">
       <div class="loginchild">
         <div style="padding: 50px 30px 30px 0px;">
               {0}
@@ -200,6 +275,7 @@ Login.prototype ={
           	</div>
           </div>
         </div>
+      </div>
           `.format(this.htmlFlag(),this.htmlLogo());
   },
   htmlFlag:function(){

@@ -22,7 +22,7 @@ Header.prototype ={
   postrender:function(){
     const self=this;
     $(".LGbtn2").click(function(e){return self.parent.changeLanguageToggle();});
-    $(".btn-logout").click(this.parent.login.logout);
+    $(".btn-logout").click(this.parent.logout);
     // this.parent.Login.show_logged_in();
     this.getUserInfo();
     
@@ -39,11 +39,12 @@ Header.prototype ={
   },
   getUserInfo:function(){
     const self=this;
-    const userInfo = this.parent.login.userInfo;
+    const userInfo = this.parent.userInfo;
     if(userInfo){
       $("#usernameHome").text(userInfo.user_metadata.first);
-      if(userInfo.app_metadata.roles[0]=="admin" || userInfo.app_metadata.roles[0]=="user"){
-          $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal"><span><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i></span><span keyword="upload"  keywordType="text">Upload</span></button>`);
+      // if(userInfo.app_metadata.roles[0]=="admin" || userInfo.app_metadata.roles[0]=="user"){
+      if(userInfo.app_metadata.roles[0]=="admin"){
+          $('#headerdroplist').prepend(`<button class="upload dropdown-item" type="button"  data-toggle="modal" data-target="#exampleModal"><span><i class="fas fa-cloud-upload-alt" aria-hidden="true"></i></span><span keyword="upload"  keywordType="text">Upload</span></button>`);
       }
     }
   },
@@ -64,7 +65,7 @@ Header.prototype ={
         </button>
         <div id="headerdroplist" class="dropdown-menu dropdown-menu-right">
           <div class="dropdown-divider"></div>
-          <button class="dropdown-item btn-logout" type="button"><i class="fa fa-sign-out fa-fw"></i><span keyword="logout" keywordType="text">Log out</span></button>
+          <button class="dropdown-item btn-logout" type="button"><i class="fas fa-sign-out-alt"></i><span keyword="logout" keywordType="text">Log out</span></button>
         </div>
       </div>
       

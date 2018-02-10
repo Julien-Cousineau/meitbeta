@@ -51,7 +51,7 @@ MapD.prototype = {
     const table=this.table;
     const keys = this.KEYS.mapd;
     new MapdCon()
-    .protocol("http")
+    .protocol("https")
     .host(this.IP)
     .port(keys.port)
     .dbName(keys.dbName)

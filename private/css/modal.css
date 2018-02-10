@@ -27,6 +27,9 @@
   margin-top: 2px;  
 
 }
+.pull-right {
+  float: right;
+}
 .card li,label,input {
   font-size: 14px;
 }

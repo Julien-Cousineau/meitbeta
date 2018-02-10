@@ -6,7 +6,7 @@ const SCHEMAFOLDER =  path.join(__dirname, '../../shareddrive/data/schema');
 const IP = process.env.IP;
 const fs = require('fs');
 const Connector = require("./node-connector");
-
+const MAPD = process.env.MAPD;
 const util = require("./util");
 
 
@@ -22,10 +22,10 @@ MapDServer.prototype = {
     connector
       .protocol("http")
       .host("localhost")
-      .port("9092")
-      .dbName("mapd")
-      .user("mapd")
-      .password("HyperInteractive")
+      .port("9090")
+      .dbName(MAPD.dbName)
+      .user(MAPD.user)
+      .password(MAPD.password)
       .connect((err, results) => { // eslint-disable-line consistent-return
           callback(err,connector);
         });
@@ -40,6 +40,7 @@ MapDServer.prototype = {
   },
   createTable:function(tablename,schemafilepath,callback){
     let query = fs.readFileSync(schemafilepath, 'utf8').replace("tablename",tablename);
+    console.log(query)
     this.query(query,{},function(err,result){
        callback(err,result);
     });

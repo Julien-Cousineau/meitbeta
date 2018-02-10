@@ -23,7 +23,12 @@ DatesetTable.prototype = {
       actionbuttons:function(id){return self.htmlAddButton(id);},
       columns:{
         name:{title:"Dateset name",data:""},
-        datecreated:{title:"Date Uploaded",data:''},
+        // datecreated:{title:"Date Uploaded",data:''},
+        public:{title:"Public?",
+                className:'publicAtt',
+                render:function(full){return self.htmlPublicDataset(full);},
+                action:function(id,className){return self.htmlPublicAction(id,className);}
+        },
         default:{title:"Default",
                 className:'defaultAtt',
                 render:function(full){return self.htmlDefault(full);},
@@ -46,6 +51,10 @@ DatesetTable.prototype = {
     this.base.apiFunc();
     this.socket.emit("getdatasets");
   },
+  htmlPublicDataset:function(full){
+    return (full.public)?'<button type="button" class="btn-none"><span><i class="fas fa-check-circle fa-2x" aria-hidden="true"></i></span></button>':
+                          '<button type="button" class="btn-none"><span><i class="far fa-circle fa-2x checktable" aria-hidden="true"></i></span></button>';
+  },  
   htmlDataset:function(full){
     return '<button type="button" class="btn-circle btn-primary"><span><i class="fa fa-plus" aria-hidden="true"></i></span></button>';
   },
@@ -62,17 +71,6 @@ DatesetTable.prototype = {
       var rowid = row[0][0];
       $('.panelleft').css("margin-left","-49%");
       self.socket.emit("getview",obj);
-      
-      
-      // $(this).children("i").toggleClass("fa-plus fa-minus")
-      // if ( row.child.isShown() ) {
-      //   row.child.hide();
-      //   tr.removeClass('shown');
-      // } else {        
-      //   row.child(self.htmlDatasetDetail(rowid,row.data()) ).show();
-      //   tr.addClass('shown');
-      // }
-    
     });
     
   },
@@ -85,6 +83,15 @@ DatesetTable.prototype = {
       self.socket.emit("changedefaultdataset",obj);
     });
   },
+  htmlPublicAction :function(id,className){
+    const self = this;
+    $('#{0} tbody'.format(id)).on('click', 'td.{0} button'.format(className), function () {
+      var tr = $(this).closest('tr');      
+      var row = self.base.datatable.row( tr );
+      var obj = row.data();
+      self.socket.emit("changepublicdataset",obj);
+    });
+  },  
   htmlDatasetDetail:function(rowid,data){
       return  `
     <div class="deletecontainer" rowid={0}>

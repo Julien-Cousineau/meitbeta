@@ -28,7 +28,7 @@ function ManualInsert(){
     this.pointer = function(){return self;};
     const dataserver = this.dataserver=new DataServer(this.pointer,{web:false});
     
-    // this.addFilesManually();
+    this.addFilesManually();
     
     // this.TestAll();
     // this.deleteAll(()=>null)
@@ -43,7 +43,8 @@ function ManualInsert(){
     // this.TestingPush();
     // this.TestingGetView();
     // this.TestingDeleteFile();
-    this.TestingchangeDefault(()=>self.getDListAll());
+    // this.TestingchangeDefault(()=>self.getDListAll());
+    // this.TestingPublicDefault(()=>self.getDListAll());
     
     // dataserver.files.delete(function(){
     //   dataserver.files.create(function(){
@@ -101,9 +102,9 @@ ManualInsert.prototype = {
   addFilesManually:function(){
     const files=[
       'arctic_emissions_01102018.csv',
-      // 'east_emissions_2018-01-17.csv',
+      'east_emissions_2018-01-17.csv',
       // 'pacific_emissions_01042018.csv',
-      // 'pacificWIG_07192017.csv',
+      'pacificWIG_07192017.csv',
       // 'eastWIG_09212017.csv',
       // 'pacificWIG_09212017.csv',
       // 'pacific_emissions_11162017.csv',
@@ -148,6 +149,10 @@ ManualInsert.prototype = {
   },
   TestingchangeDefault:function(callback){
     this.dataserver.datasets.changeDefault('test1',callback)
+  },
+  TestingPublicDefault:function(callback){
+     this.getDListAll();
+    this.dataserver.datasets.changePublic('test1',callback)
   }
     
   // addConvertFile:function(){

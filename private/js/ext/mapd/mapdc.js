@@ -9207,7 +9207,9 @@ function coordinateGridMixin(_chart) {
       return xDomain[xDomain.length - 1] - xDomain[0];
     } else {
       var effectiveWidth = _chart.effectiveWidth();
-      var numTicks = _chart.xAxis().scale().ticks().length;
+    //   console.log(_chart.xAxis().scale()())
+      var numTicks = _chart.xAxis().scale().ticks? _chart.xAxis().scale().ticks().length:DEFAULT_NUM_TICKS;
+       
       return effectiveWidth / numTicks < MAX_TICK_WIDTH ? Math.ceil(effectiveWidth / MAX_TICK_WIDTH) : DEFAULT_NUM_TICKS;
     }
   };

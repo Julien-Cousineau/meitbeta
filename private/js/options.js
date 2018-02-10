@@ -9,7 +9,7 @@ const options ={
     },
   IP :getHostName(window.location.href),
   // URL : 'http://' + getHostName(window.location.href) + '/',
-  URL : 'http://' + getHostName(window.location.href) + ':8080/',
+  URL : 'https://' + getHostName(window.location.href) + '/private/',
   // IP : '52.228.71.184',
   // URL : 'http://52.228.71.184:8080/',  
   keywords:{
@@ -113,7 +113,8 @@ const options ={
   charts:[
   {id:"paneldate",checked:true,active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
     attributes:{xAxis:{tickFormat:dc.utils.customTimeFormat,orient:'bottom',},
-                yAxis:{ticks:5}
+                yAxis:{ticks:5},
+                measureLabelsOn:true
     },   
     attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 400,binBounds: [minMax.minimum,minMax.maximum]};}},
                             x:{minMax:function(minMax){return d3.time.scale.utc().domain([minMax.minimum,minMax.maximum]) }},
@@ -144,7 +145,21 @@ const options ={
   },
   {id:"panelclass",checked:true,active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
   {id:"paneltype",checked:true,active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
+    attributes:{
+      // binParams:{numBins: 24,binBounds: [0,23]},
+      x:d3.scale.ordinal().domain(d3.range(0,24)),
+      xUnits:dc.units.ordinal,
+      // xUnits:dc.units.ordinal(),
+      xAxis:{orient:'bottom',ticks:22},
+      yAxis:{ticks:5},
+      barPadding:0.1,
+      outerPadding:0.05,
+    }
+    
+  },
+  // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
+  // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'rowChart',defaultscale:'',attributes:{}},
   {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
   {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
   {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{

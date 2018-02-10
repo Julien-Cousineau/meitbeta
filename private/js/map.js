@@ -18,7 +18,7 @@ MapContainer.prototype = {
     hoverquery:false,
     center:[-100.00,60.0],
     paint:{
-      hex:{"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.0)"},
+      hex:{"fill-outline-color": "rgba(0,0,0,0.0)","fill-color": "rgba(0,0,0,0.0)"},
       meit: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
       prov: {"fill-outline-color": "rgba(0,0,0,0.5)","fill-color": "rgba(0,0,0,0.1)"},
       label: {'text-color': 'black'},
@@ -43,11 +43,11 @@ MapContainer.prototype = {
             },            
     },
     viewlayers:{
-      mapmeit:{geo:'mapmeit',label:'meitlabels'},
-      prov:{geo:'prov',label:'provlabels'},
-      hex16:{geo:"hex16"},
-      hex4:{geo:"hex4"},
-      hex1:{geo:"hex1"},
+      mapmeit:{geo:'mapmeit',label:'meitlabels',property:'gid'},
+      prov:{geo:'prov',label:'provlabels',property:'gid'},
+      hex16:{geo:"hex16",property:'name'},
+      hex4:{geo:"hex4",property:'name'},
+      hex1:{geo:"hex1",property:'name'},
     }
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
@@ -126,7 +126,7 @@ MapContainer.prototype = {
   },
   readTerminals: function(callback){
     const self=this;
-    d3.json("/js/terminals.geojson", function(data) {
+    d3.json("/private/js/terminals.geojson", function(data) {
        self.terminals = data;
         callback();
     });
@@ -248,7 +248,7 @@ MapContainer.prototype = {
     if(stops && stops.length && this.map.getLayer(mapDLayer)){
       // console.log(stops.length)
       // console.time("inside");
-      self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": "name",default: "rgba(0,0,0,0.0)","type": "categorical","stops": stops});
+      self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": this.options.viewlayers[mapDLayer].property,default: "rgba(0,0,0,0.0)","type": "categorical","stops": stops});
       this.showLayer();
       // console.timeEnd("inside");
     }
@@ -264,8 +264,8 @@ MapContainer.prototype = {
     const layers=this.options.viewlayers;
     for(let id in layers){
       const layer=layers[id];
-       this.map.setLayoutProperty(layer.geo, 'visibility', 'none');
-       if(layer.label)this.map.setLayoutProperty(layer.label, 'visibility', 'none');
+       if(this.map.getLayer(layer.geo))this.map.setLayoutProperty(layer.geo, 'visibility', 'none');
+       if(this.map.getLayer(layer.geo) && layer.label)this.map.setLayoutProperty(layer.label, 'visibility', 'none');
     }
   },
 
@@ -313,6 +313,12 @@ MapContainer.prototype = {
     this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     if (!features.length)return this.popup.remove();
     this.popup.setLngLat(e.lngLat).setHTML(this.htmlPopup(features[0])).addTo(this.map);
+    
+    const _featuresTerminals = this.map.queryRenderedFeatures(e.point, { layers: ['terminals','terminals5','terminals2','terminals1']});
+    if (!_featuresTerminals.length)return;
+    const featuresTerminals = _featuresTerminals.find(feature => feature.layer.id==="terminals" || feature.layer.id==="terminals5" || feature.layer.id==="terminals2" || feature.layer.id==="terminals1" )    
+    const value =featuresTerminals.properties.name
+    this.popup.setLngLat(e.lngLat).setHTML(value).addTo(this.map);
   },
   onMove:function(e){
     const distance = e.target.dragPan._startPos.dist(e.target.dragPan._pos);

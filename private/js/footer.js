@@ -136,7 +136,7 @@ Footer.prototype ={
     }).join("");
   },
   updateTableList:function(){
-    const tablelis = this.htmlli(this.parent.tables);
+    const tablelis = this.htmlli(this.parent.publictables);
     $('.menufortable ul').empty();
     $('.menufortable ul').append(tablelis)
   },
@@ -150,7 +150,8 @@ Footer.prototype ={
     const emissionT = this.parent.emissions.find(item=>item.id===emission).keyword;
     const unitT = units.find(item=>item.divider===divider).keyword;
     const yearT = years.find(item=>item.id===year).keyword;
-    const tablelis = this.htmlli(this.parent.tables);
+
+    const tablelis = this.htmlli(this.parent.publictables);
     const gislis = this.htmlli(this.parent.gis);
     const chartlis = this.htmlli(this.parent.charts);
     

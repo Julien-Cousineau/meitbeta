@@ -163,7 +163,6 @@ Chart.prototype = {
                 .height(height)
                 .width(width)
                 .ordinalColors(this.colorScheme)
-                .measureLabelsOn(true)
                 .dimension(this.dimension)
                 .group(this.group)
                 .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
@@ -175,7 +174,7 @@ Chart.prototype = {
       if(attr!=='xAxis' && attr!=='yAxis'){this.dc[attr](this.attributes[attr])}
       else{
         for(let xattr in this.attributes[attr]){
-          this.dc.xAxis()[xattr](this.attributes[attr][xattr]);
+          this.dc[attr]()[xattr](this.attributes[attr][xattr]);
         }
       }
     }
@@ -192,7 +191,6 @@ Chart.prototype = {
       
     }
     if(this.dc.xAxis)this.dc.xAxis().scale(this.dc.x());
-    
   },
   formatValue:function(x){
     var formatSi = d3.format(".2s");
