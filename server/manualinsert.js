@@ -101,13 +101,15 @@ ManualInsert.prototype = {
   },
   addFilesManually:function(){
     const files=[
-      'arctic_emissions_01102018.csv',
-      'east_emissions_2018-01-17.csv',
+      //'arctic_emissions_01102018.csv',
+      //'pacific_emissions_01042018.csv',
+      //'east_emissions_2018-01-17.csv',            
       // 'pacific_emissions_01042018.csv',
-      'pacificWIG_07192017.csv',
+      // 'pacificWIG_07192017.csv',
       // 'eastWIG_09212017.csv',
       // 'pacificWIG_09212017.csv',
       // 'pacific_emissions_11162017.csv',
+      'arcticWIG_09212017.csv'
       ];
     files.forEach(file=>{
       const filepath = path.resolve(UPLOADFOLDER,file);
@@ -130,7 +132,7 @@ ManualInsert.prototype = {
   },
   TestAll:function(){
     this.deleteAll(()=>{
-      this.addTestFile(()=>this.addTestDataset(()=>this.addTestConvertFile(()=>null)));
+      this.addTestFile(()=>this.addTestDataset(null,()=>this.addTestConvertFile(()=>null)));
     })
     
   },

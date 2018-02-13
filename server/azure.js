@@ -77,10 +77,10 @@ function main(){
       // {name:"pacific_WebtideIndexedGridded",file:"pacific_WebtideIndexedGridded.zip"},
       //{name:"newhex16",file:"newhex16.hex"},
       //{name:"newhex4",file:"newhex4.hex"},
-      {name:"newhex1",file:"newhex1.hex"},
+      // {name:"newhex1",file:"newhex1.hex"},
       // {name:"newhex16mbtiles",file:"newhex16.mbtiles"},
       // {name:"newhex4mbtiles",file:"newhex4.mbtiles"},
-      {name:"newhex1mbtiles",file:"newhex1.mbtiles"},
+      // {name:"newhex1mbtiles",file:"newhex1.mbtiles"},
       ];
   
   download(list,function(e){

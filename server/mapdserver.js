@@ -3,12 +3,13 @@ const path = require('path');
 const CONVERTFOLDER =  path.join(__dirname, '../../shareddrive/data/convert');
 const UPLOADFOLDER =  path.join(__dirname, '../../shareddrive/data/upload');
 const SCHEMAFOLDER =  path.join(__dirname, '../../shareddrive/data/schema');
-const IP = process.env.IP;
 const fs = require('fs');
 const Connector = require("./node-connector");
-const MAPD = process.env.MAPD;
+const dotenv = require('dotenv');
 const util = require("./util");
-
+dotenv.load();
+const IP = process.env.IP;
+const MAPD = JSON.parse(process.env.MAPD);
 
 function MapDServer(parent){
   // parent,options

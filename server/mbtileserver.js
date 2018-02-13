@@ -30,7 +30,7 @@ MBTileServer.prototype={
       cmeit: { mbtiles: 'cmeitregions.mbtiles' },
       cprov: { mbtiles: 'cprovinces.mbtiles' },
       terminals: { mbtiles: 'terminals.mbtiles' },
-      arcticpts: { mbtiles: 'arcticpts.mbtiles' },
+      // arcticpts: { mbtiles: 'arcticpts.mbtiles' },
       // pacificpts: { mbtiles: 'pacificpts.mbtiles' }
     }
   },
