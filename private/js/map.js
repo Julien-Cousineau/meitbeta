@@ -234,7 +234,7 @@ MapContainer.prototype = {
     this.map.addLayer({"id": "terminals5","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 10, "filter": ["==", "zoom", "1"]});
     this.map.addLayer({"id": "terminals2","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 11, "filter": ["==", "zoom", "2"]});
     this.map.addLayer({"id": "terminals1","type": "symbol","source": "terminalS","source-layer": "terminals",'layout': this.options.layout.terminal2,'minzoom': 12, "filter": ["==", "zoom", "3"]});
-    this.map.addLayer({"id": "arcticpts","type": "symbol","source": "arcticpts","source-layer": "pts",'layout': this.options.layout.pts});
+    // this.map.addLayer({"id": "arcticpts","type": "symbol","source": "arcticpts","source-layer": "pts",'layout': this.options.layout.pts});
     // this.map.addLayer({"id": "pacificpts","type": "symbol","source": "pacificpts","source-layer": "pts",'layout': this.options.layout.pts});
     // this.map.addLayer({"id": "newgrid","type": "fill","source": "newgrid",'paint': this.options.paint.hex});
   },
@@ -245,7 +245,7 @@ MapContainer.prototype = {
     this.hideLayer();
     const self=this;
     const mapDLayer = this.mapDLayer;
-    console.log(mapDLayer,stops);
+    // console.log(mapDLayer,stops);
     if(stops && stops.length && this.map.getLayer(mapDLayer)){
       // console.log(stops.length)
       // console.time("inside");
@@ -324,7 +324,7 @@ MapContainer.prototype = {
     
   },
   hoverFeature:function(e,_con){
-    const con = (typeof _con==undefined)? true:_con;
+    const con = (typeof _con=='undefined')? true:_con;
     console.log(_con,con)
     if(!(this.map.getLayer(this.mapDLayer)))return;
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
@@ -359,7 +359,7 @@ MapContainer.prototype = {
     // const obj = {mapLayer:this.parent.mapLayer,center:this.center};
     // this.parent.socket.emit("moving",obj);
     this.parent.mapd.getMap();
-    console.log("moving");
+    // console.log("moving");
   },
   get bounds(){
     var lon1=this.map.getBounds()._sw.lng;
