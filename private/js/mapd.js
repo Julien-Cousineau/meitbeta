@@ -159,10 +159,42 @@ MapD.prototype = {
     };
     this.total.reduceMulti(this.reduceFunc);
   },
-  filterbyID:function(att,value){
+  filterbyID:function(att,array){ //value=array
     
-    (value.length==0)?this.geomaps[att].dc.dimension.filterAll():
-                      this.geomaps[att].dc.dimension.filterMulti(value);
+    this.pillcontainer.forEach(pill=>{if(pill.panel==att)pill.active=false;})
+    const pills=this.pillcontainer.filter(pill=>pill.panel==att);
+    // console.log(pills)
+    
+    
+    array.forEach(value=>{
+      // console.log(value,pills.find(pill=>pill.filter==value.id.toString()))
+      if(!(pills.find(pill=>pill.filter==value.id.toString()))){
+        $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{2} <i class="fa fa-times"></i></span>`.format(att,value.id.toString(),value.label.toString()))  
+        this.pillcontainer.push({panel:att,filter:value.id.toString(),active:true})
+      } else {
+        pills.find(pill=>pill.filter==value.id.toString()).active=true;
+      }
+    })
+    this.pillcontainer=this.pillcontainer.reduce((acc,pill)=>{
+      // console.log(pill)
+    if(!(pill.active)){
+      // console.log('remove',`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter))
+      $(`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter)).remove();
+      return acc;
+    }
+    acc.push(pill);
+    return acc;
+    },[]);
+    // console.log(this.pillcontainer)  
+    
+    
+    if(this.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
+    if(this.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
+    
+    const arrayid=array.map(item=>item.id);
+    // console.log(arrayid);
+    (arrayid.length===0)?this.geomaps[att].dc.dimension.filterAll():
+                        this.geomaps[att].dc.dimension.filterMulti(arrayid);
     this.draw();
   },
   filterMap:function(bounds){
@@ -245,7 +277,7 @@ MapD.prototype = {
     let bounds=null;
     $('#map').addClass("chart-loading-overlay");
     $('#map').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
-    console.log(self.mapDLayer)
+    // console.log(self.mapDLayer)
     if(self.mapDLayer==='hex16' || self.mapDLayer==='hex4' || self.mapDLayer==='hex1'){bounds=self.mapContainer.bounds;} 
     this.queue.unshift({priorityindex:++this.priorityindex,bounds:bounds});
     // this.queueFunc(bounds,function(err,data){
@@ -271,14 +303,14 @@ MapD.prototype = {
     
     let querystring = self.geomaps[self.mapDLayer].dc.group.writeTopQuery(50);
     querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
-    console.log(querystring)
+    // console.log(querystring)
     if(bounds){
       const dim = this.geomaps[self.mapDLayer].dim;
       const table = this.parent.table;
       const limit = 1000000;
       
       const filters = this.crossFilter.getFilterString();
-      console.log(filters)
+      // console.log(filters)
       const filtersstr = (filters)?"{0} AND ".format(filters):"";
       const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(bounds[0],bounds[1],bounds[2],bounds[3]);
       querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"

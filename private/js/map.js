@@ -250,7 +250,7 @@ MapContainer.prototype = {
       // console.log(stops.length)
       // console.time("inside");
       stops=stops.map(stop=>{
-        if(self.filteredids.length==0 || self.filteredids.indexOf(stop[0])!=-1)return stop;
+        if(self.filteredids.length==0 || self.filteredids.find(item=>item.id==stop[0]))return stop;
         stop[1]="#ccc";
         return stop;
       });
@@ -300,8 +300,10 @@ MapContainer.prototype = {
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapLayer]});
     if (!features.length)return;
     // console.log()
-    const _id=features[0].properties.gid;
-    (this.filteredids.indexOf(_id)==-1)?this.filteredids.push(_id):this.filteredids.splice(this.filteredids.indexOf(_id),1);
+    // const _id=features[0].properties.gid;
+    const _id=(this.mapDLayer=='mapmeit' || this.mapDLayer=='prov')?features[0].properties.gid:features[0].properties.name;
+    const label=(this.mapDLayer=='mapmeit')?features[0].properties.meitid:(this.mapDLayer=='prov')?features[0].properties.province:features[0].properties.name;
+    (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:label}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
     
     this.parent.mapd.filterbyID(this.mapDLayer,this.filteredids);
     
