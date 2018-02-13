@@ -297,7 +297,7 @@ MapContainer.prototype = {
     if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.up(e);
   },
   onClick:function(e){
-    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapLayer]});
+    const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     if (!features.length)return;
     // console.log()
     // const _id=features[0].properties.gid;

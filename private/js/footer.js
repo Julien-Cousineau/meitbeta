@@ -61,10 +61,22 @@ Footer.prototype ={
     this.dropdownObj('table');
     this.dropdownObj('chart');
     this.dropdownObj('gis');
+    const self=this;
+    $('.clearpanel2').on("click",function(){self.clear();})
     // this.removetooltip();
     // $('[data-toggle="tooltip"]').tooltip();
     // $(".LGbtn2").click(this.changeLanguage);
     // this.postrender();
+  },
+  clear:function(){
+    for(let id in this.parent.geomaps){
+      this.parent.mapd.filterbyID(id,[]);
+      this.parent.mapContainer.filteredids=[];
+    }
+    for(let id in this.parent.charts){
+      const chart=this.parent.charts[id];
+      chart.dc.removeFilters();
+    }
   },
   removetooltip:function(){
     // $('.dropdownbtn').on("click",function(e){$('[data-toggle="tooltip"]').tooltip('hide');});
@@ -163,8 +175,8 @@ Footer.prototype ={
                 
                 <div class="footer-title">
                   
-                      <h5>Filters</h5>
-                  
+                      <h5 style="display: inline;">Filters</h5>
+                  <a class="clearpanel2" style="float: right;color: #007bff;"  keyword="clear" keywordType="text">clear</a>
                 </div>
                 <div class="pillcontainer">
                   
