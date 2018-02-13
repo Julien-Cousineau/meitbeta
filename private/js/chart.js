@@ -16,8 +16,8 @@ Chart.prototype = {
     colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
   },
   defaultChartAttributes:{
-    pieChart:{cap:9,othersGrouper:false},
-    rowChart:{cap:20,autoScroll:true,elasticX:true,margins:{top:10,right:50,bottom:50,left:10},othersGrouper:false},
+    pieChart:{cap:25,othersGrouper:false},
+    rowChart:{cap:25,autoScroll:true,elasticX:true,margins:{top:10,right:50,bottom:50,left:10},othersGrouper:false},
     barChart:{elasticX:true,elasticY:true},
   },
   defaultChartAttributesFunc:{
@@ -37,7 +37,7 @@ Chart.prototype = {
   
   get attributes(){
     if(!this._attributes){
-      this._attributes = extend(Object.create(this.options.attributes), this.defaultChartAttributes[this.dctype]);
+      this._attributes = extend(Object.create(this.defaultChartAttributes[this.dctype]),this.options.attributes);
     }
     return this._attributes
   },
@@ -92,19 +92,42 @@ Chart.prototype = {
     $('div[panelid="{0}"] .x_title .nav .resetbtn'.format(this.id)).one("click",function(){self.removeFilters();});
   },
   filteredFunc:function(chart,filter){
-    console.log(chart.group())
-    console.log(chart.group().writeTopQuery(10))
-    // console.log(this.crossFilter.getFilterString())
-    // console.log(this.crossFilter.getFilter())
-    // console.log(this.crossFilter.getGlobalFilter())
-    // console.log(this.crossFilter.getGlobalFilterString())
-    // console.log(this.crossFilter)
     const self=this;
+    
+    
+    
+    this.parent.pillcontainer.forEach(pill=>{if(pill.panel==this.id)pill.active=false;})
+    const pill=this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==filter.toString());
+    if(!(pill) && chart.filters().length>0){
+      
+      $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{1} <i class="fa fa-times"></i></span>`.format(this.id,filter.toString()))
+      // $(`[_panel="{0}"][_filter="{1}"]`.format(this.id,filter.toString())).on("click",function(){
+      //   const _filters  =chart.filters().filter(_filter=>_filter!=$(this).attr("_filter"))
+      //   console.log(_filter)
+      //   self.dc.filter(_filters);
+      // })
+      this.parent.pillcontainer.push({panel:this.id,filter:filter.toString(),active:true})
+    }
+    chart.filters().forEach(_filter=>{
+      this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==_filter.toString()).active=true;
+    })
+    this.parent.pillcontainer=this.parent.pillcontainer.reduce((acc,pill)=>{
+      if(pill.active==false){
+        $(`[_panel="{0}"][_filter="{1}"]`.format(this.id,pill.filter)).remove();
+        return acc;
+      }
+      acc.push(pill);
+      return acc;
+    },[]);
+    
+    
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
     // console.log(this.group.getReduceExpression())
     this.parent.getTotalMap();
     // this.parent.getMapValue();
+    if(this.parent.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
+    if(this.parent.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
   },
   // preCreateChart:function(){
   //   const self=this;
@@ -168,15 +191,19 @@ Chart.prototype = {
                 .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
                 .valueAccessor(function (p) {return p[self.emission]/self.divider;});
     
-    this.dc.measureValue=function (d) {return self.formatValue(self.dc.cappedValueAccessor(d));}
+    this.dc.measureValue=function (d) {return self.formatValue(self.dc.cappedValueAccessor(d));};
     // console.log(this.group.getReduceExpression())
     for(let attr in this.attributes){
-      if(attr!=='xAxis' && attr!=='yAxis'){this.dc[attr](this.attributes[attr])}
-      else{
+      
+      if(attr=='xAxis' || attr=='yAxis'){
         for(let xattr in this.attributes[attr]){
           this.dc[attr]()[xattr](this.attributes[attr][xattr]);
         }
       }
+      else if(attr=='measureValue'){
+        // if(this.attributes[attr])
+      }
+      else{this.dc[attr](this.attributes[attr]);}
     }
     //TODO : Chnage this below...too complicated
     for(let attr in this.attributesFunc){
@@ -191,6 +218,7 @@ Chart.prototype = {
       
     }
     if(this.dc.xAxis)this.dc.xAxis().scale(this.dc.x());
+    // if(this.dim=='meit')this.dc.xAxis().scale(d3.scale.ordinal().domain(d3.range(0,22)));
   },
   formatValue:function(x){
     var formatSi = d3.format(".2s");

@@ -114,6 +114,7 @@ const options ={
   {id:"paneldate",checked:true,active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
     attributes:{xAxis:{tickFormat:dc.utils.customTimeFormat,orient:'bottom',},
                 yAxis:{ticks:5},
+                // measureValue:true,
                 measureLabelsOn:true
     },   
     attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 400,binBounds: [minMax.minimum,minMax.maximum]};}},
@@ -148,10 +149,12 @@ const options ={
   {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
     attributes:{
       // binParams:{numBins: 24,binBounds: [0,23]},
-      x:d3.scale.ordinal().domain(d3.range(0,24)),
+      // x:d3.scale.ordinal().domain(d3.range(0,24)),
+      x:d3.scale.ordinal().domain(d3.range((0,23))),
       xUnits:dc.units.ordinal,
-      // xUnits:dc.units.ordinal(),
-      xAxis:{orient:'bottom',ticks:22},
+      elasticX:false,
+      // measureValue:false,
+      xAxis:{orient:'bottom'},
       yAxis:{ticks:5},
       barPadding:0.1,
       outerPadding:0.05,

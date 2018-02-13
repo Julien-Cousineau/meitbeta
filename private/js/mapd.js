@@ -9,7 +9,9 @@ function MapD(parent){
   // this.first = true;
   this.createQueue();
   this.createCrossFilter();
+  this.pillcontainer=[];
   this.workerSetup();
+  
   // this.queueSetup();
   
   // this.getMapSetup();
@@ -157,6 +159,12 @@ MapD.prototype = {
     };
     this.total.reduceMulti(this.reduceFunc);
   },
+  filterbyID:function(att,value){
+    
+    (value.length==0)?this.geomaps[att].dc.dimension.filterAll():
+                      this.geomaps[att].dc.dimension.filterMulti(value);
+    this.draw();
+  },
   filterMap:function(bounds){
     // const bounds = this.mapContainer.bounds;
     const minx=bounds[0],miny=bounds[1],maxx=bounds[2],maxy=bounds[3];
@@ -263,12 +271,14 @@ MapD.prototype = {
     
     let querystring = self.geomaps[self.mapDLayer].dc.group.writeTopQuery(50);
     querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
+    console.log(querystring)
     if(bounds){
       const dim = this.geomaps[self.mapDLayer].dim;
       const table = this.parent.table;
       const limit = 1000000;
       
       const filters = this.crossFilter.getFilterString();
+      console.log(filters)
       const filtersstr = (filters)?"{0} AND ".format(filters):"";
       const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(bounds[0],bounds[1],bounds[2],bounds[3]);
       querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"

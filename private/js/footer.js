@@ -158,6 +158,23 @@ Footer.prototype ={
     
     
     return `<div class="handle"></div>
+            <div class="filterpanel">
+              <div class="inside">
+                
+                <div class="footer-title">
+                  
+                      <h5>Filters</h5>
+                  
+                </div>
+                <div class="pillcontainer">
+                  
+                </div>
+                
+              </div>
+            </div>
+              
+            
+            
             <div class="footer-title">
             <div class="container-fluid">
               <div class="row">

@@ -23,6 +23,37 @@
 #totalnumber {
     color: #22a7f0;
 }
+.filterpanel {
+    height: 300px;
+    position: absolute;
+    width: 240px;
+    left: 8px;
+    margin-top: -300px;
+    overflow: hidden;
+}
+.filterpanel .inside {
+   margin-top: 300px; 
+    position: absolute;
+    background: #f5f5f6;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 292px;
+    border-radius: 3px;
+    border-color: black;
+    box-shadow: 0px 0px 6px 0px rgba(0,0,0,.26);
+    transition: all 0.5s;
+}
+.pillcontainer {
+  padding:5px;
+}
+.filterpanel .inside.active {
+   margin-top: 0px; 
+}
+.badge-filter {
+    color: #fff;
+    background-color: #4eb9f3;
+}
 .switch-color {
     background: #22a7f0;
 }
