@@ -213,7 +213,7 @@ WebServer.prototype = {
     // });
     
     
-    this.dataserver = new DataServer(this.pointer);
+    this.dataserver = new DataServer(this.pointer,this.checkJwt);
     this.mbtileserver = new MBTileServer(this.pointer,this.checkJwt);
     this.socketserver = new Socket(this.pointer,{});
     // app.use(function(err, req, res, next) {

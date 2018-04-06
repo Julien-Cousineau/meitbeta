@@ -34,6 +34,7 @@ Chart.prototype = {
   get emission(){return this.parent.emission;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.parent.reduceFunc;},
+  get reduceTrendFunc(){return this.parent.reduceTrendFunc;},
   
   get attributes(){
     if(!this._attributes){
@@ -68,14 +69,26 @@ Chart.prototype = {
   get colorScheme(){return this.options.colorScheme;},
   // get group(){return this.dimension.group().reduce(this.reduceFunc);}, 
   get group(){
-    if(!(this._group))this._group=this.dimension.group().reduce(this.reduceFunc);
+    if(!(this._group)){
+      if(this.id=="paneltrend"){
+        this._group=this.crossFilter.groupAll().reduce(this.reduceTrendFunc);
+        // this.crossFilter.groupAll().reduceMulti(this.reduceFunc);
+      } else {
+        this._group=this.dimension.group().reduce(this.reduceFunc);
+      }
+    }
     return this._group;
   },
   changeGroup(){
     
     // console.log(this.group)
     // this.dc.group(this.group);
+    if(this.id=="paneltrend"){
+      this.group.reduce(this.reduceTrendFunc);
+    }
+    else{
     this.group.reduce(this.reduceFunc);
+    }
   },
   removeFilters:function(){
     this.dc.filterAll();
@@ -84,6 +97,7 @@ Chart.prototype = {
   removeReset:function(){
      const self=this;
      $('div[panelid="{0}"] .x_title .nav .resetbtnli'.format(this.id)).css(`visibility`,"hidden");
+     if(this.id=="panelmeit")this.parent.mapContainer.filteredids=[];
      dc.redrawAllAsync();
   },
   addReset:function(){
@@ -181,15 +195,83 @@ Chart.prototype = {
     const self = this;
     const width = $('div[panelid="{0}"] .x_content'.format(this.id)).width();
     const height = $('div[panelid="{0}"] .x_content'.format(this.id)).height();
-    console.log("here")
+    // console.log(this.group.writeTopQuery())
     this.dc = dc[this.dctype](this.container)
                 .height(height)
                 .width(width)
                 .ordinalColors(this.colorScheme)
                 .dimension(this.dimension)
-                .group(this.group)
+                
                 .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
-                .valueAccessor(function (p) {return p[self.emission]/self.divider;});
+                
+    
+    if(this.id=="paneltrend"){
+      function remove_empty_bins(source_group) {
+          return {
+              topAsync:function () {
+                  return new Promise(function(resolve,reject){
+                    source_group.valuesAsync().then(data=>{
+                      
+                      resolve([
+                        {key0:'2015',value:data.year2015},
+                        {key0:'2020',value:data.year2020},
+                        {key0:'2025',value:data.year2025},
+                        {key0:'2030',value:data.year2030},
+                        {key0:'2035',value:data.year2035},
+                        {key0:'2040',value:data.year2040},
+                        {key0:'2045',value:data.year2045},
+                        {key0:'2050',value:data.year2050}
+                      ]);
+                    })
+                  })
+                  
+              },
+              all:function(callback){
+                // return [{key0:'2015',value:1000}]
+                source_group.valuesAsync().then(data=>{
+                  
+                  callback(false,
+                  [
+                    {key0:'2015',value:data.year2015},
+                    {key0:'2020',value:data.year2020},
+                    {key0:'2025',value:data.year2025},
+                    {key0:'2030',value:data.year2030},
+                    {key0:'2035',value:data.year2035},
+                    {key0:'2040',value:data.year2040},
+                    {key0:'2045',value:data.year2045},
+                    {key0:'2050',value:data.year2050}
+                    ]
+                  )
+                });
+                
+                // new Promise(function(resolve,reject){
+                    // source_group.valuesAsync().then(data=>{
+                      
+                    //   callback([
+                    //     {key0:'2015',value:data.year2015},
+                    //     {key0:'2020',value:data.year2020},
+                    //     {key0:'2025',value:data.year2025},
+                    //     {key0:'2030',value:data.year2030},
+                    //     {key0:'2035',value:data.year2035},
+                    //     {key0:'2040',value:data.year2040},
+                    //     {key0:'2045',value:data.year2045},
+                    //     {key0:'2050',value:data.year2050}
+                    //   ]);
+                    // })
+                  // })
+              }
+          };
+      }
+      // this.dc.ordering=null;
+      this.dc.group(remove_empty_bins(this.group))
+      // this.dc.keyAccessor(function (p) {console.log(p);return p.key;});
+      this.dc.valueAccessor(function (p) {console.log(p);return p.value/self.divider;});
+      
+    } else {
+      this.dc.group(this.group)
+      this.dc.valueAccessor(function (p) {return p[self.emission]/self.divider;});
+    }
+    
     
     this.dc.measureValue=function (d) {return self.formatValue(self.dc.cappedValueAccessor(d));};
     // console.log(this.group.getReduceExpression())

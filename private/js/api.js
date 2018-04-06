@@ -21,6 +21,36 @@ Api.prototype = {
   },
   uploadFiles:function(id,container,callback){
     const self=this;
+    
+    $('{0}'.format(id)).dmUploader({
+        dataType: 'csv',
+        url: '/upload',
+        onBeforeUpload: function(id){
+          $("{0}".format(container)).empty().append(getprogressbar("uploadprogress"));
+        },
+        onComplete: function (e, data) {
+          console.log('upload successful!\n' + data);
+          callback(false)
+        },
+        onUploadProgress: function (e, percentComplete) {
+          // console.log(percentComplete)
+          // var progress = parseInt(data.loaded / data.total * 100, 10);
+          // var percentComplete = evt.loaded / evt.total;
+          // var    percentComplete = parseInt(data.loaded / data.total * 100, 10);
+  
+              // update the Bootstrap progress bar with the new percentage
+              $('{0} .progress.bar .uploadprogress'.format(container)).text(percentComplete + '%');
+              $('{0} .progress.bar .uploadprogress'.format(container)).width(percentComplete + '%');
+  
+              // once the upload reaches 100%, set the progress bar text to done
+              if (percentComplete === 100) {
+                $('{0} .progress.bar .uploadprogress'.format(container)).html('Done');
+              }
+        }
+    });
+  },
+  uploadFiless:function(id,container,callback){
+    const self=this;
     $('{0}'.format(id)).on('change', function(){
       $("{0}".format(container)).empty().append(getprogressbar("uploadprogress"));
       var files = $(this).get(0).files;

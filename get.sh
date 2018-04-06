@@ -43,3 +43,5 @@ wget https://github.com/AndreLGava/font-awesome-extension/archive/v.0.0.3.zip
 
 
 npm install --save express compression cors body-parser cookie-parser node-uuid express-session formidable pretty-bytes
+
+wget https://github.com/blueimp/jQuery-File-Upload/archive/v9.20.0.zip

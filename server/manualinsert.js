@@ -28,13 +28,13 @@ function ManualInsert(){
     this.pointer = function(){return self;};
     const dataserver = this.dataserver=new DataServer(this.pointer,{web:false});
     
-    this.addFilesManually();
+    //this.addFilesManually();
     
     // this.TestAll();
     // this.deleteAll(()=>null)
     // this.deleteConvert();
-    // this.getListAll()
-    
+    //this.getListAll()
+    this.deleteConvert();
     // this.addTestFile(()=>null);
     // this.addTestDataset('test2',()=>null);
     // this.addTestConvertFile(()=>null);
@@ -109,7 +109,8 @@ ManualInsert.prototype = {
       // 'eastWIG_09212017.csv',
       // 'pacificWIG_09212017.csv',
       // 'pacific_emissions_11162017.csv',
-      'arcticWIG_09212017.csv'
+      //'arcticWIG_09212017.csv'
+      'arctic_emissions_2018-02-13.csv'
       ];
     files.forEach(file=>{
       const filepath = path.resolve(UPLOADFOLDER,file);

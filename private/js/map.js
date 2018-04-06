@@ -112,7 +112,8 @@ MapContainer.prototype = {
     map.addControl(new MapboxGeocoder({accessToken: mapboxgl.accessToken,country:'CA',zoom:12,limit:10,terminals:this.terminals}),'top-left');
     map.on("error",function(e){return self.error(e);});
     map.on("zoomend",debounce(function(e){self.onMove(e)}, 1000));
-    map.on("click",debounce(function(e){self.onClick(e)}, 1000));
+    // map.on("click",debounce(function(e){self.onClick(e)}, 1000));
+    map.on("click",function(e){self.onClick(e)});
     map.on("dragend",debounce(function(e){self.onMove(e)}, 1000));
     map.on('mousedown', debounce(function(e){self.mouseDown(e)}, 10));
     map.on('touchstart',debounce(function(e){self.mouseDown(e)}, 10));
@@ -247,7 +248,8 @@ MapContainer.prototype = {
     const mapDLayer = this.mapDLayer;
     // console.log(mapDLayer,stops);
     if(stops && stops.length && this.map.getLayer(mapDLayer)){
-      // console.log(stops.length)
+      // console.log(self.filteredids)
+      // console.log(stops)
       // console.time("inside");
       stops=stops.map(stop=>{
         if(self.filteredids.length==0 || self.filteredids.find(item=>item.id==stop[0]))return stop;
@@ -297,15 +299,23 @@ MapContainer.prototype = {
     if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.up(e);
   },
   onClick:function(e){
+    
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     if (!features.length)return;
-    // console.log()
-    // const _id=features[0].properties.gid;
-    const _id=(this.mapDLayer=='mapmeit' || this.mapDLayer=='prov')?features[0].properties.gid:features[0].properties.name;
-    const label=(this.mapDLayer=='mapmeit')?features[0].properties.meitid:(this.mapDLayer=='prov')?features[0].properties.province:features[0].properties.name;
-    (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:label}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
     
-    this.parent.mapd.filterbyID(this.mapDLayer,this.filteredids);
+    if(this.mapDLayer=='mapmeit'){
+      const _id=features[0].properties.gid;
+        (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:_id}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
+      const id=features[0].properties.meitid;
+      this.parent.mapd.filterbyID(this.mapDLayer,id);
+    } else {
+      const _id=(this.mapDLayer=='prov')?features[0].properties.gid:features[0].properties.name;
+      const label=(this.mapDLayer=='prov')?features[0].properties.province:features[0].properties.name;
+    
+      (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:label}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
+      this.parent.mapd.filterbyID(this.mapDLayer,this.filteredids);  
+    }
+    
     
     
     
@@ -325,7 +335,7 @@ MapContainer.prototype = {
   },
   hoverFeature:function(e,_con){
     const con = (typeof _con=='undefined')? true:_con;
-    console.log(_con,con)
+    // console.log(_con,con)
     if(!(this.map.getLayer(this.mapDLayer)))return;
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -407,7 +417,7 @@ SelectBox.prototype = {
     $('.clearpanel').on("click",function(){self.clear();})
   },
   updateBBox:function(){
-    console.log("updateBBox")
+    // console.log("updateBBox")
     this.start={lng:$("#lon1").val(),lat:$("#lat1").val()};
     this.end={lng:$("#lon2").val(),lat:$("#lat2").val()};
     this.update();

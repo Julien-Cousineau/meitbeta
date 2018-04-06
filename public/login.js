@@ -143,6 +143,8 @@ Login.prototype ={
         console.log(data)
         if(data.status){
           window.location.href='/private/index.html'
+        } else {
+          self.logout();
         }
       },
       error:function(){
