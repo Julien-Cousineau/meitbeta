@@ -36,6 +36,7 @@ Login.prototype ={
   
   get auth(){
     if(!(this._auth)){
+     
       this._auth=new auth0.WebAuth({
         domain: this.AUTH0.AUTH0_DOMAIN,
         clientID: this.AUTH0.AUTH0_CLIENT_ID,
@@ -43,6 +44,7 @@ Login.prototype ={
         // audience: this.AUTH0.AUTH0_AUDIENCE,
         responseType: 'token id_token'
       });
+       console.log(this._auth)
     }
     return this._auth;
   },

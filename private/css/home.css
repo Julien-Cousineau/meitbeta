@@ -41,7 +41,7 @@ a {
 .mapboxgl-ctrl-top-left .selectpanel {
     position: absolute;
     top: 46px;
-    height: 140px;
+    /*height: 140px;*/
     left: 6px;
     width: 244px;
     overflow: hidden;
@@ -58,15 +58,25 @@ a {
     height: calc(100% - 4px);
     background-color: white;
     margin: 2px;
-    margin-top: -140px;
+    margin-top: -130px;
     padding: 10px 10px 5px 10px;
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
     pointer-events: auto;
     box-shadow: 0 0px 4px rgba(0,0,0,.26);
 }
+.mapboxgl-ctrl-top-left .selectpanel .extentinside.active {
+  margin-top: 0px;
+}
 .mapboxgl-ctrl-top-left .selectpanel .inside a{
     color: #007bff;
+}
+.mapboxgl-ctrl-top-left .selectpanel .filterinside {
+    opacity: 0; 
+    margin-top: 0px;
+}
+.mapboxgl-ctrl-top-left .selectpanel .filterinside.active {
+    opacity: 1;
 }
 .mapboxgl-ctrl-top-left .selectbtn {
    margin: 10px 5px;
@@ -80,6 +90,9 @@ a {
     border-radius: 50%;
     font-size: 12px;
     /*box-shadow: 0px 0px 3px 2px rgba(0,0,0,.26);*/
+    cursor: pointer;
+}
+.badge-filter {
     cursor: pointer;
 }
 .selectbtn .btn:hover {

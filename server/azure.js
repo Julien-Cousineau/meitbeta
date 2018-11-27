@@ -6,8 +6,8 @@ const prettyBytes = require('pretty-bytes');
 const async = require('async');
 const path = require('path');
 
-const UPLOADFOLDER = '../../shareddrive/data/hex/'
-const DOWNLOADFOLDER = '../../shareddrive/data/hex/'
+const UPLOADFOLDER = '../shareddrive/data/hex/'
+const DOWNLOADFOLDER = '../shareddrive/data/hex/'
 // const deletelist =[
 // 'sep21_processed',
 // 'sep21_grid',
@@ -81,6 +81,12 @@ function main(){
       // {name:"newhex16mbtiles",file:"newhex16.mbtiles"},
       // {name:"newhex4mbtiles",file:"newhex4.mbtiles"},
       // {name:"newhex1mbtiles",file:"newhex1.mbtiles"},
+      //{name:"arctic_emissions_02132018_11062017DS",file:"arctic_emissions_02132018_11062017DS.zip"}
+      // {name:"forecast_factors_02152018",file:"forecast_factors_02152018.zip"}
+      // {name:"arctic_emissions_2018-04-10",file:"arctic_emissions_2018-04-10.zip"} 
+      {name:"pacific_emissions_2018-05-02",file:"pacific_emissions_2018-05-02.zip"}
+      // {name:"east_emissions_2018-04-17",file:"east_emissions_2018-04-17.zip"}
+      // {name:"pacific_fishing_emissions_2018-05-09",file:"pacific_fishing_emissions_2018-05-09.zip"}
       ];
   
   download(list,function(e){

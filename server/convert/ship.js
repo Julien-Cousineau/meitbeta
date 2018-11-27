@@ -27,7 +27,7 @@ function Ship(parent,id){
   
   if(typeof id!=="undefined"){
     this.id = id;
-    this.forecast = blank;
+    this.forecast = JSON.parse(JSON.stringify(blank));
 
   } else {
     this._parent = parent;
@@ -49,24 +49,38 @@ Ship.prototype={
     const region  = obj.meit_region;
     const _class  = obj.ship_class;
     const type    = obj.ship_type;
-    if(!(this.ships[ship_id])){this.ships[ship_id]=new Ship(null,this.iship++)}
+    if(!(this.ships[ship_id])){
+      this.ships[ship_id]=new Ship(null,this.iship++);
+      this.ships[ship_id].type  = type;   
+      this.ships[ship_id].Class= _class;
+    }
     if(!(this.classes[_class])){this.classes[_class]=this.iclass++;}
     if(!(this.types[type])){this.types[type]=this.itype++;}
     // const id = this.ships[ship_id].id;
     
-    if(REGIONS.includes(parseFloat(region))){
-      this.ships[ship_id].type  = type;   
-      this.ships[ship_id].Class= _class;
+    // if(ship_id =='100155000000000183'){
+    //   const _ship = this.ships[ship_id]
+    //   null;
+    // }
+    
+    for(var propertyName in obj) {      
+      let [engine,emission] = propertyName.split("_");
       
-      for(var propertyName in obj) {      
-        let [engine,emission] = propertyName.split("_");
-        
-        if(typeof ENGINES[engine]!=="undefined"){
-          const code = ENGINES[engine];
-          this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]);
-        }      
-      }
+      if(typeof ENGINES[engine]!=="undefined"){
+        const code = ENGINES[engine];
+        if(REGIONS.includes(parseFloat(region))){
+          // EAST
+          this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]) || 1.0;
+        } else {
+          // PACIFIC
+          REGIONS.forEach(region=>{
+            this.ships[ship_id].forecast[year][code][region][emission]=parseFloat(obj[propertyName]) || 1.0;
+          },this);
+        }
+      }      
     }
+      
+    // null;
   },
   readCSV:function(filename,callback){
     const self=this;

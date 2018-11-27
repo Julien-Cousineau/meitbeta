@@ -10,6 +10,7 @@ function MapD(parent){
   this.createQueue();
   this.createCrossFilter();
   this.pillcontainer=[];
+  this.badges={};
   this.workerSetup();
   
   // this.queueSetup();
@@ -23,6 +24,8 @@ MapD.prototype = {
   get priorityindex(){return this.options.priorityindex;},
   set priorityindex(value){this.options.priorityindex=value;},
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get keywords(){return this.parent.keywords;},
+  get language(){return this.parent.language;},
   get IP(){return this.parent.options.IP},
   get emission(){return this.parent.emission;},
   get year(){return this.parent.year;},
@@ -193,51 +196,112 @@ MapD.prototype = {
     };
     this.total.reduceMulti(this.reduceFunc);
   },
-  filterbyID:function(att,array){ //value=array
+  removeBadge:function(id,filter){
+    const badge = this.badges[id][filter];
+    badge.dom.remove();
+    delete this.badges[id][filter];
+  },
+  createBadge:function(obj){
+    const {id,acc,chart,filter,label}=obj;
+    const element = d3.select($('.pillcontainer')[0]);
+    // const badge_id = '{0}_{1}'.format(id,filter.toString());
     
-    if(att=="mapmeit"){
+    if(typeof this.badges[id]==='undefined')this.badges[id]={};
+    
+    if(typeof filter==='undefined' || filter===null){
+      for(let filter in this.badges[id]){
+        this.removeBadge(id,filter);  
+      }
+    } else if(this.badges[id][filter]){
+      this.removeBadge(id,filter);
+    } else {
+      const badge = this.badges[id][filter] = {filter:filter};
+      const span =badge.dom= element.append('span').attr("class","badge badge-pill badge-filter")
+        .attr("_panel",id)
+        .attr("_filter",filter.toString())
+        .on('click',()=>{
+          if(chart){chart.filter(filter)}
+          else {this.filterbyObj(obj)}
+          this.draw();
+          })
+        span.append('i')
+        .attr("keyword",acc)
+        .attr("keywordType", "text")
+        .text(this.keywords[acc][this.language]);
+        const t =span.append('i');
+        if(label)t.text(':' + label);
+        if(!label)t.text(':' + filter.toString());
+        span.append('i').attr('class','fa fa-times');
+    }
+    
+    let count=0;
+    for(let key in this.badges){
+      const badge = this.badges[key];
+      // if(!badge){this.geomaps[key].dc.dimension.filterAll()}
+      count +=Object.keys(badge).length;
+      // const array = Object.keys(badge).map(filter=>filter.id);
+      // this.geomaps[id].dc.dimension.filterMulti(array);
+    }
+    (count==0)?$('.filterinside').removeClass("active"):$('.filterinside').addClass("active");
+  },
+  filterbyObj:function(obj){ //value=array
+    const {id,filter,acc,label} = obj;
+    
+    if(id=="mapmeit"){
       const meitchart = this.parent.charts.find(item=>item.id=="panelmeit");
-      meitchart.dc.dc.filter(array);
-      // console.log(meitchart);
+      meitchart.dc.dc.filter(filter?filter:[]);
       
     } else {
-      const arrayid=array.map(item=>item.id);
-      this.pillcontainer.forEach(pill=>{if(pill.panel==att)pill.active=false;})
-      const pills=this.pillcontainer.filter(pill=>pill.panel==att);
-      array.forEach(value=>{
-        // console.log(value,pills.find(pill=>pill.filter==value.id.toString()))
-        if(!(pills.find(pill=>pill.filter==value.id.toString()))){
-          $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{2} <i class="fa fa-times"></i></span>`.format(att,value.id.toString(),value.label.toString()))  
-          this.pillcontainer.push({panel:att,filter:value.id.toString(),active:true})
-        } else {
-          pills.find(pill=>pill.filter==value.id.toString()).active=true;
-        }
-      })
-      this.pillcontainer=this.pillcontainer.reduce((acc,pill)=>{
-        // console.log(pill)
-      if(!(pill.active)){
-        // console.log('remove',`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter))
-        $(`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter)).remove();
-        return acc;
+      
+      
+      this.createBadge(obj);
+      
+      if(Object.keys(this.badges[id]).length !== 0){
+        const filters = Object.keys(this.badges[id]).map(key=>this.badges[id][key].filter);
+        
+        this.geomaps[id].dc.dimension.filterMulti(filters);
       }
-      acc.push(pill);
-      return acc;
-      },[]);
+      else{
+        console.log("filterhere","undeasdads");
+        this.geomaps[id].dc.dimension.filterAll()
+        
+      }
+      
+      //TODO
+      // const arrayid=array.map(item=>item.id);
+      // this.pillcontainer.forEach(pill=>{if(pill.panel==filter)pill.active=false;})
+      // const pills=this.pillcontainer.filter(pill=>pill.panel==id);
+      // array.forEach(value=>{
+        // console.log(value,pills.find(pill=>pill.filter==value.id.toString()))
+        // if(!(pills.find(pill=>pill.filter==filter))){
+          // $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{2} <i class="fa fa-times"></i></span>`.format(att,value.id.toString(),value.label.toString()))  
+          // this.createBadge(obj)
+          // this.pillcontainer.push({panel:id,filter:value.id.toString(),active:true})
+        // } else {
+          // pills.find(pill=>pill.filter==value.id.toString()).active=true;
+        // }
+      // })
+      // this.pillcontainer=this.pillcontainer.reduce((acc,pill)=>{
+        // console.log(pill)
+      // if(!(pill.active)){
+      //   // console.log('remove',`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter))
+      //   $(`[_panel="{0}"][_filter="{1}"]`.format(id,pill.filter)).remove();
+      //   return acc;
+      // }
+      // acc.push(pill);
+      // return acc;
+      // },[]);
       // console.log(this.pillcontainer)  
       
       
-      if(this.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
-      if(this.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
-      
       
       // console.log(arrayid);
-      (arrayid.length===0)?this.geomaps[att].dc.dimension.filterAll():
-                          this.geomaps[att].dc.dimension.filterMulti(arrayid);
+      // (arrayid.length===0)?this.geomaps[id].dc.dimension.filterAll():
+                          
       
       
       
     }
-    this.draw();
   },
   filterMap:function(bounds){
     // const bounds = this.mapContainer.bounds;
@@ -314,17 +378,15 @@ MapD.prototype = {
     this.total.valuesAsync().then(data=>$('#totalnumber').text(self.formatTotal(data[self.emission]/self.divider)));
     this.getMap();
   },  
-  getMap:function(){
-    const self=this;
+  getMap:function(panning){
+    if(panning && this.mapDLayer!=='hex16' && this.mapDLayer!=='hex4' && this.mapDLayer!=='hex1')return;
+    
     let bounds=null;
-    $('#map').addClass("chart-loading-overlay");
-    $('#map').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
-    // console.log(self.mapDLayer)
-    if(self.mapDLayer==='hex16' || self.mapDLayer==='hex4' || self.mapDLayer==='hex1'){bounds=self.mapContainer.bounds;} 
+    if(this.mapDLayer==='hex16' || this.mapDLayer==='hex4' || this.mapDLayer==='hex1')bounds=this.mapContainer.bounds;
+    // $('#map').addClass("chart-loading-overlay");
+    // $('#map').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
     this.queue.unshift({priorityindex:++this.priorityindex,bounds:bounds});
-    // this.queueFunc(bounds,function(err,data){
-      
-    // });
+
   },
   createQueue:function(){
     const self=this;
@@ -347,6 +409,7 @@ MapD.prototype = {
     querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
     // console.log(querystring)
     if(bounds){
+      const {expression}=this.reduceFunction()[0];
       const dim = this.geomaps[self.mapDLayer].dim;
       const table = this.parent.table;
       const limit = 1000000;
@@ -355,8 +418,9 @@ MapD.prototype = {
       // console.log(filters)
       const filtersstr = (filters)?"{0} AND ".format(filters):"";
       const con = "(lng>{0} AND lat>{1} AND lng<{2} AND lat<{3}) AND ".format(bounds[0],bounds[1],bounds[2],bounds[3]);
-      querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"
-                            .format(dim,this.emission,table,limit,con,filtersstr);
+      // querystring = "SELECT {0} as key0,SUM({1}) AS {1} FROM {2} WHERE {4}{5}{1} IS NOT NULL GROUP BY key0 ORDER BY {1} DESC LIMIT {3}"
+      querystring = "SELECT {0} as key0,SUM({1}) AS {2} FROM {3} WHERE {5}{6}{1} IS NOT NULL GROUP BY key0 ORDER BY {2} DESC LIMIT {4}"
+                            .format(dim,expression,this.emission,table,limit,con,filtersstr);
       querystring=querystring.replace('ip = false','NOT ip').replace('ip = true','ip');
     }
     this.con.query(querystring, {}, function(err, data) {

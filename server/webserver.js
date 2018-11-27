@@ -8,6 +8,9 @@ const uuid = require('node-uuid');
 const session = require('express-session');
 const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
+const cookieSession = require('cookie-session');
+
+const helmet = require('helmet')
 
 
 const jwt = require('express-jwt');
@@ -29,7 +32,9 @@ const Socket = require('./socket');
 
 // const async = require("async");
 
-
+const COOKIE_KEY1='123456789';
+const COOKIE_KEY2='123123123123';
+const DOMAIN='ec-meit.ca';
 
 
 
@@ -42,7 +47,7 @@ dotenv.load();
 
 const routes = require('./routes/index');
 const home = require('./routes/home');
-
+const csp = require('helmet-csp')
 
 function WebServer(parent){
   this._parent = parent;
@@ -76,16 +81,76 @@ WebServer.prototype = {
     // app.use(compress()); 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(helmet());
+    
+    //const ninetyDaysInSeconds = 7776000;
+    //app.use(helmet.hpkp({
+    //  maxAge: ninetyDaysInSeconds,
+    //  sha256s: ['AbCdEf123=', 'ZyXwVu456=']
+    //}));
+    app.use(cookieSession(
+      { name: 'session',
+        keys: [COOKIE_KEY1,COOKIE_KEY2],
+        maxAge: 1 * 60 * 60 * 1000, // 24 hours
+        cookie: {
+          secure: true,
+          httpOnly: true,
+          domain: DOMAIN,
+          // path: 'foo/bar',
+        }
+    }));
+    
     app.use(cookieParser());
+    
+    
+    
+    //app.use(csp({
+    //  // Specify directives as normal.
+    //  directives: {
+    //    defaultSrc: ["'self'", 'ec-meit.ca'],
+    //    scriptSrc: ["'self'", "'unsafe-inline'"],
+        //styleSrc: ['style.com'],
+        //fontSrc: ["'self'", 'fonts.com'],
+    //    imgSrc: ['img.com', 'data:'],
+    //    sandbox: ['allow-forms', 'allow-scripts'],
+    //    reportUri: '/report-violation',
+    //    objectSrc: ["'none'"],
+    //    upgradeInsecureRequests: true,
+    //    workerSrc: false  // This is not set.
+    //  },
+    
+      // This module will detect common mistakes in your directives and throw errors
+      // if it finds any. To disable this, enable "loose mode".
+   //   loose: false,
+    
+      // Set to true if you only want browsers to report errors, not block them.
+      // You may also set this to a function(req, res) in order to decide dynamically
+      // whether to use reportOnly mode, e.g., to allow for a dynamic kill switch.
+     // reportOnly: false,
+    
+      // Set to true if you want to blindly set all headers: Content-Security-Policy,
+      // X-WebKit-CSP, and X-Content-Security-Policy.
+     // setAllHeaders: false,
+    
+      // Set to true if you want to disable CSP on Android where it can be buggy.
+  //    disableAndroid: false,
+    
+      // Set to false if you want to completely disable any user-agent sniffing.
+      // This may make the headers less compatible but it will be much faster.
+      // This defaults to `true`.
+   //   browserSniff: true
+   // }))
+    
+    
     // app.use(express.static(path.join(__dirname, '../public')));
     
-    app.use(session({
-        genid: function(req) {return uuid.v1();},
-        secret: '123456789',
-        resave:true,
-        saveUninitialized: true,
-        cookie: {}
-    }))
+    //app.use(session({
+    //    genid: function(req) {return uuid.v1();},
+    //    secret: '123456789',
+    //    resave:true,
+    //    saveUninitialized: true,
+    //    cookie: {}
+    //}))
     // const strategy = new Auth0Strategy({
     //     domain:       process.env.AUTH0_DOMAIN,
     //     clientID:     process.env.AUTH0_CLIENT_ID,
@@ -267,11 +332,3 @@ WebServer.prototype = {
 module.exports = WebServer;
 
 
-
-
-// http://ec-meit-dev.ca:8080/home#
-// access_token=ulMTRyI2-hYmWQ6Xsis3FzbWRNt0eLcK&
-// expires_in=86400&
-// token_type=Bearer&
-// state=jopGPRmPrUdqASqFESfM9tH1lNXV-7aX&
-// id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL25yYy1vY3JlLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw1ODZiMDVlMmVmNzkzZTU1OWEwNmY0ZGMiLCJhdWQiOiJRdHlOSGFjRkwxR2hIY0w3ejVDZTNqMzR0UGYzZ0pnQiIsImlhdCI6MTUxNzg1MDIwMywiZXhwIjoxNTE3ODg2MjAzLCJhdF9oYXNoIjoiVEZ2SmRuY0UzeC04QVM1Y1h5a3dWZyIsIm5vbmNlIjoiT1BobGZWQ2NqclFheW9BdkxQSzF5QWFNMjE2Rk5kcEEifQ.BaKaH-5T2yHSV6CdPy3eDzjf8JGgpe6l2JCckI6FnEo

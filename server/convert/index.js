@@ -238,7 +238,8 @@ Convert.prototype = {
       }
       if(!(allzeros)){
         const ship_id = obj.ship_id;
-        const point_id= obj.grid_index;
+        const point_id= '{0}_{1}'.format(obj.lat,obj.long);
+        console.log(point_id)
         const mode    = obj.activity_type;
         const ip = (obj.ip && obj.ip.toLowerCase()==='true')?1:0;
         const datetime= Date.parse(obj.date_time);
@@ -305,6 +306,7 @@ Convert.prototype = {
         for(let i=0,n=YEARS.length;i<n;i++){
           const year=YEARS[i];
           if(ships[ship_id]){
+            const _ship = ships[ship_id];
             ping['nox'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].nox / 4.0 *256.0;
             ping['other'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].sox / 4.0 *256.0;
           } else{

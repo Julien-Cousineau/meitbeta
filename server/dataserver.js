@@ -22,11 +22,13 @@ const fs = require('fs');
 const prettyBytes = require('pretty-bytes');
 var MongoClient = require('mongodb').MongoClient;
 
-function DataServer(parent,checkJwt){
+function DataServer(parent,checkJwt,options){
+    this.options=util.extend(this.options,options);
   // parent,options
     this._parent = parent;
     const self=this;
     this.pointer = function(){return self;};
+    
     this.checkJwt = checkJwt;
     this.mapdserver = new MapDServer(this.pointer)
     this.construct();

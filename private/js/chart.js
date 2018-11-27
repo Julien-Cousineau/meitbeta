@@ -30,6 +30,9 @@ Chart.prototype = {
     
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
+  get app(){return this.parent.parent;},
+  get keywords(){return this.app.keywords;},
+  get language(){return this.app.language;},
   get crossFilter(){return this.parent.crossFilter;},
   get emission(){return this.parent.emission;},
   get divider(){return this.parent.divider;},
@@ -91,14 +94,15 @@ Chart.prototype = {
     }
   },
   removeFilters:function(){
+    if(this.id ==='paneltrend')return;
     this.dc.filterAll();
     this.removeReset();
   },
   removeReset:function(){
-     const self=this;
+    // const self=this;
      $('div[panelid="{0}"] .x_title .nav .resetbtnli'.format(this.id)).css(`visibility`,"hidden");
-     if(this.id=="panelmeit")this.parent.mapContainer.filteredids=[];
-     dc.redrawAllAsync();
+    // if(this.id=="panelmeit")this.parent.mapContainer.filteredids=[];
+     this.parent.draw();
   },
   addReset:function(){
     const self=this;
@@ -106,42 +110,40 @@ Chart.prototype = {
     $('div[panelid="{0}"] .x_title .nav .resetbtn'.format(this.id)).one("click",function(){self.removeFilters();});
   },
   filteredFunc:function(chart,filter){
-    const self=this;
+    // const self=this;
     
     
     
-    this.parent.pillcontainer.forEach(pill=>{if(pill.panel==this.id)pill.active=false;})
-    const pill=this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==filter.toString());
-    if(!(pill) && chart.filters().length>0){
-      
-      $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{1} <i class="fa fa-times"></i></span>`.format(this.id,filter.toString()))
-      // $(`[_panel="{0}"][_filter="{1}"]`.format(this.id,filter.toString())).on("click",function(){
-      //   const _filters  =chart.filters().filter(_filter=>_filter!=$(this).attr("_filter"))
-      //   console.log(_filter)
-      //   self.dc.filter(_filters);
-      // })
-      this.parent.pillcontainer.push({panel:this.id,filter:filter.toString(),active:true})
-    }
-    chart.filters().forEach(_filter=>{
-      this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==_filter.toString()).active=true;
-    })
-    this.parent.pillcontainer=this.parent.pillcontainer.reduce((acc,pill)=>{
-      if(pill.active==false){
-        $(`[_panel="{0}"][_filter="{1}"]`.format(this.id,pill.filter)).remove();
-        return acc;
-      }
-      acc.push(pill);
-      return acc;
-    },[]);
+    // this.parent.pillcontainer.forEach(pill=>{if(pill.panel==this.id)pill.active=false;})
+    // const pill=this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==filter.toString());
+    // if(!(pill) && chart.filters().length>0){
+    
+    filter = (typeof filter==='symbol')?null:filter;
+    this.parent.createBadge({id:this.id,acc:this.options.acc,chart:chart,filter:filter});
+      // this.parent.pillcontainer.push({panel:this.id,filter:filter.toString(),active:true})
+    // }
+    // chart.filters().forEach(_filter=>{
+      // this.parent.pillcontainer.find(pill=>pill.panel==this.id &&pill.filter==_filter.toString()).active=true;
+    // })
+    // this.parent.pillcontainer=this.parent.pillcontainer.reduce((acc,pill)=>{
+      // if(pill.active==false){
+        // $(`[_panel="{0}"][_filter="{1}"]`.format(this.id,pill.filter)).remove();
+        // return acc;
+      // }
+      // acc.push(pill);
+      // return acc;
+    // },[]);
     
     
     if(chart.filters().length===0){this.removeReset();}
     else{this.addReset();}
+    // this.parent.draw();
     // console.log(this.group.getReduceExpression())
     this.parent.getTotalMap();
     // this.parent.getMapValue();
-    if(this.parent.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
-    if(this.parent.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
+    
+    // if(this.parent.pillcontainer.length>0)$('.filterinside').addClass("active");
+    // if(this.parent.pillcontainer.length==0)$('.filterinside').removeClass("active");
   },
   // preCreateChart:function(){
   //   const self=this;
@@ -265,7 +267,7 @@ Chart.prototype = {
       // this.dc.ordering=null;
       this.dc.group(remove_empty_bins(this.group))
       // this.dc.keyAccessor(function (p) {console.log(p);return p.key;});
-      this.dc.valueAccessor(function (p) {console.log(p);return p.value/self.divider;});
+      this.dc.valueAccessor(function (p) {return p.value/self.divider;});
       
     } else {
       this.dc.group(this.group)

@@ -41,6 +41,24 @@ const options ={
     trend:{'en':"Trend",'fr':"Trend"},
     tooltip:{'en':"Tooltip",'fr':"Tooltip"},
     filters:{'en':"Filters",'fr':"Filtres"},
+    a_daterange:{'en':"Date",'fr':"Période"},
+    a_ip:{'en':"IP",'fr':"PI"},
+    a_shipct:{'en':"Class/Type",'fr':"Catégorie/Type"},
+    a_shipclass:{'en':"Class",'fr':"Catégorie"},
+    a_meitregion:{'en':"MEIT",'fr':"MEIT"},
+    a_shiptype:{'en':"Type",'fr':"Type"},
+    a_emissionmode:{'en':"Mode",'fr':"Code"},
+    a_enginecode:{'en':"Engine",'fr':"Moteur"},
+    a_prov:{'en':"Province",'fr':"Province"},
+    a_hexgrid:{'en':"Hex",'fr':"Hex"},
+    // datetime:{'en':"Date Time",'fr':"Temps"},
+    // year:{'en':"Year",'fr':"Année"},
+    // month:{'en':"Month",'fr':"Mois"},
+    a_dow:{'en':"DOW",'fr':"JDS"},
+    a_hour:{'en':"Hour",'fr':"Heure"},
+    
+    
+    
     daterange:{'en':"Date range",'fr':"Période"},
     ip:{'en':"Innocent Passage",'fr':"Passage innocent"},
     shipct:{'en':"Ship Class/Type",'fr':"Catégorie/Type de navire"},
@@ -112,7 +130,7 @@ const options ={
     {id:"hexgrid",keyword:"hexgrid",checked:false}
     ],
 charts:[
-  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
+  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",acc:"a_meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
     attributes:{
       // binParams:{numBins: 24,binBounds: [0,23]},
       // x:d3.scale.ordinal().domain(d3.range(0,24)),
@@ -127,11 +145,11 @@ charts:[
     }
     
   },  
-  {id:"panelclass",checked:true,active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"paneltype",checked:true,active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
-  {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
-  {id:"paneltrend",checked:true,active:false,keyword:"trend",icon:"fa fa-cogs",dim:'mapmeit',dctype:'barChart',defaultscale:'',attributes:{
+  {id:"panelclass",checked:true,active:false,keyword:"shipclass",acc:"a_shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"paneltype",checked:true,active:false,keyword:"shiptype",acc:"a_shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"panelmode",checked:true,active:false,keyword:"emissionmode",acc:"a_emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelengine",checked:true,active:false,keyword:"enginecode",acc:"a_enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
+  {id:"paneltrend",checked:true,active:false,keyword:"trend",acc:"a_trend",icon:"fa fa-cogs",dim:'mapmeit',dctype:'barChart',defaultscale:'',attributes:{
       // binParams:{numBins: 24,binBounds: [0,23]},
       // x:d3.scale.ordinal().domain(d3.range(0,24)),
       x:d3.scale.ordinal().domain(['2015','2020','2025','2030','2035','2035','2040','2045','2050']),
@@ -143,7 +161,7 @@ charts:[
       barPadding:0.1,
       outerPadding:0.05,
     }},,
-  {id:"paneldate",checked:true,active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
+  {id:"paneldate",checked:true,active:false,keyword:"daterange",acc:"a_daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
     attributes:{xAxis:{tickFormat:dc.utils.customTimeFormat,orient:'bottom',},
                 yAxis:{ticks:5},
                 // measureValue:true,
@@ -153,7 +171,7 @@ charts:[
                             x:{minMax:function(minMax){return d3.time.scale.utc().domain([minMax.minimum,minMax.maximum]) }},
                    }
   },
-  {id:"paneldow",checked:true,active:false,keyword:"dow",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
+  {id:"paneldow",checked:true,active:false,keyword:"dow",acc:"a_dow",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
   attributes:{binParams:{timeBin: "dow",extract: true,numBins: 7,binBounds: [new Date(), new Date()]},
               xAxis:{tickFormat:function(p) {return DOW[p];},orient:'bottom'},
               yAxis:{ticks:5},
@@ -164,7 +182,7 @@ charts:[
              }
     
   },
-  {id:"panelhour",checked:true,active:false,keyword:"hour",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
+  {id:"panelhour",checked:true,active:false,keyword:"hour",acc:"a_hour",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',defaultscale:'',
   attributes:{binParams:{timeBin: "hour",extract: true,numBins: 24,binBounds: [new Date(), new Date()]},
               xAxis:{orient:'bottom'},
               yAxis:{ticks:5},
@@ -181,7 +199,7 @@ charts:[
   // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
   // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'rowChart',defaultscale:'',attributes:{}},
 
-  {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{
+  {id:"panelip",checked:true,active:false,keyword:"ip",acc:"a_ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{
     label:function(d){return (d.key0)?'Includes non Canadian O/D':'Canadian O/D-Only';}
   }},
   ],

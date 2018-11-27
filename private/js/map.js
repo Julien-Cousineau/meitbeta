@@ -7,7 +7,7 @@ function MapContainer(parent,options,callback){
   const self   = this;
   this.pointer = function(){return self;};
   this.callback=callback;
-  this.filteredids=[];
+  // this.filteredids=[];
   this.construct();
 }
 
@@ -143,11 +143,9 @@ MapContainer.prototype = {
     this.popup = new mapboxgl.Popup({closeButton: false,closeOnClick: false});
     this.callback();
   },
-  addSelectButton:function(){
-    const self=this;
-    let html = `
-    <div class="selectpanel">
-      <div class="inside">
+  addExtentHtml:function(){
+    const html =       `
+    <div class="inside extentinside">
           <div>
           <div class="row">
             <div class="col-sm-8">
@@ -182,7 +180,33 @@ MapContainer.prototype = {
             </div>
             
           </div>
-      </div>
+      </div>`;    
+      return html;
+  },
+  addFilterHtml:function(){
+    const html =       `
+    <div class="inside filterinside">
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="extentheader" keyword="filter" keywordType="text">Filters</div>
+            </div>
+            <div class="col-sm-4">
+                <a class="filterclear" style="float: right;" keyword="clear" keywordType="text">clear</a>
+            </div>
+          </div>
+          <div class="row">
+          <div class="pillcontainer"></div>
+              
+          </div>
+      </div>`;
+      return html;
+  },
+  addSelectButton:function(){
+    const self=this;
+    let html = `
+    <div class="selectpanel">
+      {0}
+      {1}
     </div>
     <div class="selectbtn boxselect">
       <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="extent" keyword="extent" keywordType="title"><i class="far fa-square fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon"></i></button>
@@ -190,7 +214,7 @@ MapContainer.prototype = {
     <div class="selectbtn hoverquery">
       <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="query" keyword="query" keywordType="title"><i class="fas fa-info-circle fa-2x" aria-hidden="true"></i><i class="fa fa-mouse-pointer mpicon mpicon2"></i></button>
     </div>
-    `;
+    `.format(this.addExtentHtml(),this.addFilterHtml());
     
     $(".mapboxgl-ctrl-top-left").append(html);
     $('.selectbtn.boxselect button').on("click",function(){$(this).blur();self.selectBox.activate();})
@@ -201,8 +225,21 @@ MapContainer.prototype = {
      
       (self.hoverquery)?$('.selectbtn.hoverquery button').addClass("active"):
                         $('.selectbtn.hoverquery button').removeClass("active");
-      if(!(self.hoverquery))self.popup.remove();                   
+      if(!(self.hoverquery))self.popup.remove();
+      if(!(self.hoverquery))self.map.getCanvas().style.cursor = '';
     });
+    $('.filterclear').on("click",function(){self.filterclear();})
+  },
+    filterclear:function(){
+    for(let id in this.parent.geomaps){
+      this.parent.mapd.filterbyObj({id:id,filter:null});
+      // this.parent.mapContainer.filteredids=[];
+    }
+    for(let id in this.parent.charts){
+      const chart=this.parent.charts[id];
+      chart.dc.removeFilters();
+    }
+    this.parent.mapd.draw();
   },
   error:function(e){
     if (e && e.error !== 'Error: Not Found')console.error(e);
@@ -243,28 +280,28 @@ MapContainer.prototype = {
   // stops:[],
   // resetStops:function(){this.stops=[];},
   updateHexPaint:function(stops){
-    this.hideLayer();
+    
     const self=this;
     const mapDLayer = this.mapDLayer;
-    // console.log(mapDLayer,stops);
     if(stops && stops.length && this.map.getLayer(mapDLayer)){
-      // console.log(self.filteredids)
-      // console.log(stops)
-      // console.time("inside");
+      const badge = this.mapd.badges[this.mapDLayer];
       stops=stops.map(stop=>{
-        if(self.filteredids.length==0 || self.filteredids.find(item=>item.id==stop[0]))return stop;
+        if(!badge || Object.keys(badge).length === 0) return stop;
+        if(badge[stop[0]])return stop;
+        
         stop[1]="#ccc";
         return stop;
       });
       self.map.setPaintProperty(mapDLayer, 'fill-color', {"property": this.options.viewlayers[mapDLayer].property,default: "rgba(0,0,0,0.0)","type": "categorical","stops": stops});
-      this.showLayer();
+    
       // console.timeEnd("inside");
     }
   },
   changeLayer:function(_id){
     // this.mapLayer = (_id==="hexgrid")?:_id;//panelid
-    this.mapLayer=_id;
     this.hideLayer();
+    this.mapLayer=_id;
+    this.showLayer();
     this.mapd.getMap();
   },
   hideLayer:function(){
@@ -291,7 +328,7 @@ MapContainer.prototype = {
   mouseMove:function(e){
     // e.originalEvent.preventDefault();
     if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.move(e);
-    if(!(this.selectBox && this.selectBox.active) && this.hoverquery)this.hoverFeature(e);
+    if(!(this.selectBox && this.selectBox.active) && this.hoverquery)this.hoverFeature(e,true);
     if(!(this.selectBox && this.selectBox.active) && !(this.hoverquery))this.hoverFeature(e,false);
   },
   mouseUp:function(e){
@@ -299,23 +336,24 @@ MapContainer.prototype = {
     if(this.selectBox && this.selectBox.active && this.selectBox.dragging)return this.selectBox.up(e);
   },
   onClick:function(e){
+    if(!this.hoverquery)return;
     
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     if (!features.length)return;
     
     if(this.mapDLayer=='mapmeit'){
-      const _id=features[0].properties.gid;
-        (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:_id}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
+      // const _id=features[0].properties.gid;
+        // (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,acc:'a_meitregion',label:_id}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
       const id=features[0].properties.meitid;
-      this.parent.mapd.filterbyID(this.mapDLayer,id);
+      this.parent.mapd.filterbyObj({id:this.mapDLayer,filter:id});
     } else {
-      const _id=(this.mapDLayer=='prov')?features[0].properties.gid:features[0].properties.name;
+      const id=(this.mapDLayer=='prov')?features[0].properties.gid:features[0].properties.name;
       const label=(this.mapDLayer=='prov')?features[0].properties.province:features[0].properties.name;
-    
-      (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,label:label}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
-      this.parent.mapd.filterbyID(this.mapDLayer,this.filteredids);  
+      const acc = (this.mapDLayer=='prov')?'a_prov':'a_hexgrid';
+      // (!(this.filteredids.find(_=>_.id==_id)))?this.filteredids.push({id:_id,acc:acc,label:label}):this.filteredids.splice(this.filteredids.findIndex(_=>_.id==_id),1);
+      this.parent.mapd.filterbyObj({id:this.mapDLayer,filter:id,label:label,acc:acc});  
     }
-    
+    this.parent.mapd.draw();
     
     
     
@@ -333,8 +371,9 @@ MapContainer.prototype = {
     }
     
   },
-  hoverFeature:function(e,_con){
-    const con = (typeof _con=='undefined')? true:_con;
+  hoverFeature:function(e,con){
+    if(!con)return;
+    // const con = (typeof _con=='undefined')? true:_con;
     // console.log(_con,con)
     if(!(this.map.getLayer(this.mapDLayer)))return;
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
@@ -360,7 +399,7 @@ MapContainer.prototype = {
     this.zoom=Math.floor(this.map.getZoom());
     this.bounds =[lon1,lat1,lon2,lat2];
     this.center = this.map.getCenter();
-    this.hideLayer();
+    
     
     
     // this.parent.mapd.filterMap();
@@ -368,7 +407,7 @@ MapContainer.prototype = {
     
     // const obj = {mapLayer:this.parent.mapLayer,center:this.center};
     // this.parent.socket.emit("moving",obj);
-    this.parent.mapd.getMap();
+    this.parent.mapd.getMap(true);
     // console.log("moving");
   },
   get bounds(){
@@ -535,10 +574,10 @@ OutlineBox.prototype = {
     this.showPanel()
   },
   showPanel:function(){
-    $('.selectpanel .inside').css('margin-top',0);
+    $('.selectpanel .extentinside').addClass("active");
   },
   hidePanel:function(){
-    $('.selectpanel .inside').css('margin-top','-140px');
+    $('.selectpanel .extentinside').removeClass("active");
   },
   updatePanel:function(){
     $("#lat1").val(this.bounds[1].toFixed(2));
