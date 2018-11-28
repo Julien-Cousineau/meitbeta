@@ -276,10 +276,11 @@ Chart.prototype = {
     
     
     this.dc.measureValue=function (d) {return self.formatValue(self.dc.cappedValueAccessor(d));};
-    // console.log(this.group.getReduceExpression())
+    
     for(let attr in this.attributes){
       
       if(attr=='xAxis' || attr=='yAxis'){
+        // console.log("here",this.attributes[attr])
         for(let xattr in this.attributes[attr]){
           this.dc[attr]()[xattr](this.attributes[attr][xattr]);
         }
@@ -287,7 +288,11 @@ Chart.prototype = {
       else if(attr=='measureValue'){
         // if(this.attributes[attr])
       }
-      else{this.dc[attr](this.attributes[attr]);}
+      else{
+        // console.log("here",attr,this.attributes[attr])
+        this.dc[attr](this.attributes[attr]);
+        
+      }
     }
     //TODO : Chnage this below...too complicated
     for(let attr in this.attributesFunc){
@@ -302,7 +307,7 @@ Chart.prototype = {
       
     }
     if(this.dc.xAxis)this.dc.xAxis().scale(this.dc.x());
-    // if(this.dim=='meit')this.dc.xAxis().scale(d3.scale.ordinal().domain(d3.range(0,22)));
+  
   },
   formatValue:function(x){
     var formatSi = d3.format(".2s");

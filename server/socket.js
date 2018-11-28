@@ -74,9 +74,9 @@ Socket.prototype = {
         });
         
         socket.on('newdataset', function(name){
-          console.log(name)
+          // console.log(name)
           self.dataserver.datasets.add(name,function(err,results){
-            console.log(results)
+            // console.log(results)
             if(err)return socket.emit('newdataseterror', results);
             getdatasets();
           });
@@ -98,7 +98,7 @@ Socket.prototype = {
         });
         socket.on('addfiledataset', function(obj){
             self.dataserver.converts.add(obj,function(err,meta){
-              console.log(meta)
+              // console.log(meta)
               meta.htmlid = obj.htmlid;
               socket.emit('addfiledataset', meta);
               if(meta.action==="upload done"){

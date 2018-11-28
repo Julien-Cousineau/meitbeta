@@ -216,8 +216,10 @@ ExportC.prototype = {
     
     this.getSummarySheet();
     this.getEmissionSheets({selectedcharts:selectedcharts,selectedemissions:selectedemissions},function(){
-      let wbout = XLSX.write(self.wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
+      console.log(wb.SheetNames)
       const filename = $('#export{0}'.format('filename')).val() + ".xlsx";
+      let wbout = XLSX.write(self.wb, {bookType:'xlsx', bookSST:false, type: 'binary'});
+      // let wbout = XLSX.writeFileSync(wb,filename);
       saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), filename);
     });
     
@@ -247,10 +249,11 @@ ExportC.prototype = {
       }
       // console.log(table);
     });
-    console.log(table)
     const sheetname = "general";
-    this.wb.SheetNames.push(sheetname);
-    this.wb.Sheets[sheetname] = XLSX.utils.aoa_to_sheet(table);
+    const ws= XLSX.utils.aoa_to_sheet(table);
+    XLSX.utils.book_append_sheet(this.wb, ws, sheetname);
+    
+    
   },
   updateProgressBar:function(_value){
     const value = parseInt(_value)
@@ -272,35 +275,29 @@ ExportC.prototype = {
       const data=obj.data;
       console.log(data);
       charts.forEach((chart,i)=>{
+        
         const cdata=data[i];
-        // console.log(cdata)
-        let table=[];
-        table.push(header);
         const keys=cdata[0].map(item=>item.key0);
         
-        // console.log(keys.length,emissions.length)
-        for(let irow=0,nrow=keys.length;irow<nrow;irow++){
+        let table=[];
+        table.push(header);
+        for(let ikey=0,nrow=keys.length;ikey<nrow;ikey++){
+          const key=keys[ikey];
           let row=[];
           for(let ie=0,ne=emissions.length;ie<ne;ie++){
-            let value = cdata[ie][irow][emissions[ie].id]/divider;
+            const e_name = emissions[ie].id;
+            const index = cdata[ie].findIndex(item=>item.key0===key); 
+            let value = Number.parseFloat(cdata[ie][index][e_name]/divider).toPrecision(7);
             row.push(value);
           }
-          table.push([keys[irow]].concat(row))
+          table.push([key].concat(row));
         }
-        // console.log(table)
-        // console.log(data[i])
         let sheetname = chart.keyword;
-        wb.SheetNames.push(sheetname);
-        wb.Sheets[sheetname] = XLSX.utils.aoa_to_sheet(table);
+        const ws= XLSX.utils.aoa_to_sheet(table);
+        XLSX.utils.book_append_sheet(wb, ws, '_'+sheetname);
       });
       callback();
     });
-   
-    // charts.forEach(chart=>{
-    //   const keyword = chart.keyword;
-    //   const sheetname = this.parent.keywords[keyword][language];
-    // },this);
-    
   },
   
 

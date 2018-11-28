@@ -134,15 +134,20 @@ charts:[
     attributes:{
       // binParams:{numBins: 24,binBounds: [0,23]},
       // x:d3.scale.ordinal().domain(d3.range(0,24)),
-      x:d3.scale.ordinal().domain(d3.range((0,23))),
+      x:d3.scale.ordinal().domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]),
+      // x:d3.scale.ordinal().domain([10]),
       xUnits:dc.units.ordinal,
       elasticX:false,
-      // measureValue:false,
+      // measureValue:true,
+      // measureLabelsOn:true,
       xAxis:{orient:'bottom'},
       yAxis:{ticks:5},
       barPadding:0.1,
       outerPadding:0.05,
-    }
+    },
+    attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 22,binBounds: [1,23]};}},
+                            // x:{minMax:function(minMax){return d3.scale.ordinal().domain(d3.range(1,23))}},
+                   }    
     
   },  
   {id:"panelclass",checked:true,active:false,keyword:"shipclass",acc:"a_shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},

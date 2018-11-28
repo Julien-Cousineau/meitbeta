@@ -139,6 +139,7 @@ MapContainer.prototype = {
     this.addSources();
     this.addLayers();
     this.addSelectButton();
+    this.addLegend();
     this.selectBox = new SelectBox(this.pointer);
     this.popup = new mapboxgl.Popup({closeButton: false,closeOnClick: false});
     this.callback();
@@ -200,6 +201,39 @@ MapContainer.prototype = {
           </div>
       </div>`;
       return html;
+  },
+  addLegend:function(){
+                // .domain([1,1E3,1E6,1E9,1E12,1E15])
+            // .range(['#66c2a5','#abdda4','#e6f598','#fee08b','#fdae61','#f46d43']);
+
+
+    const xscale= d3.scale.linear()
+            .domain([1E6,1E7,1E8,1E9,1E10,1E11,1E12,1E13])
+            .range(['#3288bd','#66c2a5','#abdda4','#e6f598','#fee08b','#fdae61','#f46d43','#d53e4f']);
+    const legend = {
+      "1t":xscale(1E6),
+      "10t":xscale(1E7),
+      "100t":xscale(1E8),
+      "1kt":xscale(1E9),
+      "10kt":xscale(1E10),
+      "100kt":xscale(1E11),
+      "1Mt":xscale(1E12),
+      "10Mt":xscale(1E13),
+    }
+    const html = 
+    `<div class="mapboxgl-ctrl-group" style="height: 100px;width: 100px;background: white;float: right;margin: 10px;">
+      <h5>Legend</h5>
+      
+    </div>`;
+    const element = d3.select($(".mapboxgl-ctrl-top-right")[0]);
+    const div = element.append('div').attr('class','mapboxgl-ctrl-group legend');
+    div.append('h5').text('Legend')
+    for(let value in legend){
+      const color = legend[value];
+      const item = div.append('div');
+      item.append('span').attr('class','legend-key').style('background',color);
+      item.append('span').text(value)  
+    }
   },
   addSelectButton:function(){
     const self=this;
@@ -361,7 +395,8 @@ MapContainer.prototype = {
   htmlPopup:function(feature){
     // console.log(feature)
     const gid=(this.mapDLayer=='mapmeit' || this.mapDLayer=='prov')?feature.properties.gid:feature.properties.name;
-    const value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
+    let value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
+    value = value.toFixed(2);
     // console.log(this.unit)
     switch (this.mapDLayer) {
       case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.keywords[this.unit][this.language]);
