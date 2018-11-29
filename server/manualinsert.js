@@ -181,7 +181,7 @@ function processFile(obj,callback){
       printfunc:function(opt){callback(false,opt)},
     };
     new CONVERT(options,function(meta){
-      console.log("here here")
+      // console.log("here here")
       self.insert(output,function(){
         self.setids(input,output,function(){
           meta.action="convert done";

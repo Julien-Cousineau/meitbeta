@@ -78,7 +78,7 @@ MBTileServer.prototype={
           return res.status(204).send('Out of bounds');
         }
         source.getTile(z, x, y, function(err, data, headers) {
-           console.log(x+ " " + y + " " + z)
+          // console.log(x+ " " + y + " " + z)
           if (err) {
             if (/does not exist/.test(err.message)) {
                return res.status(204).send(err.message);

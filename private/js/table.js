@@ -29,7 +29,6 @@ BaseTable.prototype = {
     this.socket.on(self.parent.options.apiFuncName, function(obj){
       const list = obj.data;
       const meta = obj.meta;
-      console.log(list)
         if(self.data){
           self.data= list;
           self.meta = meta;

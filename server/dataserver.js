@@ -718,7 +718,7 @@ DatasetTable.prototype= {
     const schemafilepath=path.resolve(SCHEMAFOLDER,this.sqltemplate);
     
     self.rowExist({name:name},function(err,exist){
-      console.log("here")
+      // console.log("here")
       if(err)return callback(err);
       if(exist)return callback(true,"Dataset exist!");
       console.log(name)

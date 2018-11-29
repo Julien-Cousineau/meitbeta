@@ -73,7 +73,9 @@ MapContainer.prototype = {
   set zoom(value){
     if(value !==this.options.zoom){
       this.options.zoom=value;
-      this.parent.setmapDLayer();
+      if(this.parent.setmapDLayer()){
+        this.changeLayer();
+      }
       // const mapLayer=this.mapLayer;
       // const zoom = value;
       // if(mapLayer==='mapmeit'||mapLayer==='prov'){this.parent.mapDLayer=mapLayer;return;}
@@ -351,7 +353,6 @@ MapContainer.prototype = {
   showLayer:function(){
     const layers=this.options.viewlayers;
     const _id =this.mapDLayer;
-    // console.log(_id,layers[_id])
     this.map.setLayoutProperty(layers[_id].geo, 'visibility', 'visible');
     if(layers[_id].label)this.map.setLayoutProperty(layers[_id].label, 'visibility', 'visible');
   },
@@ -393,11 +394,9 @@ MapContainer.prototype = {
     
   },
   htmlPopup:function(feature){
-    // console.log(feature)
     const gid=(this.mapDLayer=='mapmeit' || this.mapDLayer=='prov')?feature.properties.gid:feature.properties.name;
     let value = (this.cache[this.mapDLayer][gid]) ? this.cache[this.mapDLayer][gid].value / this.divider:0;
     value = value.toFixed(2);
-    // console.log(this.unit)
     switch (this.mapDLayer) {
       case "mapmeit": return `{0} {1} <br> {2} {3}`.format(this.keywords["meitregion"][this.language],feature.properties.meitid,value,this.keywords[this.unit][this.language]);
       case "prov": return `{1} <br> {0}: {2} {3}`.format(this.keywords[this.emission][this.language],feature.properties.province,value,this.keywords[this.unit][this.language]);
@@ -408,8 +407,6 @@ MapContainer.prototype = {
   },
   hoverFeature:function(e,con){
     if(!con)return;
-    // const con = (typeof _con=='undefined')? true:_con;
-    // console.log(_con,con)
     if(!(this.map.getLayer(this.mapDLayer)))return;
     const features = this.map.queryRenderedFeatures(e.point, { layers: [this.mapDLayer]});
     this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -443,7 +440,6 @@ MapContainer.prototype = {
     // const obj = {mapLayer:this.parent.mapLayer,center:this.center};
     // this.parent.socket.emit("moving",obj);
     this.parent.mapd.getMap(true);
-    // console.log("moving");
   },
   get bounds(){
     var lon1=this.map.getBounds()._sw.lng;

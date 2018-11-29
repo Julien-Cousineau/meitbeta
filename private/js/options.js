@@ -1,6 +1,6 @@
 const DOW={0:"Mon",1:"Tue",2:"Wed",3:"Thu",4:"Fri",5:"Sat",6:"Sun"};
 const options ={
-  debug:true,
+  debug:false,
   language:'en',
   AUTH0:{
     AUTH0_CLIENT_ID:'QtyNHacFL1GhHcL7z5Ce3j34tPf3gJgB',

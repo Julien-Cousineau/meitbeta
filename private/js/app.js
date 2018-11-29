@@ -87,10 +87,12 @@ App.prototype ={
     const mapLayer=this.mapLayer;
     const zoom = this.mapContainer.zoom;
     if(mapLayer==='mapmeit'||mapLayer==='prov'){this.options.mapDLayer=mapLayer;return;}
+    const oldMapDLayer = this.options.mapDLayer;
     for(let key in this.geomaps){
         let layer = this.geomaps[key];
         if(zoom >=layer.minimum && zoom<=layer.maximum)this.options.mapDLayer=key;
     }
+    return !(oldMapDLayer==this.options.mapDLayer);
   },
   
   get emission(){return this.options.emission;},
