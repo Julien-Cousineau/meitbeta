@@ -34,7 +34,7 @@ const Socket = require('./socket');
 
 const COOKIE_KEY1='123456789';
 const COOKIE_KEY2='123123123123';
-const DOMAIN='ec-meit.ca';
+
 
 
 
@@ -44,6 +44,8 @@ const CONVERTFOLDER =  path.join(__dirname, '../../shareddrive/data/convert');
 const dotenv = require('dotenv');
 
 dotenv.load();
+const DOMAIN=process.env.DOMAIN;
+console.log(DOMAIN)
 
 const routes = require('./routes/index');
 const home = require('./routes/home');

@@ -145,7 +145,7 @@ charts:[
       barPadding:0.1,
       outerPadding:0.05,
     },
-    attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 23,binBounds: [1,23]};}},
+    attributesFunc:{binParams:{minMax:function(minMax){return {numBins: 22,binBounds: [1,23]};}},
                             // x:{minMax:function(minMax){return d3.scale.ordinal().domain(d3.range(1,23))}},
                    }    
     

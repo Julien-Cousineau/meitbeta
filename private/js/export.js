@@ -290,7 +290,8 @@ ExportC.prototype = {
             let value = Number.parseFloat(cdata[ie][index][e_name]/divider).toPrecision(7);
             row.push(value);
           }
-          table.push([key].concat(row));
+          const keyname = (chart.dim==='meit')?key+1:key;// Hack: for some reason, key0 is meit-1 (changed by map)
+          table.push([keyname].concat(row));
         }
         let sheetname = chart.keyword;
         const ws= XLSX.utils.aoa_to_sheet(table);
