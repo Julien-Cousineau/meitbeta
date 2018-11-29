@@ -22,10 +22,11 @@ const fs = require('fs');
 const prettyBytes = require('pretty-bytes');
 var MongoClient = require('mongodb').MongoClient;
 
-function DataServer(parent,options){
+function DataServer(parent,checkJwt,options){
   // parent,options
     this._parent = parent;
     const self=this;
+    this.checkJwt = checkJwt;
     this.pointer = function(){return self;};
     this.options = util.extend(Object.create(this.options), options);
     this.mapdserver = new MapDServer(this.pointer)
@@ -49,7 +50,7 @@ DataServer.prototype = {
   postfile:function(){
     const self=this;
     
-    self.parent.app.post('/upload', function(req, res){
+    self.parent.app.post('/upload',this.checkJwt, function(req, res){
 
       // create an incoming form object
       var form = new formidable.IncomingForm();

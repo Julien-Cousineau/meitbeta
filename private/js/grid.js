@@ -70,7 +70,7 @@ Grid.prototype = {
                 <li class="resetbtnli" style="visibility: hidden"><a class="resetbtn"><i class="fa fa-filter"></i><i class="fa fa-times xicon"></i></a></li>
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                 </li>
-                <li class="dropdown">
+                <!--<li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="#">Settings 1</a>
@@ -78,7 +78,7 @@ Grid.prototype = {
                     <li><a href="#">Settings 2</a>
                     </li>
                   </ul>
-                </li>
+                </li>-->
                 <li><a class="close-link"><i class="fa fa-times"></i></a>
                 </li>
               </ul>

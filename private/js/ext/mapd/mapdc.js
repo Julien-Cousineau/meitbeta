@@ -9202,8 +9202,8 @@ function coordinateGridMixin(_chart) {
 
   _chart.getNumTicksForXAxis = function () {
     var xDomain = _chart.x().domain();
-    var timeBinParam = _chart.group().binParams()[DEFAULT_TIME_DIMENSION_INDEX];
-    if (timeBinParam && timeBinParam.extract) {
+    // var timeBinParam = _chart.group().binParams()[DEFAULT_TIME_DIMENSION_INDEX];
+    if (_chart.group().binParams && _chart.group().binParams()[DEFAULT_TIME_DIMENSION_INDEX] && _chart.group().binParams()[DEFAULT_TIME_DIMENSION_INDEX].extract) {
       return xDomain[xDomain.length - 1] - xDomain[0];
     } else {
       var effectiveWidth = _chart.effectiveWidth();
@@ -29454,9 +29454,10 @@ var EXTRACT_UNIT_NUM_BUCKETS = {
   function calculateBarWidth() {
 
     var numberOfBars = void 0;
-    var binParams = _chart.group().binParams()[0];
+    
 
-    if (binParams) {
+    if (_chart.group().binParams && _chart.group().binParams()[0]) {
+      var binParams = _chart.group().binParams()[0];    
       numberOfBars = binParams.timeBin ? _chart.getTimeBinSize(binParams) : binParams.numBins;
     } else {
       var allValues = _chart.data()[0].values.map(function (val) {

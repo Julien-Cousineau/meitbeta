@@ -28,6 +28,7 @@ MapD.prototype = {
   get year(){return this.parent.year;},
   get divider(){return this.parent.divider;},
   get reduceFunc(){return this.reduceFunction();},
+  get reduceTrendFunc(){return this.reduceTrendFunction();},
   get mapDLayer(){return this.parent.mapDLayer;},
   get geomaps(){return this.parent.geomaps},
   get mapContainer(){return this.parent.mapContainer},
@@ -104,7 +105,25 @@ MapD.prototype = {
     }
      return [{expression: exp,agg_mode:"sum",name: this.emission}];
   },
-  createClassChart:function(){
+  reduceTrendFunction:function(){
+    return this.parent.options.years.map(item=>{
+      const year=item.id;
+      let exp='';
+      if(this.emission=='co2e'){
+        const factor = 'other' + year;
+        exp = (year==='2015')?
+                      "25*ch4 + 298*n2o + co2":
+                      "(25*ch4 + 298*n2o + co2)*{0}*0.015625".format(factor);
+      } else {
+        const stre=(this.emission==='nox')?'nox':'other';
+        const factor = stre + year;
+        const fuelFactor = (this.emission=='fuel_cons')?1000000:1;
+        exp = (year==='2015')?
+                      "{0}*{1}".format(this.emission,fuelFactor):
+                      "{0}*{1}*{2}*0.015625".format(this.emission,fuelFactor,factor);
+      }
+      return {expression: exp,agg_mode:"sum",name: 'year'+year}
+    },this)
   },
   colorScheme:["#22A7F0", "#3ad6cd", "#d4e666"],
   createCharts:function(){
@@ -124,7 +143,7 @@ MapD.prototype = {
       chart.dc = new Chart(self.pointer,chart,function(){
         // console.log("done chart")
         callback();
-      });
+      });  
     }
     async.each(array, createChartFunc,function(err){
       if( err ) {console.log('A file failed to process');}
@@ -143,6 +162,21 @@ MapD.prototype = {
       geomap.dc=new GeoMap(this.pointer,geomap)
     };
   },
+  // createTrendChart:function(chart){
+  //   const width = $('div[panelid="{0}"] .x_content'.format(chart.id)).width();
+  //   const height = $('div[panelid="{0}"] .x_content'.format(chart.id)).height();
+  //   const group=this.crossFilter.groupAll().reduceMulti(this.reduceFunc)
+  //   this.dc = dc[chart.dctype](chart.container)
+  //               .height(height)
+  //               .width(width)
+  //               .ordinalColors(["#22A7F0", "#3ad6cd", "#d4e666"])
+  //               .dimension(this.dimension)
+  //               .group(this.group)
+  //               // .on("filtered",function(chart, filter){self.filteredFunc(chart,filter);})
+  //               .valueAccessor(function (p) {return p[this.emission]/this.divider;});
+    
+  //   return ;
+  // },
   createNumberDisplay:function(){
     this.total = this.crossFilter.groupAll().reduceMulti(this.reduceFunc);
   },
@@ -161,40 +195,48 @@ MapD.prototype = {
   },
   filterbyID:function(att,array){ //value=array
     
-    this.pillcontainer.forEach(pill=>{if(pill.panel==att)pill.active=false;})
-    const pills=this.pillcontainer.filter(pill=>pill.panel==att);
-    // console.log(pills)
-    
-    
-    array.forEach(value=>{
-      // console.log(value,pills.find(pill=>pill.filter==value.id.toString()))
-      if(!(pills.find(pill=>pill.filter==value.id.toString()))){
-        $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{2} <i class="fa fa-times"></i></span>`.format(att,value.id.toString(),value.label.toString()))  
-        this.pillcontainer.push({panel:att,filter:value.id.toString(),active:true})
-      } else {
-        pills.find(pill=>pill.filter==value.id.toString()).active=true;
+    if(att=="mapmeit"){
+      const meitchart = this.parent.charts.find(item=>item.id=="panelmeit");
+      meitchart.dc.dc.filter(array);
+      // console.log(meitchart);
+      
+    } else {
+      const arrayid=array.map(item=>item.id);
+      this.pillcontainer.forEach(pill=>{if(pill.panel==att)pill.active=false;})
+      const pills=this.pillcontainer.filter(pill=>pill.panel==att);
+      array.forEach(value=>{
+        // console.log(value,pills.find(pill=>pill.filter==value.id.toString()))
+        if(!(pills.find(pill=>pill.filter==value.id.toString()))){
+          $('.pillcontainer').append(`<span class="badge badge-pill badge-filter" _panel="{0}" _filter="{1}">{0}:{2} <i class="fa fa-times"></i></span>`.format(att,value.id.toString(),value.label.toString()))  
+          this.pillcontainer.push({panel:att,filter:value.id.toString(),active:true})
+        } else {
+          pills.find(pill=>pill.filter==value.id.toString()).active=true;
+        }
+      })
+      this.pillcontainer=this.pillcontainer.reduce((acc,pill)=>{
+        // console.log(pill)
+      if(!(pill.active)){
+        // console.log('remove',`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter))
+        $(`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter)).remove();
+        return acc;
       }
-    })
-    this.pillcontainer=this.pillcontainer.reduce((acc,pill)=>{
-      // console.log(pill)
-    if(!(pill.active)){
-      // console.log('remove',`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter))
-      $(`[_panel="{0}"][_filter="{1}"]`.format(att,pill.filter)).remove();
+      acc.push(pill);
       return acc;
+      },[]);
+      // console.log(this.pillcontainer)  
+      
+      
+      if(this.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
+      if(this.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
+      
+      
+      // console.log(arrayid);
+      (arrayid.length===0)?this.geomaps[att].dc.dimension.filterAll():
+                          this.geomaps[att].dc.dimension.filterMulti(arrayid);
+      
+      
+      
     }
-    acc.push(pill);
-    return acc;
-    },[]);
-    // console.log(this.pillcontainer)  
-    
-    
-    if(this.pillcontainer.length>0)$('.filterpanel .inside').addClass("active");
-    if(this.pillcontainer.length==0)$('.filterpanel .inside').removeClass("active");
-    
-    const arrayid=array.map(item=>item.id);
-    // console.log(arrayid);
-    (arrayid.length===0)?this.geomaps[att].dc.dimension.filterAll():
-                        this.geomaps[att].dc.dimension.filterMulti(arrayid);
     this.draw();
   },
   filterMap:function(bounds){
@@ -341,6 +383,12 @@ MapD.prototype = {
       // console.log(chart.dc.group)
       const emissionFunc=function(emission,_callback){
         self.parent.emission = emission.id;
+        if(chart.id =="paneltrend"){
+          chart.dc.dc.group().topAsync().then(data=>{
+            data.forEach(item=>item[emission.id]=item.value);
+           _callback(null,data);
+          });
+        } else {
         let strquery = chart.dc.group.writeTopQuery(100);
         // console.log(filters);
         if(filters)strquery=strquery.split('WHERE')[0]+"WHERE " + filters + "GROUP BY" +strquery.split('GROUP BY')[1]
@@ -349,6 +397,7 @@ MapD.prototype = {
           maincallback(err,{meta:'process',data:++iquery/parseFloat(nqueries)*100})
           _callback(null,data);
         });
+        }
       };
       async.mapSeries(emissions,emissionFunc,callback);
     };

@@ -13,7 +13,7 @@ Login.prototype ={
         AUTH0_CLIENT_ID:'QtyNHacFL1GhHcL7z5Ce3j34tPf3gJgB',
         AUTH0_DOMAIN:'nrc-ocre.auth0.com',  
         // AUTH0_AUDIENCE:'https://nrc-ocre.auth0.com/api/v2/',
-        AUTH0_CALLBACK_URL:window.location.href,
+        AUTH0_CALLBACK_URL:'https://ec-meit.ca',
       },
   },
   get parent(){if(!(this._parent))throw Error("Parent is undefined");return this._parent();},
@@ -43,7 +43,8 @@ Login.prototype ={
         // audience: this.AUTH0.AUTH0_AUDIENCE,
         responseType: 'token id_token'
       });
-    }
+     // this._auth.crossOriginVerification();
+    }    
     return this._auth;
   },
 
@@ -143,6 +144,8 @@ Login.prototype ={
         console.log(data)
         if(data.status){
           window.location.href='/private/index.html'
+        } else {
+         self.logout();
         }
       },
       error:function(){

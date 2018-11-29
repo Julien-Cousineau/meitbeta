@@ -76,7 +76,7 @@ Header.prototype ={
     <div class ='bannerContainer'>
       <div class="bannerImage"></div>
       <div class ='leaflogo'></div>
-      <div class="nrclogo"></div>                     
+      <!--<div class="nrclogo"></div>-->                     
       <div class="row bannerrow"> 
         <div class="col-sm-6 bannerCC"><div class ='bannerText' keyword="title" keywordType="text">Marine Renewable Energy Atlas</div></div>       
       </div>

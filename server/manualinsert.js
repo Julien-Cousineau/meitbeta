@@ -22,19 +22,21 @@ const MapDServer = require("./mapdserver");
 // const filename='pacificWIG_09212017.csv';
 // const filename='pacific_emissions_01042018.csv';
 // const filename='pacific_emissions_11162017.csv';
+//const filename='arctic_emissions_2018-05-28.csv';
+
 
 function ManualInsert(){
     const self=this;
     this.pointer = function(){return self;};
-    const dataserver = this.dataserver=new DataServer(this.pointer,{web:false});
+    const dataserver = this.dataserver=new DataServer(this.pointer,null,{web:false});
     
     this.addFilesManually();
     
     // this.TestAll();
     // this.deleteAll(()=>null)
-    // this.deleteConvert();
-    // this.getListAll()
-    
+    //this.deleteConvert();
+    //this.getListAll()
+    //this.deleteConvert();
     // this.addTestFile(()=>null);
     // this.addTestDataset('test2',()=>null);
     // this.addTestConvertFile(()=>null);
@@ -109,7 +111,14 @@ ManualInsert.prototype = {
       // 'eastWIG_09212017.csv',
       // 'pacificWIG_09212017.csv',
       // 'pacific_emissions_11162017.csv',
-      'arcticWIG_09212017.csv'
+      //'arcticWIG_09212017.csv'
+      //'arctic_emissions_2018-02-13.csv'
+      //'arctic_emissions_2018-04-10.csv',
+      //'pacific_emissions_2018-05-02.csv',
+      //'east_emissions_2018-04-17.csv',
+      //'pacific_fishing_emissions_2018-05-09.csv',
+      'arctic_emissions_2018-05-28.csv',
+      
       ];
     files.forEach(file=>{
       const filepath = path.resolve(UPLOADFOLDER,file);

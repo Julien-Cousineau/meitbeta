@@ -38,6 +38,7 @@ const options ={
     gis:{'en':"GIS Layer",'fr':"Couche SIG"},
     title:{'en':"Marine Emission Inventory Tool (Beta Version)",'fr':"Outil d’inventaire des émissions des navires (version Beta)"},
     bbox:{'en':"Bounding Box",'fr':"Cadre"},
+    trend:{'en':"Trend",'fr':"Trend"},
     tooltip:{'en':"Tooltip",'fr':"Tooltip"},
     filters:{'en':"Filters",'fr':"Filtres"},
     daterange:{'en':"Date range",'fr':"Période"},
@@ -110,7 +111,38 @@ const options ={
     {id:"prov",keyword:"prov",checked:false},
     {id:"hexgrid",keyword:"hexgrid",checked:false}
     ],
-  charts:[
+charts:[
+  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
+    attributes:{
+      // binParams:{numBins: 24,binBounds: [0,23]},
+      // x:d3.scale.ordinal().domain(d3.range(0,24)),
+      x:d3.scale.ordinal().domain(d3.range((0,23))),
+      xUnits:dc.units.ordinal,
+      elasticX:false,
+      // measureValue:false,
+      xAxis:{orient:'bottom'},
+      yAxis:{ticks:5},
+      barPadding:0.1,
+      outerPadding:0.05,
+    }
+    
+  },  
+  {id:"panelclass",checked:true,active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"paneltype",checked:true,active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
+  {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
+  {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
+  {id:"paneltrend",checked:true,active:false,keyword:"trend",icon:"fa fa-cogs",dim:'mapmeit',dctype:'barChart',defaultscale:'',attributes:{
+      // binParams:{numBins: 24,binBounds: [0,23]},
+      // x:d3.scale.ordinal().domain(d3.range(0,24)),
+      x:d3.scale.ordinal().domain(['2015','2020','2025','2030','2035','2035','2040','2045','2050']),
+      xUnits:dc.units.ordinal,
+      elasticX:false,
+      // measureValue:false,
+      xAxis:{orient:'bottom'},
+      yAxis:{ticks:5},
+      barPadding:0.1,
+      outerPadding:0.05,
+    }},,
   {id:"paneldate",checked:true,active:false,keyword:"daterange",icon:"fa fa-calendar",dim:'datet',dctype:'barChart',minMax:true,defaultscale:'',
     attributes:{xAxis:{tickFormat:dc.utils.customTimeFormat,orient:'bottom',},
                 yAxis:{ticks:5},
@@ -144,27 +176,11 @@ const options ={
              }
     
   },
-  {id:"panelclass",checked:true,active:false,keyword:"shipclass",icon:"fa fa-ship",dim:'class',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"paneltype",checked:true,active:false,keyword:"shiptype",icon:"fa fa-ship",dim:'type',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'barChart',defaultscale:'',
-    attributes:{
-      // binParams:{numBins: 24,binBounds: [0,23]},
-      // x:d3.scale.ordinal().domain(d3.range(0,24)),
-      x:d3.scale.ordinal().domain(d3.range((0,23))),
-      xUnits:dc.units.ordinal,
-      elasticX:false,
-      // measureValue:false,
-      xAxis:{orient:'bottom'},
-      yAxis:{ticks:5},
-      barPadding:0.1,
-      outerPadding:0.05,
-    }
-    
-  },
+
+
   // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'pieChart',defaultscale:'',attributes:{}},
   // {id:"panelmeit",checked:true,active:false,keyword:"meitregion",icon:"fa fa-map",dim:'meit',dctype:'rowChart',defaultscale:'',attributes:{}},
-  {id:"panelmode",checked:true,active:false,keyword:"emissionmode",icon:"fa fa-modx",dim:'mode',dctype:'pieChart',defaultscale:'',attributes:{}},
-  {id:"panelengine",checked:true,active:false,keyword:"enginecode",icon:"fa fa-cogs",dim:'engine',dctype:'pieChart',defaultscale:'',attributes:{}},,
+
   {id:"panelip",checked:true,active:false,keyword:"ip",icon:"fa fa-cogs",dim:'ip',dctype:'rowChart',defaultscale:'',attributes:{
     label:function(d){return (d.key0)?'Includes non Canadian O/D':'Canadian O/D-Only';}
   }},

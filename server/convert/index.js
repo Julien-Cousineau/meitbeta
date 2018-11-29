@@ -69,8 +69,8 @@ Convert.prototype = {
       ],
     testing:false,
     shipinput:[
-     {id:0,file:'pacific_growth_factors_11212017.csv'},
-     {id:1,file:'east_arctic_greatlakes_growth_factors_11212017.csv'}
+     {id:0,file:'pacific_growth_factors_02062018.csv'},
+     {id:1,file:'east_arctic_greatlakes_forecast_factors_02062018.csv'}
      ],
     printfunc:function(step,nstep,i){console.log("step {0} of {1}:{2}".format(step,nstep,i))},
   },
@@ -238,7 +238,7 @@ Convert.prototype = {
       }
       if(!(allzeros)){
         const ship_id = obj.ship_id;
-        const point_id= obj.grid_index;
+        const point_id= '{0}_{1}'.format(obj.lat,obj.long);
         const mode    = obj.activity_type;
         const ip = (obj.ip && obj.ip.toLowerCase()==='true')?1:0;
         const datetime= Date.parse(obj.date_time);
@@ -282,9 +282,10 @@ Convert.prototype = {
         // ping.type    = ships[ship_id].type;
         
         //TEMPORARY
-        ping.class = (ships[ship_id])?ships[ship_id].Class:obj.ship_class;
-        ping.type = (ships[ship_id])?ships[ship_id].type:obj.ship_type;
-        
+        //ping.class = (ships[ship_id])?ships[ship_id].Class:obj.ship_class;
+        //ping.type = (ships[ship_id])?ships[ship_id].type:obj.ship_type;
+        ping.class=obj.ship_class;
+        ping.type=obj.ship_type;
         
         ping.ip      = ip;
         // ping.point_id= point_id;
