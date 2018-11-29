@@ -121,7 +121,7 @@ Footer.prototype ={
     const self=this;
     $("#ul_{0}s li a".format(name)).click(function(){
       let selText = $(this).text();
-      $(this).closest('div').children('div').text(selText);
+      $(this).closest('div').children('div').children('div').text(selText);
       var _id = $(this).attr('_id');
       self.parent[name] = _id;
       self.parent.refresh();

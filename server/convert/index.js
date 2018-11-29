@@ -306,7 +306,6 @@ Convert.prototype = {
         for(let i=0,n=YEARS.length;i<n;i++){
           const year=YEARS[i];
           if(ships[ship_id]){
-            const _ship = ships[ship_id];
             ping['nox'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].nox / 4.0 *256.0;
             ping['other'+year]=ships[ship_id].forecast[year][ping.engine][ping.meit].sox / 4.0 *256.0;
           } else{

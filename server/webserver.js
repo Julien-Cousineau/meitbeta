@@ -81,7 +81,7 @@ WebServer.prototype = {
     // app.use(compress()); 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(helmet());
+    // app.use(helmet());
     
     //const ninetyDaysInSeconds = 7776000;
     //app.use(helmet.hpkp({

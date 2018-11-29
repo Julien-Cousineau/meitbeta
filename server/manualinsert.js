@@ -22,6 +22,7 @@ const MapDServer = require("./mapdserver");
 // const filename='pacificWIG_09212017.csv';
 // const filename='pacific_emissions_01042018.csv';
 // const filename='pacific_emissions_11162017.csv';
+// const filename='arctic_emissions_2018-05-28.csv';
 
 function ManualInsert(){
     const self=this;
@@ -86,8 +87,7 @@ function ManualInsert(){
 ManualInsert.prototype = {
   sqltemplate: "template2.sql",
   testdataset:'test1',
-  // testfile:'dummy.csv',
-  testfile:'pacific_emissions_2018-05-02.csv',
+  testfile:'dummy.csv',
   deleteConvert:function(){
     this.dataserver.converts.delete(function(){});
   },
@@ -108,11 +108,13 @@ ManualInsert.prototype = {
       // 'pacific_emissions_01042018.csv',
       // 'pacificWIG_07192017.csv',
       // 'eastWIG_09212017.csv',
-      'pacificWIG_09212017.csv',
-      // 'pacific_emissions_11162017.csv',
       //'arcticWIG_09212017.csv'
-      // 'arctic_emissions_2018-02-13.csv',
-      // 'arctic_emissions_2018-04-10.csv'
+      //'arctic_emissions_2018-02-13.csv'
+      //'arctic_emissions_2018-04-10.csv',
+      //'pacific_emissions_2018-05-02.csv',
+      //'east_emissions_2018-04-17.csv',
+      //'pacific_fishing_emissions_2018-05-09.csv',
+      'arctic_emissions_2018-05-28.csv',
       ];
     files.forEach(file=>{
       const filepath = path.resolve(UPLOADFOLDER,file);
